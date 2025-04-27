@@ -5,16 +5,21 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Ask Kai – Kaymar Consulting</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+    .kaymar-green {
+      color: #7AC142; /* Kaymar Lime Green */
+    }
+  </style>
 </head>
-<body class="bg-gray-100 text-gray-800">
+<body class="bg-white text-gray-800">
   <header class="bg-white shadow p-4 flex items-center justify-between">
-    <h1 class="text-2xl font-bold text-blue-700">Ask Kai</h1>
+    <h1 class="text-2xl font-bold kaymar-green">Ask Kai</h1>
     <p class="italic text-sm">AI-powered consulting by Kaymar</p>
   </header>
 
   <main class="flex flex-col items-center justify-center min-h-[80vh] p-8">
     <div class="max-w-2xl w-full bg-white rounded-2xl shadow-lg p-6">
-      <h2 class="text-xl font-semibold mb-2 text-center">Ask Kai...</h2>
+      <h2 class="text-xl font-semibold mb-2 text-center kaymar-green">Ask Kai...</h2>
       
       <input id="askInput" type="text" placeholder="Type your question here..." class="w-full border p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600" />
       <p id="flashingExamples" class="text-sm text-gray-500 text-center mt-2"></p>
@@ -23,9 +28,9 @@
     </div>
 
     <div class="max-w-2xl w-full bg-white rounded-2xl shadow-lg p-6 mt-8">
-      <img src="https://drive.google.com/file/d/1JGXRUF_bfaSm058iDpWhjv1vpwjKrM8S/view?usp=sharing" alt="Kai Marlow Profile" class="mx-auto rounded-full mb-4" />
-      
-      <h2 class="text-2xl font-bold text-center text-blue-700 mb-4">Who is Kai?</h2>
+      <img src="https://drive.google.com/uc?export=view&id=1JGXRUF_bfaSm058iDpWhjv1vpwjKrM8S" alt="Kai Marlow Profile" class="mx-auto rounded-full mb-4 w-32 h-32 object-cover" />
+
+      <h2 class="text-2xl font-bold text-center kaymar-green mb-4">Who is Kai?</h2>
       <p class="text-gray-700 text-center mb-4">
         Kai Marlow is your trusted mate in the building world.<br>
         With over 20 years of hands-on experience across Australia, the UK, the USA, and beyond, Kai offers fast, down-to-earth advice on construction, carpentry, materials, and design.<br>
@@ -33,7 +38,7 @@
         Built by tradies, for tradies and homeowners.
       </p>
 
-      <h2 class="text-2xl font-bold text-center text-blue-700 mb-4 mt-8">Need Extra Help?</h2>
+      <h2 class="text-2xl font-bold text-center kaymar-green mb-4 mt-8">Need Extra Help?</h2>
       <p class="text-gray-700 text-center">
         No worries!<br>
         Shoot me an email at <a href="mailto:kai@kaymarconstruction.com" class="text-blue-600 underline">kai@kaymarconstruction.com</a><br>
@@ -68,4 +73,3 @@
   </script>
 </body>
 </html>
-
