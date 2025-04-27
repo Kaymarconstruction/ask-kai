@@ -45,5 +45,25 @@
   <footer class="text-center text-gray-500 text-sm p-4">
     &copy; 2025 Kaymar Consulting | Powered by AI
   </footer>
+<script>
+  const examples = [
+    "What size rafters do I need for a 4m span?",
+    "What's the best decking timber for coastal homes?",
+    "How much should I budget for a 6x4m deck?",
+    "What's the difference between composite and hardwood decking?",
+    "How do I work out timber quantities for a pergola?"
+  ];
+
+  let index = 0;
+  const flashingExamples = document.getElementById("flashingExamples");
+
+  function showNextExample() {
+    flashingExamples.textContent = examples[index];
+    index = (index + 1) % examples.length;
+  }
+
+  setInterval(showNextExample, 3000); // Change every 3 seconds
+  showNextExample(); // Start immediately
+</script>
 </body>
 </html>
