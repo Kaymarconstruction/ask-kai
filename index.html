@@ -6,60 +6,66 @@
   <title>Ask Kai – Kaymar Consulting</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body class="bg-gray-50 text-gray-800">
+<body class="bg-gray-100 text-gray-800">
   <header class="bg-white shadow p-4 flex items-center justify-between">
     <h1 class="text-2xl font-bold text-blue-700">Ask Kai</h1>
     <p class="italic text-sm">AI-powered consulting by Kaymar</p>
   </header>
 
   <main class="flex flex-col items-center justify-center min-h-[80vh] p-8">
-      <div class="border rounded-lg p-4 mb-4 bg-white shadow-md p-6 rounded-2xl">
-  <h2 class="text-2xl font-bold text-center text-blue-700 mb-4">Who is Kai?</h2>
-  <p class="text-gray-700 text-center mb-4">
-    Kai Marlow is your trusted mate in the building world.<br>
-    With over 20 years of hands-on experience across Australia, the UK, the USA, and beyond, Kai offers fast, down-to-earth advice on construction, carpentry, materials, and design.<br>
-    Whether you're a homeowner starting a renovation or a tradie chasing specs — <strong>Ask Kai</strong>.<br>
-    Built by tradies, for tradies and homeowners.
-  </p>
-
-  <h2 class="text-2xl font-bold text-center text-blue-700 mb-4 mt-8">Need Extra Help?</h2>
-  <p class="text-gray-700 text-center">
-    No worries!<br>
-    Shoot me an email at <a href="mailto:kai@kaymarconstruction.com" class="text-blue-600 underline">kai@kaymarconstruction.com</a><br>
-    I’ll get back to you with practical advice, sketches, or ideas — usually within a day!
-  </p>
-</div>
-
-
-     <input id="askInput" type="text" placeholder="Type your question here..." class="w-full border p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600" />
-<p id="flashingExamples" class="text-sm text-gray-500 text-center mt-2"></p>
+    <div class="max-w-2xl w-full bg-white rounded-2xl shadow-lg p-6">
+      <h2 class="text-xl font-semibold mb-2 text-center">Ask Kai...</h2>
+      
+      <input id="askInput" type="text" placeholder="Type your question here..." class="w-full border p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600" />
+      <p id="flashingExamples" class="text-sm text-gray-500 text-center mt-2"></p>
 
       <button class="mt-4 bg-blue-700 text-white px-6 py-2 rounded-lg hover:bg-blue-800 transition">Submit</button>
+    </div>
+
+    <div class="max-w-2xl w-full bg-white rounded-2xl shadow-lg p-6 mt-8">
+      <img src="https://via.placeholder.com/100" alt="Kai Marlow Profile" class="mx-auto rounded-full mb-4" />
+      
+      <h2 class="text-2xl font-bold text-center text-blue-700 mb-4">Who is Kai?</h2>
+      <p class="text-gray-700 text-center mb-4">
+        Kai Marlow is your trusted mate in the building world.<br>
+        With over 20 years of hands-on experience across Australia, the UK, the USA, and beyond, Kai offers fast, down-to-earth advice on construction, carpentry, materials, and design.<br>
+        Whether you're a homeowner starting a renovation or a tradie chasing specs — <strong>Ask Kai</strong>.<br>
+        Built by tradies, for tradies and homeowners.
+      </p>
+
+      <h2 class="text-2xl font-bold text-center text-blue-700 mb-4 mt-8">Need Extra Help?</h2>
+      <p class="text-gray-700 text-center">
+        No worries!<br>
+        Shoot me an email at <a href="mailto:kai@kaymarconstruction.com" class="text-blue-600 underline">kai@kaymarconstruction.com</a><br>
+        I’ll get back to you with practical advice, sketches, or ideas — usually within a day!
+      </p>
     </div>
   </main>
 
   <footer class="text-center text-gray-500 text-sm p-4">
     &copy; 2025 Kaymar Consulting | Powered by AI
   </footer>
-<script>
-  const examples = [
-    "What size rafters do I need for a 4m span?",
-    "What's the best decking timber for coastal homes?",
-    "How much should I budget for a 6x4m deck?",
-    "What's the difference between composite and hardwood decking?",
-    "How do I work out timber quantities for a pergola?"
-  ];
 
-  let index = 0;
-  const flashingExamples = document.getElementById("flashingExamples");
+  <script>
+    const examples = [
+      "What size rafters do I need for a 4m span?",
+      "What's the best decking timber for coastal homes?",
+      "How much should I budget for a 6x4m deck?",
+      "What's the difference between composite and hardwood decking?",
+      "How do I work out timber quantities for a pergola?"
+    ];
 
-  function showNextExample() {
-    flashingExamples.textContent = examples[index];
-    index = (index + 1) % examples.length;
-  }
+    let index = 0;
+    const flashingExamples = document.getElementById("flashingExamples");
 
-  setInterval(showNextExample, 3000); // Change every 3 seconds
-  showNextExample(); // Start immediately
-</script>
+    function showNextExample() {
+      flashingExamples.textContent = examples[index];
+      index = (index + 1) % examples.length;
+    }
+
+    setInterval(showNextExample, 3000);
+    showNextExample();
+  </script>
 </body>
 </html>
+
