@@ -20,7 +20,6 @@ app.post('/', (req, res) => {
     return res.status(400).json({ reply: "No prompt received." });
   }
 
-  // Replace this section with your real GPT-4/AI logic later
   const mockReply = `You asked: "${prompt}" — I'm on it, mate!`;
 
   res.json({ reply: mockReply });
