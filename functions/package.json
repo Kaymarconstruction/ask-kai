@@ -1,9 +1,19 @@
 {
   "name": "askkai",
   "version": "1.0.0",
-  "description": "Ask Kai Serverless Backend",
-  "main": "functions/askkai.js",
+  "description": "Ask Kai - AI-powered consulting for building and tradies",
+  "main": "askkai.js",
+  "scripts": {
+    "start": "node askkai.js"
+  },
   "dependencies": {
-    "node-fetch": "^2.6.7"
-  }
+    "cors": "^2.8.5",
+    "express": "^4.18.2"
+  },
+  "engines": {
+    "node": ">=14"
+  },
+  "keywords": [],
+  "author": "Kaymar Consulting",
+  "license": "ISC"
 }
