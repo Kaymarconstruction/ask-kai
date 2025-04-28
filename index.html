@@ -20,13 +20,14 @@
   <main class="flex flex-col items-center justify-center min-h-[80vh] p-8">
     <div class="max-w-2xl w-full bg-white rounded-2xl shadow-lg p-6">
       <h2 class="text-xl font-semibold mb-2 text-center kaymar-green">Ask Kai...</h2>
-
+      
       <input id="askInput" type="text" placeholder="Type your question here..." class="w-full border p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600" />
       <p id="flashingExamples" class="text-sm text-gray-500 text-center mt-2"></p>
 
-      <button class="mt-4 bg-blue-700 text-white px-6 py-2 rounded-lg hover:bg-blue-800 transition">Submit</button>
+      <button id="submitBtn" class="mt-4 bg-blue-700 text-white px-6 py-2 rounded-lg hover:bg-blue-800 transition">Submit</button>
 
-      <div id="response" class="mt-6 p-4 border rounded-lg text-gray-700 bg-gray-50 hidden"></div>
+      <!-- This is where Kai's reply will appear -->
+      <div id="kaiReply" class="mt-6 text-center text-gray-700"></div>
     </div>
 
     <div class="max-w-2xl w-full bg-white rounded-2xl shadow-lg p-6 mt-8">
@@ -59,7 +60,6 @@
     </div>
   </footer>
 
-  <!-- Flashing FAQ examples -->
   <script>
     const examples = [
       "What size rafters do I need for a 4m span?",
@@ -79,12 +79,37 @@
 
     setInterval(showNextExample, 3000);
     showNextExample();
-  </script>
 
-  <!-- Submit button to Serverless function -->
-  <script>
-    const submitButton = document.querySelector("button");
-    const askInput = document.getElementById("askInput");
+    const submitButton = document.getElementById('submitBtn');
+    const askInput = document.getElementById('askInput');
+    const kaiReply = document.getElementById('kaiReply');
+
+    submitButton.addEventListener('click', async () => {
+      const userQuestion = askInput.value.trim();
+      if (!userQuestion) return;
+
+      kaiReply.textContent = "Thinking...";
+
+      try {
+        const res = await fetch('https://ask-kai-production.up.railway.app/', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ prompt: userQuestion })
+        });
+
+        const data = await res.json();
+        kaiReply.textContent = data.reply || "Hmm, couldn't find an answer!";
+      } catch (err) {
+        console.error(err);
+        kaiReply.textContent = "Error reaching Kai. Try again later.";
+      }
+    });
+  </script>
+</body>
+</html>
+ent.getElementById("askInput");
     const responseBox = document.getElementById("response");
 
     submitButton.addEventListener("click", async () => {
