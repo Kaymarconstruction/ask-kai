@@ -7,10 +7,11 @@
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <style>
     .profile-pic {
-      width: 120px;
-      height: 120px;
+      width: 140px;
+      height: 140px;
       border-radius: 9999px;
       object-fit: cover;
+      object-position: center;
       margin: 0 auto;
     }
   </style>
@@ -19,7 +20,7 @@
   <header class="bg-white shadow p-4 flex flex-col items-center justify-center">
     <img src="https://i.imgur.com/uYWtV9r.png" alt="Kai Profile" class="profile-pic mb-2" />
     <h1 class="text-3xl font-bold text-green-600">Ask Kai</h1>
-    <p class="italic text-sm text-gray-500">AI-powered consulting by Kaymar Construction</p>
+    <p class="italic text-sm text-gray-600 mt-1">Your mate Kai — Helping you with all things carpentry, building, and design advice.</p>
   </header>
 
   <main class="flex flex-col items-center justify-center min-h-[80vh] p-8">
@@ -90,13 +91,13 @@
       });
 
       const data = await response.json();
-      if (data.choices && data.choices.length > 0) {
+      if (data.choices && data.choices.length > 0 && data.choices[0].message && data.choices[0].message.content) {
         responseArea.innerHTML = data.choices[0].message.content.trim();
       } else {
-        responseArea.innerHTML = "Sorry, I couldn't find an answer!";
+        responseArea.innerHTML = "Sorry mate, couldn't find a clear answer!";
       }
     } catch (error) {
-      responseArea.innerHTML = "Error getting answer. Please try again.";
+      responseArea.innerHTML = "Error connecting to Kai. Try again shortly.";
       console.error(error);
     }
   }
