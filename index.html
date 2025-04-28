@@ -69,7 +69,7 @@
     const responseArea = document.getElementById('responseArea');
     responseArea.innerHTML = "Thinking...";
 
-    const apiKey = "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"; // <-- PASTE NEW KEY HERE (keep inside "" quotes)
+    const apiKey = "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"; // <-- PASTE NEW KEY HERE (keep inside "" quotes)
 
     const headers = {
       "Content-Type": "application/json",
@@ -77,12 +77,11 @@
     };
 
     const body = JSON.stringify({
-      model: "gpt-3.5-turbo",
-",
+      model: "gpt-3.5-turbo", // <--- USING GPT-3.5-TURBO
       messages: [
         {
           role: "system",
-          content: "You are Kai Marlow, a friendly experienced carpenter and building consultant from Frankston, Victoria, Australia. You give expert advice in plain language about carpentry, decking, pergolas, roofing, design ideas, materials, handyman tips, quoting, and landscaping. Always be friendly, helpful, and sound like a relaxed Aussie tradie."
+          content: "You are Kai Marlow, a friendly, experienced carpenter and building consultant from Frankston, Victoria, Australia. You provide expert advice on carpentry, building, quoting, landscaping, and handyman work. Speak like a relaxed Aussie tradie."
         },
         {
           role: "user",
