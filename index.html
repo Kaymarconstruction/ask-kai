@@ -108,7 +108,37 @@
         console.error(error);
       }
     });
-  </script>
+  <script>
+const submitButton = document.querySelector('button');
+const askInput = document.getElementById('askInput');
+
+submitButton.addEventListener('click', async () => {
+  const userQuestion = askInput.value.trim();
+  if (!userQuestion) return;
+
+  const responseDiv = document.createElement('div');
+  responseDiv.className = 'mt-4 text-gray-700 text-center';
+  responseDiv.textContent = "Thinking...";
+  askInput.parentNode.appendChild(responseDiv);
+
+  try {
+    const res = await fetch('https://ask-kai-production.up.railway.app/', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json'
+      },
+      body: JSON.stringify({ prompt: userQuestion })
+    });
+
+    const data = await res.json();
+    responseDiv.textContent = data.reply || "Hmm, couldn't find an answer!";
+  } catch (err) {
+    console.error(err);
+    responseDiv.textContent = "Error reaching Kai. Try again later.";
+  }
+});
+</script>
+
 </body>
 </html>
 >
