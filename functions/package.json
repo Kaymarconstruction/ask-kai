@@ -1,0 +1,9 @@
+{
+  "name": "askkai",
+  "version": "1.0.0",
+  "description": "Ask Kai Serverless Backend",
+  "main": "functions/askkai.js",
+  "dependencies": {
+    "node-fetch": "^2.6.7"
+  }
+}
