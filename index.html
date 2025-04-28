@@ -26,7 +26,6 @@
 
       <button class="mt-4 bg-blue-700 text-white px-6 py-2 rounded-lg hover:bg-blue-800 transition">Submit</button>
 
-      <!-- Kai Response Box -->
       <div id="response" class="mt-6 p-4 border rounded-lg text-gray-700 bg-gray-50 hidden"></div>
     </div>
 
@@ -60,7 +59,7 @@
     </div>
   </footer>
 
-  <!-- Flasher FAQ script -->
+  <!-- Flashing FAQ examples -->
   <script>
     const examples = [
       "What size rafters do I need for a 4m span?",
@@ -82,7 +81,7 @@
     showNextExample();
   </script>
 
-  <!-- Ask Kai Brain Connection Script -->
+  <!-- Submit button to Serverless function -->
   <script>
     const submitButton = document.querySelector("button");
     const askInput = document.getElementById("askInput");
@@ -96,27 +95,14 @@
       responseBox.textContent = "Thinking...";
 
       try {
-        const apiKey = "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"; // <--- Insert your new API Key here
-
-        const response = await fetch("https://api.openai.com/v1/chat/completions", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Bearer ${apiKey}`
-          },
-          body: JSON.stringify({
-            model: "gpt-3.5-turbo",
-            messages: [
-              { role: "system", content: "You are Kai, a helpful Australian carpenter and builder. Answer in a casual, experienced tradie style. Provide building advice, material suggestions, design ideas, or project cost estimates." },
-              { role: "user", content: question }
-            ],
-            max_tokens: 500,
-            temperature: 0.6
-          })
+        const response = await fetch('/.netlify/functions/askkai', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ message: question })
         });
 
         const data = await response.json();
-        responseBox.textContent = data.choices[0].message.content.trim();
+        responseBox.textContent = data.reply;
       } catch (error) {
         responseBox.textContent = "Sorry mate, something went wrong. Try again.";
         console.error(error);
@@ -125,4 +111,5 @@
   </script>
 </body>
 </html>
+>
 
