@@ -80,6 +80,41 @@
 
     setInterval(showNextExample, 3000);
     showNextExample();
-  </script>
+  <script>
+async function sendQuestion() {
+  const input = document.getElementById('askInput').value;
+  const responseArea = document.getElementById('flashingExamples');
+  responseArea.innerHTML = "Thinking...";
+
+  const apiKey = "PASTE-YOUR-NEW-API-KEY-HERE"; // <<< PUT your new fresh API Key here.
+
+  const headers = {
+    "Content-Type": "application/json",
+    "Authorization": `Bearer ${apiKey}`
+  };
+
+  const body = JSON.stringify({
+    model: "gpt-4",
+    messages: [{ role: "user", content: input }]
+  });
+
+  try {
+    const response = await fetch("https://api.openai.com/v1/chat/completions", {
+      method: "POST",
+      headers: headers,
+      body: body
+    });
+
+    const data = await response.json();
+    const answer = data.choices[0].message.content.trim();
+    responseArea.innerHTML = answer;
+  } catch (error) {
+    responseArea.innerHTML = "Error getting answer. Please try again.";
+  }
+}
+
+document.querySelector("button").addEventListener("click", sendQuestion);
+</script>
+
 </body>
 </html>
