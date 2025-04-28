@@ -20,18 +20,18 @@
   <main class="flex flex-col items-center justify-center min-h-[80vh] p-8">
     <div class="max-w-2xl w-full bg-white rounded-2xl shadow-lg p-6">
       <h2 class="text-xl font-semibold mb-2 text-center kaymar-green">Ask Kai...</h2>
-      
+
       <input id="askInput" type="text" placeholder="Type your question here..." class="w-full border p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600" />
       <p id="flashingExamples" class="text-sm text-gray-500 text-center mt-2"></p>
 
       <button class="mt-4 bg-blue-700 text-white px-6 py-2 rounded-lg hover:bg-blue-800 transition">Submit</button>
-    <div id="response" class="mt-6 p-4 border rounded-lg text-gray-700 bg-gray-50 hidden"></div>
 
+      <!-- Kai Response Box -->
+      <div id="response" class="mt-6 p-4 border rounded-lg text-gray-700 bg-gray-50 hidden"></div>
+    </div>
 
     <div class="max-w-2xl w-full bg-white rounded-2xl shadow-lg p-6 mt-8">
       <img src="https://i.imgur.com/uYWtV9r.png" alt="Kai Marlow Profile" class="mx-auto rounded-full mb-4 w-40 h-40 object-contain bg-white p-2" />
-
-
 
       <h2 class="text-2xl font-bold text-center kaymar-green mb-4">Who is Kai?</h2>
       <p class="text-gray-700 text-center mb-4">
@@ -50,18 +50,17 @@
     </div>
   </main>
 
-  
   <footer class="text-center text-gray-500 text-sm p-4">
-  &copy; 2025 Kaymar Consulting | Powered by AI
-  <div class="flex justify-center space-x-6 mt-4">
-    <a href="https://www.instagram.com/askkai_official" target="_blank" class="text-blue-600 hover:underline">Instagram</a>
-    <a href="https://www.facebook.com/askkai_official" target="_blank" class="text-blue-600 hover:underline">Facebook</a>
-    <a href="https://www.tiktok.com/@askkai_official" target="_blank" class="text-blue-600 hover:underline">TikTok</a>
-    <a href="https://www.youtube.com/@askkai_official" target="_blank" class="text-blue-600 hover:underline">YouTube</a>
-  </div>
-</footer>
+    &copy; 2025 Kaymar Consulting | Powered by AI
+    <div class="flex justify-center space-x-6 mt-4">
+      <a href="https://www.instagram.com/askkai_official" target="_blank" class="text-blue-600 hover:underline">Instagram</a>
+      <a href="https://www.facebook.com/askkai_official" target="_blank" class="text-blue-600 hover:underline">Facebook</a>
+      <a href="https://www.tiktok.com/@askkai_official" target="_blank" class="text-blue-600 hover:underline">TikTok</a>
+      <a href="https://www.youtube.com/@askkai_official" target="_blank" class="text-blue-600 hover:underline">YouTube</a>
+    </div>
+  </footer>
 
-
+  <!-- Flasher FAQ script -->
   <script>
     const examples = [
       "What size rafters do I need for a 4m span?",
@@ -82,5 +81,48 @@
     setInterval(showNextExample, 3000);
     showNextExample();
   </script>
+
+  <!-- Ask Kai Brain Connection Script -->
+  <script>
+    const submitButton = document.querySelector("button");
+    const askInput = document.getElementById("askInput");
+    const responseBox = document.getElementById("response");
+
+    submitButton.addEventListener("click", async () => {
+      const question = askInput.value.trim();
+      if (!question) return;
+
+      responseBox.classList.remove("hidden");
+      responseBox.textContent = "Thinking...";
+
+      try {
+        const apiKey = "YOUR-API-KEY-HERE"; // <--- Insert your new API Key here
+
+        const response = await fetch("https://api.openai.com/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "Authorization": `Bearer ${apiKey}`
+          },
+          body: JSON.stringify({
+            model: "gpt-3.5-turbo",
+            messages: [
+              { role: "system", content: "You are Kai, a helpful Australian carpenter and builder. Answer in a casual, experienced tradie style. Provide building advice, material suggestions, design ideas, or project cost estimates." },
+              { role: "user", content: question }
+            ],
+            max_tokens: 500,
+            temperature: 0.6
+          })
+        });
+
+        const data = await response.json();
+        responseBox.textContent = data.choices[0].message.content.trim();
+      } catch (error) {
+        responseBox.textContent = "Sorry mate, something went wrong. Try again.";
+        console.error(error);
+      }
+    });
+  </script>
 </body>
 </html>
+
