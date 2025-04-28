@@ -1,26 +1,54 @@
-<script>
-  const submitButton = document.getElementById('submitBtn');
-  const askInput = document.getElementById('askInput');
-  const kaiReply = document.getElementById('kaiReply');
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ask Kai – Kaymar Consulting</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 text-gray-800 min-h-screen flex flex-col justify-center items-center p-4">
 
-  submitButton.addEventListener('click', async () => {
-    const userQuestion = askInput.value.trim();
-    if (!userQuestion) return;
+  <div class="bg-white shadow-md rounded-2xl p-8 max-w-lg w-full">
+    <h1 class="text-3xl font-bold text-green-600 text-center mb-6">Ask Kai</h1>
 
-    kaiReply.textContent = "Thinking...";
+    <input id="askInput" type="text" placeholder="Type your building or carpentry question..." class="w-full p-3 mb-4 border rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" />
 
-    try {
-      const response = await fetch('https://askkai-backend-clean.onrender.com/ask', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ prompt: userQuestion })
-      });
+    <button id="submitBtn" class="w-full bg-green-600 text-white py-3 rounded-lg hover:bg-green-700 transition">
+      Submit Question
+    </button>
 
-      const data = await response.json();
-      kaiReply.textContent = data.reply;
-    } catch (error) {
-      kaiReply.textContent = "Error reaching Kai. Try again later.";
-      console.error(error);
-    }
-  });
-</script>
+    <div id="kaiReply" class="mt-6 text-center text-gray-700"></div>
+  </div>
+
+  <script>
+    const submitButton = document.getElementById('submitBtn');
+    const askInput = document.getElementById('askInput');
+    const kaiReply = document.getElementById('kaiReply');
+
+    submitButton.addEventListener('click', async () => {
+      const userQuestion = askInput.value.trim();
+      if (!userQuestion) {
+        kaiReply.textContent = "Please enter a question.";
+        return;
+      }
+
+      kaiReply.textContent = "Thinking...";
+
+      try {
+        const response = await fetch('https://askkai-backend-clean.onrender.com/ask', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ prompt: userQuestion })
+        });
+
+        const data = await response.json();
+        kaiReply.textContent = data.reply || "Kai couldn't find an answer.";
+      } catch (error) {
+        kaiReply.textContent = "Error reaching Kai. Please try again.";
+        console.error(error);
+      }
+    });
+  </script>
+
+</body>
+</html>
