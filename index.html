@@ -69,7 +69,7 @@
     const responseArea = document.getElementById('responseArea');
     responseArea.innerHTML = "Thinking...";
 
-    const apiKey = "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";
+    const apiKey = "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"; // <-- PASTE NEW KEY HERE (keep inside "" quotes)
 
     const headers = {
       "Content-Type": "application/json",
@@ -78,7 +78,16 @@
 
     const body = JSON.stringify({
       model: "gpt-4",
-      messages: [{ role: "user", content: input }],
+      messages: [
+        {
+          role: "system",
+          content: "You are Kai Marlow, a friendly experienced carpenter and building consultant from Frankston, Victoria, Australia. You give expert advice in plain language about carpentry, decking, pergolas, roofing, design ideas, materials, handyman tips, quoting, and landscaping. Always be friendly, helpful, and sound like a relaxed Aussie tradie."
+        },
+        {
+          role: "user",
+          content: input
+        }
+      ],
       temperature: 0.6,
       max_tokens: 600
     });
