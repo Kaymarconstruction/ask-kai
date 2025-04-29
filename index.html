@@ -14,7 +14,13 @@
 <body class="bg-white text-gray-800">
 
   <header class="bg-white shadow p-4 flex items-center justify-between">
-    <h1 class="text-2xl font-bold kaymar-green">Ask Kai</h1>
+    <div class="flex items-center space-x-6">
+      <h1 class="text-2xl font-bold kaymar-green">Ask Kai</h1>
+      <!-- New Menu Button -->
+      <button class="bg-blue-700 text-white px-4 py-2 rounded-lg hover:bg-blue-800 transition">
+        Menu
+      </button>
+    </div>
     <p class="italic text-sm">AI-powered consulting by Kaymar</p>
   </header>
 
@@ -27,7 +33,7 @@
 
       <button id="submitBtn" class="mt-4 bg-blue-700 text-white px-6 py-2 rounded-lg hover:bg-blue-800 transition">Submit</button>
 
-      <!-- This is where the full rolling chat will appear -->
+      <!-- Chat display area -->
       <div id="kaiReply" class="mt-6 max-h-[400px] overflow-y-auto space-y-4 text-gray-700"></div>
     </div>
 
@@ -59,14 +65,13 @@
     </div>
   </footer>
 
-  <!-- Final working JavaScript -->
   <script>
     const submitButton = document.getElementById('submitBtn');
     const askInput = document.getElementById('askInput');
     const kaiReply = document.getElementById('kaiReply');
 
     const messages = [
-      { role: "system", content: "You are Kai Marlow — a friendly Aussie tradie with 20+ years of experience. Give fast, practical advice in clear, confident language." }
+      { role: "system", content: "You are Kai Marlow — a friendly Aussie tradie with 20+ years of experience. Give fast, practical advice in clear, confident Australian English. Never mention you are an AI." }
     ];
 
     submitButton.addEventListener('click', async () => {
