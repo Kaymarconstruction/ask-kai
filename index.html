@@ -1,67 +1,121 @@
-<script>
-const submitButton = document.getElementById('submitBtn');
-const askInput = document.getElementById('askInput');
-const kaiReply = document.getElementById('kaiReply');
-
-submitButton.addEventListener('click', async () => {
-  const userQuestion = askInput.value.trim();
-  if (!userQuestion) {
-    return;
-  }
-
-  // Create a container for the new Q&A
-  const qaContainer = document.createElement('div');
-  qaContainer.className = 'mb-6';
-
-  // Add user question
-  const userText = document.createElement('p');
-  userText.className = 'text-right text-blue-700 font-semibold mb-2';
-  userText.textContent = `You: ${userQuestion}`;
-  qaContainer.appendChild(userText);
-
-  // Add placeholder for Kai's reply
-  const kaiText = document.createElement('p');
-  kaiText.className = 'text-left text-green-600 font-semibold';
-  kaiText.textContent = "Kai is thinking...";
-  qaContainer.appendChild(kaiText);
-
-  // Add the new Q&A to the chat box
-  kaiReply.appendChild(qaContainer);
-
-  // Scroll to bottom
-  kaiReply.scrollTop = kaiReply.scrollHeight;
-
-  // Clear input box
-  askInput.value = "";
-
-  try {
-    const response = await fetch('https://askkai-backend-clean.onrender.com/ask', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ prompt: userQuestion })
-    });
-
-    const data = await response.json();
-    const finalText = data.reply || "Hmm, couldn't find an answer!";
-
-    // Animate Kai's reply with typewriter effect
-    kaiText.textContent = "";
-    let i = 0;
-    const speed = 40; // typing speed (ms per character)
-
-    function typeWriter() {
-      if (i < finalText.length) {
-        kaiText.textContent += finalText.charAt(i);
-        i++;
-        setTimeout(typeWriter, speed);
-      }
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ask Kai – Kaymar Consulting</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+    .kaymar-green {
+      color: #7AC142;
     }
+  </style>
+</head>
+<body class="bg-white text-gray-800">
 
-    typeWriter();
+  <header class="bg-white shadow p-4 flex items-center justify-between">
+    <h1 class="text-2xl font-bold kaymar-green">Ask Kai</h1>
+    <p class="italic text-sm">AI-powered consulting by Kaymar</p>
+  </header>
 
-  } catch (error) {
-    console.error(error);
-    kaiText.textContent = "Error reaching Kai. Try again later.";
-  }
-});
-</script>
+  <main class="flex flex-col items-center justify-center min-h-[80vh] p-8">
+    <div class="max-w-2xl w-full bg-white rounded-2xl shadow-lg p-6">
+      <h2 class="text-xl font-semibold mb-2 text-center kaymar-green">Ask Kai...</h2>
+
+      <input id="askInput" type="text" placeholder="Type your question here..." class="w-full border p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600" />
+      <p id="flashingExamples" class="text-sm text-gray-500 text-center mt-2"></p>
+
+      <button id="submitBtn" class="mt-4 bg-blue-700 text-white px-6 py-2 rounded-lg hover:bg-blue-800 transition">Submit</button>
+
+      <!-- Chat area -->
+      <div id="kaiReply" class="mt-6 max-h-[400px] overflow-y-auto space-y-4 text-gray-700"></div>
+    </div>
+
+    <div class="max-w-2xl w-full bg-white rounded-2xl shadow-lg p-6 mt-8">
+      <img src="https://i.imgur.com/uYWtV9r.png" alt="Kai Marlow Profile" class="mx-auto rounded-full mb-4 w-40 h-40 object-contain bg-white p-2" />
+      <h2 class="text-2xl font-bold text-center kaymar-green mb-4">Who is Kai?</h2>
+      <p class="text-gray-700 text-center mb-4">
+        Kai Marlow is your trusted mate in the building world.<br>
+        With over 20 years of hands-on experience across Australia, the UK, the USA, and beyond, Kai offers fast, down-to-earth advice on construction, carpentry, materials, and design.<br>
+        Whether you're a homeowner starting a renovation or a tradie chasing specs — <strong>Ask Kai</strong>.
+      </p>
+
+      <h2 class="text-2xl font-bold text-center kaymar-green mb-4 mt-8">Need Extra Help?</h2>
+      <p class="text-gray-700 text-center">
+        No worries!<br>
+        Shoot me an email at <a href="mailto:kai@kaymarconstruction.com" class="text-blue-600 underline">kai@kaymarconstruction.com</a><br>
+        I’ll get back to you with practical advice, sketches, or ideas — usually within a day!
+      </p>
+    </div>
+  </main>
+
+  <footer class="text-center text-gray-500 text-sm p-4">
+    &copy; 2025 Kaymar Consulting | Powered by AI
+    <div class="flex justify-center space-x-6 mt-4">
+      <a href="https://www.instagram.com/askkai_official" target="_blank" class="text-blue-600 hover:underline">Instagram</a>
+      <a href="https://www.facebook.com/askkai_official" target="_blank" class="text-blue-600 hover:underline">Facebook</a>
+      <a href="https://www.tiktok.com/@askkai_official" target="_blank" class="text-blue-600 hover:underline">TikTok</a>
+      <a href="https://www.youtube.com/@askkai_official" target="_blank" class="text-blue-600 hover:underline">YouTube</a>
+    </div>
+  </footer>
+
+  <script>
+    const submitButton = document.getElementById('submitBtn');
+    const askInput = document.getElementById('askInput');
+    const kaiReply = document.getElementById('kaiReply');
+
+    submitButton.addEventListener('click', async () => {
+      const userQuestion = askInput.value.trim();
+      if (!userQuestion) {
+        return;
+      }
+
+      const qaContainer = document.createElement('div');
+      qaContainer.className = 'mb-6';
+
+      const userText = document.createElement('p');
+      userText.className = 'text-right text-blue-700 font-semibold mb-2';
+      userText.textContent = `You: ${userQuestion}`;
+      qaContainer.appendChild(userText);
+
+      const kaiText = document.createElement('p');
+      kaiText.className = 'text-left text-green-600 font-semibold';
+      kaiText.textContent = "Kai is thinking...";
+      qaContainer.appendChild(kaiText);
+
+      kaiReply.appendChild(qaContainer);
+      kaiReply.scrollTop = kaiReply.scrollHeight;
+      askInput.value = "";
+
+      try {
+        const response = await fetch('https://askkai-backend-clean.onrender.com/ask', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ prompt: userQuestion })
+        });
+
+        const data = await response.json();
+        const finalText = data.reply || "Hmm, couldn't find an answer!";
+        kaiText.textContent = "";
+        let i = 0;
+        const speed = 40;
+
+        function typeWriter() {
+          if (i < finalText.length) {
+            kaiText.textContent += finalText.charAt(i);
+            i++;
+            setTimeout(typeWriter, speed);
+          }
+        }
+
+        typeWriter();
+
+      } catch (error) {
+        console.error(error);
+        kaiText.textContent = "Error reaching Kai. Try again later.";
+      }
+    });
+  </script>
+
+</body>
+</html>
