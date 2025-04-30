@@ -25,16 +25,39 @@
     </button>
   </header>
 
-  <!-- Chat Section -->
+  <!-- Main chat body -->
   <main class="flex-1 flex flex-col items-center justify-between max-h-screen">
     <div id="kaiReply" class="w-full max-w-2xl flex-1 overflow-y-auto p-4 space-y-6 text-gray-700"></div>
 
-    <!-- Input Section -->
+    <!-- Input section at bottom -->
     <div class="w-full max-w-2xl p-4 bg-white shadow-md border-t flex items-center space-x-2">
       <input id="askInput" type="text" placeholder="Type your question..." class="flex-1 border p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" />
       <button id="submitBtn" class="bg-white border border-black text-black px-6 py-2 rounded-lg hover:bg-gray-100 transition">Submit</button>
     </div>
+
+    <!-- Kai Bio Section -->
+    <div class="max-w-2xl w-full bg-white rounded-2xl shadow-lg p-6 mt-8">
+      <img src="https://i.imgur.com/uYWtV9r.png" alt="Kai Marlow Profile" class="mx-auto mb-4 w-48 h-72 object-cover bg-white p-2 rounded-2xl shadow" />
+      <h2 class="text-2xl font-bold text-center kaymar-green mb-4">Who is Kai?</h2>
+      <p class="text-gray-700 text-center mb-4">
+        Kai Marlow is your trusted mate in the building world.<br>
+        With over 20 years of hands-on experience across Australia, the UK, the USA, and beyond, Kai offers fast, down-to-earth advice on construction, carpentry, materials, and design.<br>
+        Whether you're a homeowner starting a renovation or a tradie chasing specs — <strong>Ask Kai</strong>.
+      </p>
+    </div>
   </main>
+
+  <!-- Footer -->
+  <footer class="text-center text-gray-500 text-sm p-4">
+    &copy; 2025 Kaymar Construction | Powered by Ask Kai
+    <div class="flex justify-center space-x-6 mt-4">
+      <a href="https://www.instagram.com/askkai_official" target="_blank" class="text-blue-600 hover:underline">Instagram</a>
+      <a href="https://www.facebook.com/askkai_official" target="_blank" class="text-blue-600 hover:underline">Facebook</a>
+      <a href="https://www.tiktok.com/@askkai_official" target="_blank" class="text-blue-600 hover:underline">TikTok</a>
+      <a href="https://www.youtube.com/@askkai_official" target="_blank" class="text-blue-600 hover:underline">YouTube</a>
+    </div>
+    <p class="text-xs text-gray-400 mt-2">Built with coding support from Jack Cooper</p>
+  </footer>
 
   <!-- Chat Script -->
   <script>
@@ -46,7 +69,7 @@
     let promptCount = parseInt(localStorage.getItem('promptCount') || '0');
 
     if (!user) {
-      window.location.href = 'signup.html';
+      window.location.href = 'signin.html';
     }
 
     const messages = [
