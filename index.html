@@ -7,9 +7,14 @@
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <style>
     .kaymar-green { color: #7AC142; }
+    html, body {
+      height: 100%;
+      display: flex;
+      flex-direction: column;
+    }
   </style>
 </head>
-<body class="bg-white text-gray-800 flex flex-col min-h-screen">
+<body class="bg-white text-gray-800">
 
   <!-- Header -->
   <header class="bg-white shadow p-4 flex items-center justify-between">
@@ -21,72 +26,47 @@
   </header>
 
   <!-- Chat Section -->
-  <main class="flex flex-col items-center p-4">
-    <div class="w-full max-w-2xl">
-      <h2 class="text-xl font-semibold mb-2 text-center kaymar-green">Ask Kai...</h2>
+  <main class="flex-1 flex flex-col items-center justify-between max-h-screen">
+    <div id="kaiReply" class="w-full max-w-2xl flex-1 overflow-y-auto p-4 space-y-6 text-gray-700"></div>
 
-      <!-- Chat Display -->
-      <div id="kaiReply" class="max-h-[400px] overflow-y-auto p-2 border rounded-md mb-4 space-y-4 text-gray-700 bg-white shadow-inner"></div>
-
-      <!-- Input -->
-      <div class="flex space-x-2">
-        <input id="askInput" type="text" placeholder="Type your question here..." class="flex-1 border p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" />
-        <button id="submitBtn" class="bg-white border border-black text-black px-6 py-2 rounded-lg hover:bg-gray-100 transition">Submit</button>
-      </div>
+    <!-- Input Section -->
+    <div class="w-full max-w-2xl p-4 bg-white shadow-md border-t flex items-center space-x-2">
+      <input id="askInput" type="text" placeholder="Type your question..." class="flex-1 border p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" />
+      <button id="submitBtn" class="bg-white border border-black text-black px-6 py-2 rounded-lg hover:bg-gray-100 transition">Submit</button>
     </div>
   </main>
 
-  <!-- Profile Section -->
-  <section class="flex flex-col items-center justify-center mt-12 px-4">
-    <div class="max-w-2xl w-full bg-white rounded-2xl shadow-lg p-6">
-      <img src="https://i.imgur.com/uYWtV9r.png" alt="Kai Marlow Profile" class="mx-auto mb-4 w-48 h-72 object-cover bg-white p-2 rounded-2xl shadow" />
-
-      <h2 class="text-2xl font-bold text-center kaymar-green mb-4">Who is Kai?</h2>
-      <p class="text-gray-700 text-center mb-4">
-        Kai Marlow is your go-to expert in the building world.<br>
-        With over 20 years of global experience across Australia, the UK, USA, and Japan — Kai delivers fast, clear advice on carpentry, design, structural integrity, and compliance.<br>
-        Whether you’re framing a roof or building a backyard deck — <strong>Ask Kai</strong>.
-      </p>
-
-      <h2 class="text-2xl font-bold text-center kaymar-green mb-4 mt-8">Need Extra Help?</h2>
-      <p class="text-gray-700 text-center">
-        No worries!<br>
-        Shoot me an email at <a href="mailto:kai@kaymarconstruction.com" class="text-blue-600 underline">kai@kaymarconstruction.com</a><br>
-        I’ll get back to you with practical advice, sketches, or ideas — usually within a day!
-      </p>
-    </div>
-  </section>
-
-  <!-- Footer -->
-  <footer class="text-center text-gray-500 text-sm p-4 mt-auto">
-    &copy; 2025 Kaymar Construction
-    <div class="flex justify-center space-x-6 mt-4">
-      <a href="https://www.instagram.com/askkai_official" target="_blank" class="text-blue-600 hover:underline">Instagram</a>
-      <a href="https://www.facebook.com/askkai_official" target="_blank" class="text-blue-600 hover:underline">Facebook</a>
-      <a href="https://www.tiktok.com/@askkai_official" target="_blank" class="text-blue-600 hover:underline">TikTok</a>
-      <a href="https://www.youtube.com/@askkai_official" target="_blank" class="text-blue-600 hover:underline">YouTube</a>
-    </div>
-    <p class="text-xs text-gray-400 mt-2">Built with coding support from Jack Cooper</p>
-  </footer>
-
-  <!-- Script -->
+  <!-- Chat Script -->
   <script>
     const submitButton = document.getElementById('submitBtn');
     const askInput = document.getElementById('askInput');
     const kaiReply = document.getElementById('kaiReply');
 
+    const user = localStorage.getItem('askkaiUser');
+    let promptCount = parseInt(localStorage.getItem('promptCount') || '0');
+
+    if (!user) {
+      window.location.href = 'signup.html';
+    }
+
     const messages = [
-      { role: "system", content: "You are Kai Marlow — a highly experienced, globally educated Australian carpenter and building consultant. You have expert-level knowledge of building codes, standards, and regulations across Australia (NCC, AS1684, AS1170), the USA (IRC, IBC), the UK (NHBC, Eurocodes), Japan (Building Standards Act, seismic requirements), and beyond. You speak like a witty, practical, professional Aussie chippy and never mention you're an AI." }
+      { role: "system", content: "You are Kai Marlow — Australia’s smartest, funniest, and most experienced carpenter. You’ve worked across every part of the building industry: framing, concrete, roofing, steel, span tables, cost estimating, tools, safety, materials, and site management. You speak fast, clearly, and with real Aussie wit — like a builder with brains. Use local references like Bunnings, AS1684, MGP10, and H3 pine. Never mention you're an AI. You're the mate every Aussie tradie or DIYer wants on the job." }
     ];
 
     submitButton.addEventListener('click', async () => {
       const userQuestion = askInput.value.trim();
       if (!userQuestion) return;
 
+      if (promptCount >= 25) {
+        alert("You've used your 25 free prompts. Time to upgrade, mate.");
+        window.location.href = "upgrade.html";
+        return;
+      }
+
       messages.push({ role: "user", content: userQuestion });
 
       const qaContainer = document.createElement('div');
-      qaContainer.className = 'mb-4';
+      qaContainer.className = 'mb-6';
 
       const userText = document.createElement('p');
       userText.className = 'text-right text-blue-700 font-semibold mb-2';
@@ -125,6 +105,9 @@
 
         typeWriter();
         messages.push({ role: "assistant", content: finalText });
+
+        promptCount++;
+        localStorage.setItem('promptCount', promptCount.toString());
 
       } catch (error) {
         console.error(error);
