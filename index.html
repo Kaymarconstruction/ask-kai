@@ -68,7 +68,6 @@
     const kaiReply = document.getElementById('kaiReply');
 
     const user = localStorage.getItem('askkaiUser');
-    let promptCount = parseInt(localStorage.getItem('promptCount') || '0');
 
     if (!user) {
       window.location.href = 'signin.html';
@@ -81,12 +80,6 @@
     submitButton.addEventListener('click', async () => {
       const userQuestion = askInput.value.trim();
       if (!userQuestion) return;
-
-      if (promptCount >= 25) {
-        alert("You've used your 25 free prompts. Time to upgrade, mate.");
-        window.location.href = "upgrade.html";
-        return;
-      }
 
       messages.push({ role: "user", content: userQuestion });
 
@@ -131,9 +124,6 @@
         typeWriter();
         messages.push({ role: "assistant", content: finalText });
 
-        promptCount++;
-        localStorage.setItem('promptCount', promptCount.toString());
-
       } catch (error) {
         console.error(error);
         kaiText.textContent = "Error reaching Kai. Try again later.";
@@ -146,6 +136,5 @@
       window.location.href = 'landing.html';
     }
   </script>
-
 </body>
 </html>
