@@ -18,18 +18,21 @@
 
   <!-- Header -->
   <header class="bg-white shadow p-4 flex items-center justify-between">
-    <button class="bg-white border border-black text-black p-2 rounded-lg hover:bg-gray-100 transition">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-      </svg>
-    </button>
+    <div class="flex items-center space-x-4">
+      <button class="bg-white border border-black text-black p-2 rounded-lg hover:bg-gray-100 transition">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+      <h1 class="text-xl font-bold kaymar-green">Ask Kai</h1>
+    </div>
+    <button onclick="logoutUser()" class="text-sm text-gray-500 hover:underline">Log out</button>
   </header>
 
-  <!-- Main chat body -->
+  <!-- Chat Section -->
   <main class="flex-1 flex flex-col items-center justify-between max-h-screen">
     <div id="kaiReply" class="w-full max-w-2xl flex-1 overflow-y-auto p-4 space-y-6 text-gray-700"></div>
 
-    <!-- Input section at bottom -->
     <div class="w-full max-w-2xl p-4 bg-white shadow-md border-t flex items-center space-x-2">
       <input id="askInput" type="text" placeholder="Type your question..." class="flex-1 border p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" />
       <button id="submitBtn" class="bg-white border border-black text-black px-6 py-2 rounded-lg hover:bg-gray-100 transition">Submit</button>
@@ -59,7 +62,6 @@
     <p class="text-xs text-gray-400 mt-2">Built with coding support from Jack Cooper</p>
   </footer>
 
-  <!-- Chat Script -->
   <script>
     const submitButton = document.getElementById('submitBtn');
     const askInput = document.getElementById('askInput');
@@ -137,6 +139,12 @@
         kaiText.textContent = "Error reaching Kai. Try again later.";
       }
     });
+
+    function logoutUser() {
+      localStorage.removeItem('askkaiUser');
+      localStorage.removeItem('promptCount');
+      window.location.href = 'landing.html';
+    }
   </script>
 
 </body>
