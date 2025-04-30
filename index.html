@@ -13,32 +13,38 @@
 </head>
 <body class="bg-white text-gray-800">
 
+  <!-- Kaymar Banner -->
+  <div class="w-full bg-white shadow">
+    <img src="https://i.imgur.com/C9QMXjc.png" alt="Kaymar Construction" class="w-full object-contain max-h-28 mx-auto" />
+  </div>
+
+  <!-- Header -->
   <header class="bg-white shadow p-4 flex items-center justify-between">
     <div class="flex items-center space-x-6">
-      <!-- Hamburger Menu Button -->
-      <button class="bg-blue-700 text-white p-2 rounded-lg hover:bg-blue-800 transition">
+      <!-- Menu Button (black) -->
+      <button class="bg-black text-white p-2 rounded-lg hover:bg-gray-900 transition">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
         </svg>
       </button>
     </div>
-    <p class="italic text-sm">AI-powered consulting by Kaymar</p>
   </header>
 
+  <!-- Main -->
   <main class="flex flex-col items-center justify-center min-h-[80vh] p-8">
     <div class="max-w-2xl w-full bg-white rounded-2xl shadow-lg p-6">
       <h2 class="text-xl font-semibold mb-2 text-center kaymar-green">Ask Kai...</h2>
 
-      <input id="askInput" type="text" placeholder="Type your question here..." class="w-full border p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-600" />
+      <input id="askInput" type="text" placeholder="Type your question here..." class="w-full border p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" />
       <p id="flashingExamples" class="text-sm text-gray-500 text-center mt-2"></p>
 
-      <button id="submitBtn" class="mt-4 bg-blue-700 text-white px-6 py-2 rounded-lg hover:bg-blue-800 transition">Submit</button>
+      <!-- Submit Button (black) -->
+      <button id="submitBtn" class="mt-4 bg-black text-white px-6 py-2 rounded-lg hover:bg-gray-900 transition">Submit</button>
 
       <div id="kaiReply" class="mt-6 max-h-[400px] overflow-y-auto space-y-4 text-gray-700"></div>
     </div>
 
     <div class="max-w-2xl w-full bg-white rounded-2xl shadow-lg p-6 mt-8">
-      <!-- Updated Profile Picture Section -->
       <img src="https://i.imgur.com/uYWtV9r.png" alt="Kai Marlow Profile" class="mx-auto mb-4 w-48 h-72 object-cover bg-white p-2 rounded-2xl shadow" />
 
       <h2 class="text-2xl font-bold text-center kaymar-green mb-4">Who is Kai?</h2>
@@ -58,15 +64,17 @@
   </main>
 
   <footer class="text-center text-gray-500 text-sm p-4">
-    &copy; 2025 Kaymar Consulting | Powered by AI
+    &copy; 2025 Kaymar Construction
     <div class="flex justify-center space-x-6 mt-4">
       <a href="https://www.instagram.com/askkai_official" target="_blank" class="text-blue-600 hover:underline">Instagram</a>
       <a href="https://www.facebook.com/askkai_official" target="_blank" class="text-blue-600 hover:underline">Facebook</a>
       <a href="https://www.tiktok.com/@askkai_official" target="_blank" class="text-blue-600 hover:underline">TikTok</a>
       <a href="https://www.youtube.com/@askkai_official" target="_blank" class="text-blue-600 hover:underline">YouTube</a>
     </div>
+    <p class="text-xs text-gray-400 mt-2">Built with coding support from Jack Cooper</p>
   </footer>
 
+  <!-- Kai Script -->
   <script>
     const submitButton = document.getElementById('submitBtn');
     const askInput = document.getElementById('askInput');
