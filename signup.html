@@ -3,51 +3,41 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Create Account – Ask Kai</title>
+  <title>Sign Up – Ask Kai</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  <style>
-    .kaymar-green { color: #7AC142; }
-  </style>
 </head>
-<body class="bg-white text-gray-800 flex flex-col min-h-screen justify-center items-center p-6">
-
-  <div class="w-full max-w-md bg-white shadow-md rounded-lg p-6">
-    <h1 class="text-2xl font-bold text-center kaymar-green mb-6">Create Your Free Account</h1>
-
-    <form id="signupForm" class="space-y-4">
-      <input type="text" id="name" placeholder="Your Name" required class="w-full border p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
-      <input type="email" id="email" placeholder="Email" required class="w-full border p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
-      <input type="password" id="password" placeholder="Password" required class="w-full border p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
-      <button type="submit" class="w-full bg-black text-white py-2 rounded hover:bg-gray-800">Create Account</button>
-    </form>
-
-    <p class="text-center text-sm text-gray-500 mt-4">
-      Already have an account? <a href="signin.html" class="text-blue-600 hover:underline">Sign In</a>
-    </p>
-  </div>
-
-  <footer class="text-center text-gray-500 text-sm p-6 mt-8">
-    &copy; 2025 Kaymar Construction | Powered by Ask Kai<br>
-    <p class="text-xs text-gray-400 mt-2">Built with coding support from Jack Cooper</p>
-  </footer>
+<body class="bg-white text-gray-800">
+  <main class="min-h-screen flex flex-col items-center justify-center p-8 text-center">
+    <h1 class="text-3xl font-bold text-green-600 mb-6">Create a Free Ask Kai Account</h1>
+    <div class="w-full max-w-sm">
+      <input id="email" type="email" placeholder="Email address" class="w-full border p-3 rounded-lg mb-4" />
+      <input id="password" type="password" placeholder="Password" class="w-full border p-3 rounded-lg mb-6" />
+      <button onclick="signUp()" class="w-full bg-black text-white py-2 rounded hover:bg-gray-900">Sign Up</button>
+      <p class="text-sm text-gray-500 mt-4">
+        Already have an account? <a href="signin.html" class="text-blue-600 hover:underline">Sign in here</a>
+      </p>
+    </div>
+  </main>
 
   <script>
-    const signupForm = document.getElementById('signupForm');
-
-    signupForm.addEventListener('submit', (e) => {
-      e.preventDefault();
-
-      const name = document.getElementById('name').value.trim();
+    function signUp() {
       const email = document.getElementById('email').value.trim();
       const password = document.getElementById('password').value.trim();
 
-      if (name && email && password) {
+      if (!email || !password) {
+        alert("Please fill in both fields.");
+        return;
+      }
+
+      // Placeholder logic (no real auth yet)
+      if (email.includes('@')) {
         sessionStorage.setItem('askkaiUser', email);
+        localStorage.setItem('promptCount', '0');
         window.location.href = 'index.html';
       } else {
-        alert('Please fill in all fields.');
+        alert("Please enter a valid email.");
       }
-    });
+    }
   </script>
 </body>
 </html>
