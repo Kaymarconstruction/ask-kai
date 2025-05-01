@@ -1,0 +1,52 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Account Settings – Ask Kai</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+    .kaymar-green { color: #7AC142; }
+  </style>
+</head>
+<body class="bg-white text-gray-800">
+
+  <!-- Header -->
+  <header class="bg-white shadow p-4 flex items-center justify-between">
+    <h1 class="text-xl font-bold kaymar-green">Ask Kai Settings</h1>
+    <a href="index.html" class="text-sm text-blue-600 hover:underline">Back to Chat</a>
+  </header>
+
+  <!-- Main Content -->
+  <main class="max-w-xl mx-auto p-8">
+    <h2 class="text-2xl font-bold mb-6">Account Details</h2>
+
+    <div class="mb-4">
+      <label class="block text-sm font-medium mb-1">Email</label>
+      <input id="email" type="email" class="w-full border p-3 rounded-lg bg-gray-100" readonly />
+    </div>
+
+    <div class="mb-4">
+      <label class="block text-sm font-medium mb-1">Subscription</label>
+      <p class="text-gray-600">
+        Free Tier (25 prompts) – 
+        <a href="upgrade.html" class="text-blue-600 hover:underline">Upgrade now</a>
+      </p>
+    </div>
+
+    <button onclick="logoutUser()" class="mt-6 bg-red-600 text-white py-2 px-4 rounded hover:bg-red-700">Log Out</button>
+  </main>
+
+  <!-- Script -->
+  <script>
+    const user = sessionStorage.getItem('askkaiUser');
+    document.getElementById('email').value = user || 'Unknown';
+
+    function logoutUser() {
+      sessionStorage.removeItem('askkaiUser');
+      localStorage.removeItem('promptCount');
+      window.location.href = 'landing.html';
+    }
+  </script>
+</body>
+</html>
