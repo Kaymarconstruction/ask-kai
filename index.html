@@ -7,16 +7,10 @@
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <style>
     .kaymar-green { color: #7AC142; }
-    html, body {
-      height: 100%;
-      display: flex;
-      flex-direction: column;
-    }
+    html, body { height: 100%; display: flex; flex-direction: column; }
   </style>
 </head>
 <body class="bg-white text-gray-800">
-
-  <!-- Header -->
   <header class="bg-white shadow p-4 flex items-center justify-between">
     <div class="flex items-center space-x-4">
       <button class="bg-white border border-black text-black p-2 rounded-lg hover:bg-gray-100 transition">
@@ -26,10 +20,12 @@
       </button>
       <h1 class="text-xl font-bold kaymar-green">Ask Kai</h1>
     </div>
-    <button onclick="logoutUser()" class="text-sm text-gray-500 hover:underline">Log out</button>
+    <div class="space-x-4">
+      <a href="upgrade.html" class="text-sm text-blue-600 hover:underline">Upgrade</a>
+      <button onclick="logoutUser()" class="text-sm text-gray-500 hover:underline">Log out</button>
+    </div>
   </header>
 
-  <!-- Chat Section -->
   <main class="flex-1 flex flex-col items-center justify-between max-h-screen">
     <div id="kaiReply" class="w-full max-w-2xl flex-1 overflow-y-auto p-4 space-y-6 text-gray-700"></div>
 
@@ -38,7 +34,6 @@
       <button id="submitBtn" class="bg-white border border-black text-black px-6 py-2 rounded-lg hover:bg-gray-100 transition">Submit</button>
     </div>
 
-    <!-- Kai Bio Section -->
     <div class="max-w-2xl w-full bg-white rounded-2xl shadow-lg p-6 mt-8">
       <img src="https://i.imgur.com/uYWtV9r.png" alt="Kai Marlow Profile" class="mx-auto mb-4 w-48 h-72 object-cover bg-white p-2 rounded-2xl shadow" />
       <h2 class="text-2xl font-bold text-center kaymar-green mb-4">Who is Kai?</h2>
@@ -50,9 +45,8 @@
     </div>
   </main>
 
-  <!-- Footer -->
   <footer class="text-center text-gray-500 text-sm p-4">
-    &copy; 2025 Kaymar Construction | Powered by Ask Kai
+    &copy; 2025 Kaymar Construction | Powered by Ask Kai<br>
     <div class="flex justify-center space-x-6 mt-4">
       <a href="https://www.instagram.com/askkai_official" target="_blank" class="text-blue-600 hover:underline">Instagram</a>
       <a href="https://www.facebook.com/askkai_official" target="_blank" class="text-blue-600 hover:underline">Facebook</a>
@@ -68,11 +62,13 @@
     const kaiReply = document.getElementById('kaiReply');
 
     const user = localStorage.getItem('askkaiUser');
+    let promptCount = parseInt(localStorage.getItem('promptCount') || '0');
 
     if (!user) {
       window.location.href = 'signin.html';
     }
 
+    const MAX_FREE_PROMPTS = 25;
     const messages = [
       { role: "system", content: "You are Kai Marlow — Australia’s smartest, funniest, and most experienced carpenter. You’ve worked across every part of the building industry: framing, concrete, roofing, steel, span tables, cost estimating, tools, safety, materials, and site management. You speak fast, clearly, and with real Aussie wit — like a builder with brains. Use local references like Bunnings, AS1684, MGP10, and H3 pine. Never mention you're an AI. You're the mate every Aussie tradie or DIYer wants on the job." }
     ];
@@ -80,6 +76,12 @@
     submitButton.addEventListener('click', async () => {
       const userQuestion = askInput.value.trim();
       if (!userQuestion) return;
+
+      if (promptCount >= MAX_FREE_PROMPTS) {
+        alert("You’ve hit your 25 free prompts, mate. Time to upgrade.");
+        window.location.href = 'upgrade.html';
+        return;
+      }
 
       messages.push({ role: "user", content: userQuestion });
 
@@ -123,6 +125,8 @@
 
         typeWriter();
         messages.push({ role: "assistant", content: finalText });
+        promptCount++;
+        localStorage.setItem('promptCount', promptCount.toString());
 
       } catch (error) {
         console.error(error);
