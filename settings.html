@@ -29,9 +29,14 @@
     <div class="mb-4">
       <label class="block text-sm font-medium mb-1">Subscription</label>
       <p class="text-gray-600">
-        Free Tier (25 prompts) – 
+        Free Tier – 25 prompts max<br>
         <a href="upgrade.html" class="text-blue-600 hover:underline">Upgrade now</a>
       </p>
+    </div>
+
+    <div class="mb-6">
+      <label class="block text-sm font-medium mb-1">Prompts Used</label>
+      <p id="promptCountDisplay" class="text-gray-800 font-semibold">Loading...</p>
     </div>
 
     <button onclick="logoutUser()" class="mt-6 bg-red-600 text-white py-2 px-4 rounded hover:bg-red-700">Log Out</button>
@@ -40,7 +45,10 @@
   <!-- Script -->
   <script>
     const user = sessionStorage.getItem('askkaiUser');
+    const promptCount = localStorage.getItem('promptCount') || '0';
+
     document.getElementById('email').value = user || 'Unknown';
+    document.getElementById('promptCountDisplay').textContent = `${promptCount} of 25 used`;
 
     function logoutUser() {
       sessionStorage.removeItem('askkaiUser');
