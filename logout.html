@@ -6,12 +6,21 @@
   <title>Logged Out – Ask Kai</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body class="bg-white text-gray-800 flex items-center justify-center min-h-screen text-center px-4">
-  <div>
-    <img src="https://i.imgur.com/uYWtV9r.png" alt="Kai Marlow" class="mx-auto mb-6 w-36 h-52 object-cover rounded-2xl shadow" />
-    <h1 class="text-2xl font-bold text-green-600 mb-2">See you next time, legend!</h1>
-    <p class="text-gray-600 mb-6">You’ve successfully logged out of Ask Kai.</p>
-    <a href="landing.html" class="inline-block bg-black text-white py-2 px-6 rounded hover:bg-gray-900 transition">Return to Home</a>
-  </div>
+<body class="bg-white text-gray-800 flex flex-col items-center justify-center min-h-screen p-6 text-center">
+
+  <img src="https://i.imgur.com/uYWtV9r.png" alt="Kai Profile" class="w-36 h-52 object-cover rounded-xl shadow mb-6" />
+
+  <h1 class="text-2xl font-bold text-green-600 mb-2">You’ve signed out, mate!</h1>
+  <p class="text-gray-600 mb-6">See you back on the tools soon. Your session’s been cleared.</p>
+
+  <a href="landing.html" class="bg-black text-white px-6 py-2 rounded hover:bg-gray-900 transition">Return to Home</a>
+
+  <script>
+    // Optional: auto redirect after delay
+    setTimeout(() => {
+      window.location.href = 'landing.html';
+    }, 6000); // 6 seconds
+  </script>
+
 </body>
 </html>
