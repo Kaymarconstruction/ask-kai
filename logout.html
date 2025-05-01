@@ -16,10 +16,14 @@
   <a href="landing.html" class="bg-black text-white px-6 py-2 rounded hover:bg-gray-900 transition">Return to Home</a>
 
   <script>
-    // Optional: auto redirect after delay
+    // Ensure session is cleared in case this is loaded directly
+    sessionStorage.removeItem('askkaiUser');
+    localStorage.removeItem('promptCount');
+
+    // Auto redirect to landing page after delay
     setTimeout(() => {
       window.location.href = 'landing.html';
-    }, 6000); // 6 seconds
+    }, 6000);
   </script>
 
 </body>
