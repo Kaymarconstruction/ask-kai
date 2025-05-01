@@ -1,18 +1,17 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Ask Kai – Kaymar Consulting</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <style>
     .kaymar-green { color: #7AC142; }
-    html, body { height: 100%; margin: 0; padding: 0; }
-    body { display: flex; flex-direction: column; }
+    html, body { height: 100%; margin: 0; padding: 0; display: flex; flex-direction: column; }
+    #kaiReply { max-height: 60vh; overflow-y: auto; }
   </style>
 </head>
 <body class="bg-white text-gray-800">
-  <!-- Header -->
   <header class="bg-white shadow p-4 flex items-center justify-between">
     <div class="flex items-center space-x-4">
       <div class="relative">
@@ -31,26 +30,12 @@
     </div>
   </header>
 
-  <!-- Main Content -->
-  <main class="flex-1 flex flex-col items-center justify-between overflow-hidden">
-    <!-- Chat Container -->
-    <div id="kaiReply" class="w-full max-w-2xl flex-1 overflow-y-auto p-4 space-y-6 text-gray-700"></div>
+  <main class="flex flex-col items-center flex-1 p-4">
+    <div id="kaiReply" class="w-full max-w-2xl mb-4 p-4 bg-white border rounded shadow space-y-4"></div>
 
-    <!-- Input -->
     <div class="w-full max-w-2xl p-4 bg-white shadow-md border-t flex items-center space-x-2">
       <input id="askInput" type="text" placeholder="Type your question..." class="flex-1 border p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" />
-      <button id="submitBtn" class="bg-white border border-black text-black px-6 py-2 rounded-lg hover:bg-gray-100 transition">Submit</button>
-    </div>
-
-    <!-- Kai Profile -->
-    <div class="max-w-2xl w-full bg-white rounded-2xl shadow-lg p-6 mt-6">
-      <img src="https://i.imgur.com/uYWtV9r.png" alt="Kai Marlow Profile" class="mx-auto mb-4 w-48 h-72 object-cover bg-white p-2 rounded-2xl shadow" />
-      <h2 class="text-2xl font-bold text-center kaymar-green mb-4">Who is Kai?</h2>
-      <p class="text-gray-700 text-center mb-4">
-        Kai Marlow is your trusted mate in the building world.<br>
-        With over 20 years of hands-on experience across Australia, the UK, the USA, and beyond, Kai offers fast, down-to-earth advice on construction, carpentry, materials, and design.<br>
-        Whether you're a homeowner starting a renovation or a tradie chasing specs — <strong>Ask Kai</strong>.
-      </p>
+      <button id="submitBtn" class="bg-black text-white px-6 py-2 rounded-lg hover:bg-gray-900 transition">Submit</button>
     </div>
   </main>
 
@@ -73,16 +58,13 @@
 
     let promptCount = parseInt(localStorage.getItem('promptCount') || '0');
     const MAX_FREE_PROMPTS = 25;
-
-    const submitButton = document.getElementById('submitBtn');
-    const askInput = document.getElementById('askInput');
-    const kaiReply = document.getElementById('kaiReply');
-
     const messages = [
       { role: "system", content: "You are Kai Marlow — Australia’s smartest, funniest, and most experienced carpenter. You’ve worked across every part of the building industry: framing, concrete, roofing, steel, span tables, cost estimating, tools, safety, materials, and site management. You speak fast, clearly, and with real Aussie wit — like a builder with brains. Use local references like Bunnings, AS1684, MGP10, and H3 pine. Never mention you're an AI. You're the mate every Aussie tradie or DIYer wants on the job." }
     ];
 
-    submitButton.addEventListener('click', async () => {
+    document.getElementById('submitBtn').addEventListener('click', async () => {
+      const askInput = document.getElementById('askInput');
+      const kaiReply = document.getElementById('kaiReply');
       const userQuestion = askInput.value.trim();
       if (!userQuestion) return;
 
@@ -146,7 +128,7 @@
     function logoutUser() {
       sessionStorage.removeItem('askkaiUser');
       localStorage.removeItem('promptCount');
-      window.location.href = 'landing.html';
+      window.location.href = 'logout.html';
     }
 
     function toggleMenu() {
