@@ -11,10 +11,9 @@
   </style>
 </head>
 <body class="bg-white text-gray-800">
-  <!-- Header with Dropdown Menu -->
+  <!-- Header -->
   <header class="bg-white shadow p-4 flex items-center justify-between">
     <div class="flex items-center space-x-4">
-      <!-- Hamburger Dropdown -->
       <div class="relative">
         <button onclick="toggleMenu()" class="bg-white border border-black text-black p-2 rounded-lg hover:bg-gray-100 transition">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
@@ -23,7 +22,7 @@
         </button>
         <div id="menuDropdown" class="hidden absolute mt-2 w-48 bg-white border border-gray-300 shadow-lg rounded-md z-10">
           <a href="upgrade.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Upgrade</a>
-          <a href="#" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Settings</a>
+          <a href="settings.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Settings</a>
           <button onclick="logoutUser()" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100">Log Out</button>
         </div>
       </div>
@@ -40,7 +39,6 @@
       <button id="submitBtn" class="bg-white border border-black text-black px-6 py-2 rounded-lg hover:bg-gray-100 transition">Submit</button>
     </div>
 
-    <!-- Kai Profile Section -->
     <div class="max-w-2xl w-full bg-white rounded-2xl shadow-lg p-6 mt-8">
       <img src="https://i.imgur.com/uYWtV9r.png" alt="Kai Marlow Profile" class="mx-auto mb-4 w-48 h-72 object-cover bg-white p-2 rounded-2xl shadow" />
       <h2 class="text-2xl font-bold text-center kaymar-green mb-4">Who is Kai?</h2>
@@ -53,7 +51,7 @@
   </main>
 
   <footer class="text-center text-gray-500 text-sm p-4">
-    &copy; 2025 Kaymar Construction | Powered by Ask Kai<br>
+    &copy; 2025 Kaymar Construction | Powered by Ask Kai
     <div class="flex justify-center space-x-6 mt-4">
       <a href="https://www.instagram.com/askkai_official" target="_blank" class="text-blue-600 hover:underline">Instagram</a>
       <a href="https://www.facebook.com/askkai_official" target="_blank" class="text-blue-600 hover:underline">Facebook</a>
@@ -65,18 +63,19 @@
 
   <!-- Script -->
   <script>
-    const submitButton = document.getElementById('submitBtn');
-    const askInput = document.getElementById('askInput');
-    const kaiReply = document.getElementById('kaiReply');
-
-    const user = localStorage.getItem('askkaiUser');
-    let promptCount = parseInt(localStorage.getItem('promptCount') || '0');
-
+    // Session login check
+    const user = sessionStorage.getItem('askkaiUser');
     if (!user) {
       window.location.href = 'signin.html';
     }
 
+    let promptCount = parseInt(localStorage.getItem('promptCount') || '0');
     const MAX_FREE_PROMPTS = 25;
+
+    const submitButton = document.getElementById('submitBtn');
+    const askInput = document.getElementById('askInput');
+    const kaiReply = document.getElementById('kaiReply');
+
     const messages = [
       { role: "system", content: "You are Kai Marlow — Australia’s smartest, funniest, and most experienced carpenter. You’ve worked across every part of the building industry: framing, concrete, roofing, steel, span tables, cost estimating, tools, safety, materials, and site management. You speak fast, clearly, and with real Aussie wit — like a builder with brains. Use local references like Bunnings, AS1684, MGP10, and H3 pine. Never mention you're an AI. You're the mate every Aussie tradie or DIYer wants on the job." }
     ];
@@ -143,7 +142,7 @@
     });
 
     function logoutUser() {
-      localStorage.removeItem('askkaiUser');
+      sessionStorage.removeItem('askkaiUser');
       localStorage.removeItem('promptCount');
       window.location.href = 'landing.html';
     }
