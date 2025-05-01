@@ -7,7 +7,8 @@
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <style>
     .kaymar-green { color: #7AC142; }
-    html, body { height: 100%; display: flex; flex-direction: column; }
+    html, body { height: 100%; margin: 0; padding: 0; }
+    body { display: flex; flex-direction: column; }
   </style>
 </head>
 <body class="bg-white text-gray-800">
@@ -31,22 +32,12 @@
   </header>
 
   <!-- Chat Section -->
-  <main class="flex-1 flex flex-col items-center justify-between max-h-screen">
+  <main class="flex-1 flex flex-col items-center justify-between overflow-hidden">
     <div id="kaiReply" class="w-full max-w-2xl flex-1 overflow-y-auto p-4 space-y-6 text-gray-700"></div>
 
     <div class="w-full max-w-2xl p-4 bg-white shadow-md border-t flex items-center space-x-2">
       <input id="askInput" type="text" placeholder="Type your question..." class="flex-1 border p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" />
       <button id="submitBtn" class="bg-white border border-black text-black px-6 py-2 rounded-lg hover:bg-gray-100 transition">Submit</button>
-    </div>
-
-    <div class="max-w-2xl w-full bg-white rounded-2xl shadow-lg p-6 mt-8">
-      <img src="https://i.imgur.com/uYWtV9r.png" alt="Kai Marlow Profile" class="mx-auto mb-4 w-48 h-72 object-cover bg-white p-2 rounded-2xl shadow" />
-      <h2 class="text-2xl font-bold text-center kaymar-green mb-4">Who is Kai?</h2>
-      <p class="text-gray-700 text-center mb-4">
-        Kai Marlow is your trusted mate in the building world.<br>
-        With over 20 years of hands-on experience across Australia, the UK, the USA, and beyond, Kai offers fast, down-to-earth advice on construction, carpentry, materials, and design.<br>
-        Whether you're a homeowner starting a renovation or a tradie chasing specs — <strong>Ask Kai</strong>.
-      </p>
     </div>
   </main>
 
@@ -63,7 +54,6 @@
 
   <!-- Script -->
   <script>
-    // Session login check
     const user = sessionStorage.getItem('askkaiUser');
     if (!user) {
       window.location.href = 'signin.html';
