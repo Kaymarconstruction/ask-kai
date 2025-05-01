@@ -1,96 +1,83 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Upgrade – Ask Kai</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  <style>
-    .kaymar-green { color: #7AC142; }
-  </style>
 </head>
 <body class="bg-white text-gray-800">
-  <header class="bg-white shadow p-6 text-center">
-    <h1 class="text-3xl font-bold kaymar-green">Upgrade Your Ask Kai Experience</h1>
-    <p class="mt-2 text-gray-600">More prompts, more tools, more expert help.</p>
-  </header>
+  <main class="min-h-screen flex flex-col items-center justify-center p-8 text-center">
 
-  <main class="max-w-5xl mx-auto px-4 py-10">
-    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+    <h1 class="text-3xl font-bold text-green-600 mb-2">Upgrade Your Ask Kai Access</h1>
+    <p class="text-gray-600 mb-6 max-w-xl">Unlock more prompts, advanced tools, and full AI crew support with Ask Kai Plus, Premium, or Token Packs.</p>
 
-      <!-- Free Plan -->
-      <div class="border border-gray-300 rounded-lg shadow p-6">
+    <div class="grid grid-cols-1 md:grid-cols-3 gap-8 w-full max-w-5xl">
+
+      <!-- Free Tier -->
+      <div class="border rounded-lg p-6 shadow text-left">
         <h2 class="text-xl font-bold mb-2">Free</h2>
-        <p class="text-sm text-gray-600 mb-4">Perfect for trying Ask Kai out.</p>
-        <ul class="space-y-2 text-sm">
-          <li>✓ 25 prompts</li>
-          <li>✓ Access to Kai chat</li>
-          <li>✓ Basic tool & advice support</li>
+        <ul class="text-sm text-gray-600 mb-4">
+          <li>✔ 25 prompts/month</li>
+          <li>✔ Kai AI chat</li>
+          <li>✔ Access from any device</li>
         </ul>
-        <p class="mt-6 text-2xl font-bold">$0</p>
+        <p class="text-lg font-bold mb-4">Free</p>
+        <button disabled class="bg-gray-300 text-gray-600 px-4 py-2 rounded w-full">Current Plan</button>
       </div>
 
-      <!-- Plus Plan -->
-      <div class="border border-green-500 rounded-lg shadow p-6">
-        <h2 class="text-xl font-bold text-green-600 mb-2">Ask Kai Plus</h2>
-        <p class="text-sm text-gray-600 mb-4">For DIYers and light tradies who need help regularly.</p>
-        <ul class="space-y-2 text-sm">
-          <li>✓ 7,000 prompts/month</li>
-          <li>✓ Full chat history</li>
-          <li>✓ Toolbox: Save replies</li>
-          <li>✓ Weekly tip sheets</li>
-          <li>✓ Quote Generator access</li>
+      <!-- Plus Tier -->
+      <div class="border rounded-lg p-6 shadow text-left">
+        <h2 class="text-xl font-bold mb-2 text-green-600">Plus</h2>
+        <ul class="text-sm text-gray-600 mb-4">
+          <li>✔ 7,000 prompts/month</li>
+          <li>✔ Quote Generator</li>
+          <li>✔ Save responses</li>
+          <li>✔ Weekly trade tips</li>
         </ul>
-        <p class="mt-6 text-2xl font-bold">$14.99/mo</p>
-        <button class="mt-4 w-full bg-green-600 text-white py-2 rounded hover:bg-green-700">Coming Soon</button>
+        <p class="text-lg font-bold mb-4">$14.99/month</p>
+        <a href="#" class="bg-black text-white px-4 py-2 rounded w-full block text-center hover:bg-gray-900">Subscribe</a>
       </div>
 
-      <!-- Premium Plan -->
-      <div class="border border-yellow-600 rounded-lg shadow p-6">
-        <h2 class="text-xl font-bold text-yellow-600 mb-2">Ask Kai Premium</h2>
-        <p class="text-sm text-gray-600 mb-4">For serious tradies, builders, or business owners.</p>
-        <ul class="space-y-2 text-sm">
-          <li>✓ 20,000 prompts/month</li>
-          <li>✓ Everything in Plus</li>
-          <li>✓ Span tables by region</li>
-          <li>✓ Spec checker tools</li>
-          <li>✓ DALL·E image generation</li>
-          <li>✓ Early access to Kai AI Crew</li>
+      <!-- Premium Tier -->
+      <div class="border rounded-lg p-6 shadow text-left">
+        <h2 class="text-xl font-bold mb-2 text-green-600">Premium</h2>
+        <ul class="text-sm text-gray-600 mb-4">
+          <li>✔ 20,000 prompts/month</li>
+          <li>✔ Spec Checker + Span Tables</li>
+          <li>✔ AI Crew: Sparky & Plumber</li>
+          <li>✔ DALL·E Image Generator</li>
         </ul>
-        <p class="mt-6 text-2xl font-bold">$29.99/mo</p>
-        <button class="mt-4 w-full bg-yellow-600 text-white py-2 rounded hover:bg-yellow-700">Coming Soon</button>
+        <p class="text-lg font-bold mb-4">$29.99/month</p>
+        <a href="#" class="bg-black text-white px-4 py-2 rounded w-full block text-center hover:bg-gray-900">Subscribe</a>
       </div>
-
     </div>
 
     <!-- Token Packs -->
-    <div class="mt-16">
-      <h2 class="text-2xl font-bold text-center mb-6">Or buy prompt packs as you go</h2>
-      <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-        <div class="border border-gray-300 rounded-lg shadow p-6 text-center">
-          <h3 class="text-lg font-semibold mb-2">Mini Pack</h3>
-          <p class="text-sm mb-4">10 prompts – great for quick fixes</p>
-          <p class="text-xl font-bold">$3.99</p>
-          <button class="mt-4 w-full bg-black text-white py-2 rounded hover:bg-gray-900">Coming Soon</button>
+    <div class="mt-12 w-full max-w-3xl text-left">
+      <h2 class="text-2xl font-bold text-green-600 mb-4">Need more prompts without a subscription?</h2>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-6">
+        <div class="border rounded-lg p-4 shadow">
+          <h3 class="font-semibold">10 Prompts</h3>
+          <p class="text-sm text-gray-600 mb-2">One-time use</p>
+          <p class="font-bold mb-3">$3.99</p>
+          <a href="#" class="bg-blue-600 text-white px-3 py-2 rounded w-full block text-center hover:bg-blue-700">Buy Tokens</a>
         </div>
-        <div class="border border-gray-300 rounded-lg shadow p-6 text-center">
-          <h3 class="text-lg font-semibold mb-2">Standard Pack</h3>
-          <p class="text-sm mb-4">50 prompts – ideal for weekend warriors</p>
-          <p class="text-xl font-bold">$9.99</p>
-          <button class="mt-4 w-full bg-black text-white py-2 rounded hover:bg-gray-900">Coming Soon</button>
+        <div class="border rounded-lg p-4 shadow">
+          <h3 class="font-semibold">50 Prompts</h3>
+          <p class="text-sm text-gray-600 mb-2">One-time use</p>
+          <p class="font-bold mb-3">$9.99</p>
+          <a href="#" class="bg-blue-600 text-white px-3 py-2 rounded w-full block text-center hover:bg-blue-700">Buy Tokens</a>
         </div>
-        <div class="border border-gray-300 rounded-lg shadow p-6 text-center">
-          <h3 class="text-lg font-semibold mb-2">Pro Pack</h3>
-          <p class="text-sm mb-4">100 prompts – for serious side projects</p>
-          <p class="text-xl font-bold">$16.99</p>
-          <button class="mt-4 w-full bg-black text-white py-2 rounded hover:bg-gray-900">Coming Soon</button>
+        <div class="border rounded-lg p-4 shadow">
+          <h3 class="font-semibold">100 Prompts</h3>
+          <p class="text-sm text-gray-600 mb-2">One-time use</p>
+          <p class="font-bold mb-3">$16.99</p>
+          <a href="#" class="bg-blue-600 text-white px-3 py-2 rounded w-full block text-center hover:bg-blue-700">Buy Tokens</a>
         </div>
       </div>
     </div>
-  </main>
 
-  <footer class="text-center text-sm text-gray-500 p-6 mt-12">
-    &copy; 2025 Kaymar Construction | Built with Jack Cooper
-  </footer>
+  </main>
 </body>
 </html>
