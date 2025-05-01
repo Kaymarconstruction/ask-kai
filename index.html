@@ -24,7 +24,23 @@
   </style>
 </head>
 <body class="bg-white text-gray-800">
-  <!-- HEADER OMITTED FOR BREVITY -->
+  <header class="bg-white shadow p-4 flex items-center justify-between">
+    <div class="flex items-center space-x-4">
+      <div class="relative">
+        <button onclick="toggleMenu()" class="bg-white border border-black text-black p-2 rounded-lg hover:bg-gray-100 transition">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+        <div id="menuDropdown" class="hidden absolute mt-2 w-48 bg-white border border-gray-300 shadow-lg rounded-md z-10">
+          <a href="upgrade.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Upgrade</a>
+          <a href="settings.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Settings</a>
+          <button onclick="logoutUser()" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100">Log Out</button>
+        </div>
+      </div>
+      <h1 class="text-xl font-bold kaymar-green">Ask Kai</h1>
+    </div>
+  </header>
 
   <main class="flex flex-col items-center flex-1 p-4">
     <div id="kaiReply" class="w-full max-w-2xl mb-4 p-4 bg-white border rounded shadow space-y-4"></div>
@@ -33,15 +49,31 @@
       <input id="askInput" type="text" placeholder="Type your question..." class="flex-1 border p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" />
       <button id="submitBtn" class="bg-black text-white px-6 py-2 rounded-lg hover:bg-gray-900 transition">Submit</button>
     </div>
+
+    <!-- Kai Profile Section -->
+    <div class="max-w-2xl w-full bg-white rounded-2xl shadow-lg p-6 mt-8">
+      <img src="https://i.imgur.com/uYWtV9r.png" alt="Kai Marlow Profile" class="mx-auto mb-4 w-48 h-72 object-cover bg-white p-2 rounded-2xl shadow" />
+      <h2 class="text-2xl font-bold text-center kaymar-green mb-4">Who is Kai?</h2>
+      <p class="text-gray-700 text-center mb-4">
+        Kai Marlow is your trusted mate in the building world.<br>
+        With over 20 years of hands-on experience across Australia, the UK, the USA, and beyond, Kai offers fast, down-to-earth advice on construction, carpentry, materials, and design.<br>
+        Whether you're a homeowner starting a renovation or a tradie chasing specs — <strong>Ask Kai</strong>.
+      </p>
+    </div>
   </main>
 
-  <!-- FOOTER OMITTED FOR BREVITY -->
+  <footer class="text-center text-gray-500 text-sm p-4">
+    &copy; 2025 Kaymar Construction | Powered by Ask Kai
+    <div class="flex justify-center space-x-6 mt-4">
+      <a href="https://www.instagram.com/askkai_official" target="_blank" class="text-blue-600 hover:underline">Instagram</a>
+      <a href="https://www.facebook.com/askkai_official" target="_blank" class="text-blue-600 hover:underline">Facebook</a>
+      <a href="https://www.tiktok.com/@askkai_official" target="_blank" class="text-blue-600 hover:underline">TikTok</a>
+      <a href="https://www.youtube.com/@askkai_official" target="_blank" class="text-blue-600 hover:underline">YouTube</a>
+    </div>
+    <p class="text-xs text-gray-400 mt-2">Built with coding support from Jack Cooper</p>
+  </footer>
 
   <script>
-    const submitButton = document.getElementById('submitBtn');
-    const askInput = document.getElementById('askInput');
-    const kaiReply = document.getElementById('kaiReply');
-
     const user = sessionStorage.getItem('askkaiUser');
     if (!user) window.location.href = 'signin.html';
 
@@ -64,7 +96,9 @@ If unsure, prompt the user for more detail or give clear disclaimers for any ass
       }
     ];
 
-    submitButton.addEventListener('click', async () => {
+    document.getElementById('submitBtn').addEventListener('click', async () => {
+      const askInput = document.getElementById('askInput');
+      const kaiReply = document.getElementById('kaiReply');
       const userQuestion = askInput.value.trim();
       if (!userQuestion) return;
 
@@ -131,6 +165,17 @@ If unsure, prompt the user for more detail or give clear disclaimers for any ass
         kaiText.textContent = "Error reaching Kai. Try again later.";
       }
     });
+
+    function logoutUser() {
+      sessionStorage.removeItem('askkaiUser');
+      localStorage.removeItem('promptCount');
+      window.location.href = 'landing.html';
+    }
+
+    function toggleMenu() {
+      const menu = document.getElementById('menuDropdown');
+      menu.classList.toggle('hidden');
+    }
   </script>
 </body>
 </html>
