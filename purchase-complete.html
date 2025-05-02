@@ -10,10 +10,9 @@
   </style>
 </head>
 <body class="bg-white text-gray-800">
-
   <main class="flex flex-col items-center justify-center min-h-screen p-8 text-center">
     <h1 class="text-3xl font-bold kaymar-green mb-4">Thanks for upgrading, mate!</h1>
-    <p class="text-gray-700 mb-4">Your payment was successful. Your new tokens or plan benefits are ready to go.</p>
+    <p class="text-gray-700 mb-4" id="tokenMessage">Processing your purchase...</p>
 
     <img src="https://i.imgur.com/uYWtV9r.png" alt="Kai Avatar" class="w-40 h-56 object-cover rounded-2xl shadow mb-6" />
 
@@ -21,12 +20,33 @@
       Back to Ask Kai
     </a>
 
-    <!-- Stripe Trust -->
     <div class="text-center text-gray-400 text-sm">
       <p class="mb-2">Powered by Stripe for secure payments</p>
       <img src="https://stripe.com/img/v3/home/twitter.png" alt="Stripe Logo" class="w-24 mx-auto opacity-60" />
     </div>
   </main>
 
+  <script>
+    // Get token pack from URL
+    const params = new URLSearchParams(window.location.search);
+    const pack = params.get('pack');
+    let tokensToAdd = 0;
+
+    if (pack === 'mini') tokensToAdd = 10;
+    if (pack === 'standard') tokensToAdd = 50;
+    if (pack === 'pro') tokensToAdd = 100;
+
+    if (tokensToAdd > 0) {
+      let current = parseInt(localStorage.getItem('kaiTokens') || '0');
+      current += tokensToAdd;
+      localStorage.setItem('kaiTokens', current.toString());
+
+      document.getElementById('tokenMessage').textContent =
+        `Success! ${tokensToAdd} tokens have been added to your account.`;
+    } else {
+      document.getElementById('tokenMessage').textContent =
+        `Purchase confirmed. You're ready to continue.`;
+    }
+  </script>
 </body>
 </html>
