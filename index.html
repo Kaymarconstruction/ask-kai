@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Ask Kai – Kaymar Consulting</title>
+  <title>Ask Kai – Kaymar Construction</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <style>
     .kaymar-green { color: #7AC142; }
@@ -24,8 +24,7 @@
   </style>
 </head>
 <body class="bg-white text-gray-800">
-
-  <!-- Header with Dropdown -->
+  <!-- Header -->
   <header class="bg-white shadow p-4 flex items-center justify-between">
     <div class="flex items-center space-x-4">
       <div class="relative">
@@ -38,6 +37,7 @@
           <a href="upgrade.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Upgrade</a>
           <a href="shop.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Shop</a>
           <a href="settings.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Settings</a>
+          <a href="team.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Meet the Team</a>
           <button onclick="logoutUser()" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100">Log Out</button>
         </div>
       </div>
@@ -45,6 +45,7 @@
     </div>
   </header>
 
+  <!-- Main Content -->
   <main class="flex flex-col items-center flex-1 p-4">
     <div id="kaiReply" class="w-full max-w-2xl mb-4 p-4 bg-white border rounded shadow space-y-4"></div>
 
@@ -65,6 +66,7 @@
     </div>
   </main>
 
+  <!-- Footer -->
   <footer class="text-center text-gray-500 text-sm p-4">
     &copy; 2025 Kaymar Construction | Powered by Ask Kai
     <div class="flex justify-center space-x-6 mt-4">
@@ -76,12 +78,11 @@
     <p class="text-xs text-gray-400 mt-2">Built with coding support from Jack Cooper</p>
   </footer>
 
+  <!-- Script -->
   <script>
     const user = sessionStorage.getItem('askkaiUser');
     if (!user) window.location.href = 'signin.html';
 
-    let promptCount = parseInt(localStorage.getItem('promptCount') || '0');
-    const MAX_FREE_PROMPTS = 10;
     const messages = [
       {
         role: "system",
@@ -104,12 +105,6 @@ If unsure, prompt the user for more detail or give clear disclaimers for any ass
       const kaiReply = document.getElementById('kaiReply');
       const userQuestion = askInput.value.trim();
       if (!userQuestion) return;
-
-      if (promptCount >= MAX_FREE_PROMPTS) {
-        alert("You’ve hit your 10 free prompts, mate. Time to upgrade.");
-        window.location.href = 'upgrade.html';
-        return;
-      }
 
       messages.push({ role: "user", content: userQuestion });
 
@@ -142,7 +137,6 @@ If unsure, prompt the user for more detail or give clear disclaimers for any ass
 
         const data = await response.json();
         const finalText = data.reply || "Hmm, couldn't find an answer!";
-
         kaiText.textContent = "";
         kaiText.appendChild(cursor);
 
@@ -158,10 +152,7 @@ If unsure, prompt the user for more detail or give clear disclaimers for any ass
         }
 
         setTimeout(typeNextChar, 300);
-
         messages.push({ role: "assistant", content: finalText });
-        promptCount++;
-        localStorage.setItem('promptCount', promptCount.toString());
 
       } catch (error) {
         console.error(error);
@@ -169,15 +160,15 @@ If unsure, prompt the user for more detail or give clear disclaimers for any ass
       }
     });
 
-    function logoutUser() {
-      sessionStorage.removeItem('askkaiUser');
-      localStorage.removeItem('promptCount');
-      window.location.href = 'landing.html';
-    }
-
     function toggleMenu() {
       const menu = document.getElementById('menuDropdown');
       menu.classList.toggle('hidden');
+    }
+
+    function logoutUser() {
+      sessionStorage.clear();
+      localStorage.clear();
+      window.location.href = 'logout.html';
     }
   </script>
 </body>
