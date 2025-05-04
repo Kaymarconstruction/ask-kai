@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Ask Kai – Kaymar Construction</title>
+  <title>Ask Kai – Kaymar Consulting</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <style>
     .kaymar-green { color: #7AC142; }
@@ -24,7 +24,8 @@
   </style>
 </head>
 <body class="bg-white text-gray-800">
-  <!-- Header -->
+
+  <!-- Header with Dropdown -->
   <header class="bg-white shadow p-4 flex items-center justify-between">
     <div class="flex items-center space-x-4">
       <div class="relative">
@@ -44,7 +45,6 @@
     </div>
   </header>
 
-  <!-- Main -->
   <main class="flex flex-col items-center flex-1 p-4">
     <div id="kaiReply" class="w-full max-w-2xl mb-4 p-4 bg-white border rounded shadow space-y-4"></div>
 
@@ -65,7 +65,6 @@
     </div>
   </main>
 
-  <!-- Footer -->
   <footer class="text-center text-gray-500 text-sm p-4">
     &copy; 2025 Kaymar Construction | Powered by Ask Kai
     <div class="flex justify-center space-x-6 mt-4">
@@ -81,10 +80,8 @@
     const user = sessionStorage.getItem('askkaiUser');
     if (!user) window.location.href = 'signin.html';
 
-    const isMark = user === "mark@kaymarconstruction.com";
     let promptCount = parseInt(localStorage.getItem('promptCount') || '0');
     const MAX_FREE_PROMPTS = 10;
-
     const messages = [
       {
         role: "system",
@@ -108,7 +105,7 @@ If unsure, prompt the user for more detail or give clear disclaimers for any ass
       const userQuestion = askInput.value.trim();
       if (!userQuestion) return;
 
-      if (!isMark && promptCount >= MAX_FREE_PROMPTS) {
+      if (promptCount >= MAX_FREE_PROMPTS) {
         alert("You’ve hit your 10 free prompts, mate. Time to upgrade.");
         window.location.href = 'upgrade.html';
         return;
@@ -145,6 +142,7 @@ If unsure, prompt the user for more detail or give clear disclaimers for any ass
 
         const data = await response.json();
         const finalText = data.reply || "Hmm, couldn't find an answer!";
+
         kaiText.textContent = "";
         kaiText.appendChild(cursor);
 
@@ -158,14 +156,12 @@ If unsure, prompt the user for more detail or give clear disclaimers for any ass
             cursor.remove();
           }
         }
+
         setTimeout(typeNextChar, 300);
 
         messages.push({ role: "assistant", content: finalText });
-
-        if (!isMark) {
-          promptCount++;
-          localStorage.setItem('promptCount', promptCount.toString());
-        }
+        promptCount++;
+        localStorage.setItem('promptCount', promptCount.toString());
 
       } catch (error) {
         console.error(error);
@@ -176,7 +172,6 @@ If unsure, prompt the user for more detail or give clear disclaimers for any ass
     function logoutUser() {
       sessionStorage.removeItem('askkaiUser');
       localStorage.removeItem('promptCount');
-      localStorage.removeItem('kaiTokens');
       window.location.href = 'landing.html';
     }
 
