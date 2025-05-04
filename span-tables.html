@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Span Tables – Ask Kai</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+    .kaymar-green { color: #7AC142; }
+  </style>
+</head>
+<body class="bg-white text-gray-800">
+  <main class="max-w-3xl mx-auto p-8">
+    <h1 class="text-3xl font-bold text-center kaymar-green mb-6">Span Table Lookup</h1>
+    <p class="text-center text-gray-600 mb-8">Select your timber, spacing, and load type to check max allowable spans.</p>
+
+    <form id="spanForm" class="space-y-6">
+      <div>
+        <label class="font-semibold block mb-1">Timber Size</label>
+        <select id="timberSize" class="w-full border p-3 rounded" required>
+          <option value="">Select...</option>
+          <option value="90x35">90 x 35 mm</option>
+          <option value="140x45">140 x 45 mm</option>
+          <option value="190x45">190 x 45 mm</option>
+        </select>
+      </div>
+
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="font-semibold block mb-1">Spacing</label>
+          <select id="spacing" class="w-full border p-3 rounded" required>
+            <option value="">Select...</option>
+            <option value="450">450 mm</option>
+            <option value="600">600 mm</option>
+          </select>
+        </div>
+        <div>
+          <label class="font-semibold block mb-1">Load Type</label>
+          <select id="loadType" class="w-full border p-3 rounded" required>
+            <option value="">Select...</option>
+            <option value="roof">Roof Load</option>
+            <option value="floor">Floor Load</option>
+            <option value="deck">Deck Load</option>
+          </select>
+        </div>
+      </div>
+
+      <div>
+        <label class="font-semibold block mb-1">Region</label>
+        <select id="region" class="w-full border p-3 rounded">
+          <option value="">Select...</option>
+          <option value="NSW">NSW</option>
+          <option value="VIC">VIC</option>
+          <option value="QLD">QLD</option>
+          <option value="WA">WA</option>
+          <option value="SA">SA</option>
+        </select>
+      </div>
+
+      <button type="submit" class="w-full bg-black text-white py-3 rounded hover:bg-gray-900 transition">Get Span</button>
+    </form>
+
+    <div id="resultBox" class="mt-10 bg-gray-100 p-6 rounded shadow hidden">
+      <h2 class="text-xl font-bold mb-2 kaymar-green">Maximum Span</h2>
+      <p id="spanResult" class="text-gray-700">Your span result will appear here.</p>
+    </div>
+  </main>
+
+  <script>
+    document.getElementById("spanForm").addEventListener("submit", function (e) {
+      e.preventDefault();
+
+      const size = document.getElementById("timberSize").value;
+      const spacing = document.getElementById("spacing").value;
+      const load = document.getElementById("loadType").value;
+      const region = document.getElementById("region").value || "your region";
+
+      // Example static values
+      let span = "Unknown";
+      if (size === "90x35" && spacing === "450" && load === "roof") span = "2.7 m";
+      if (size === "140x45" && spacing === "600" && load === "floor") span = "3.5 m";
+      if (size === "190x45" && load === "deck") span = "4.2 m";
+
+      const resultBox = document.getElementById("resultBox");
+      const spanResult = document.getElementById("spanResult");
+      spanResult.innerHTML = `For <strong>${size}</strong> at <strong>${spacing} mm</strong> spacing under <strong>${load}</strong> load in <strong>${region}</strong>, the max span is <strong>${span}</strong>.`;
+      resultBox.classList.remove("hidden");
+    });
+  </script>
+</body>
+</html>
