@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Rafter Length Calculator – Ask Kai</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <style>
@@ -10,50 +10,48 @@
   </style>
 </head>
 <body class="bg-white text-gray-800">
-  <main class="min-h-screen flex flex-col items-center p-8">
-    <h1 class="text-2xl font-bold kaymar-green mb-6">Rafter Length Calculator</h1>
+  <header class="bg-white shadow p-4 flex items-center justify-between">
+    <h1 class="text-xl font-bold kaymar-green">Rafter Length Calculator</h1>
+    <a href="index.html" class="text-sm text-blue-600 hover:underline">Back to Chat</a>
+  </header>
 
-    <div class="w-full max-w-md bg-white p-6 rounded-lg shadow-md space-y-4">
-      <label class="block">
-        <span class="font-medium">Horizontal Run (mm)</span>
-        <input id="run" type="number" placeholder="e.g. 4500" class="w-full border p-3 rounded-lg mt-1" />
-      </label>
-
-      <label class="block">
-        <span class="font-medium">Roof Pitch (°)</span>
-        <input id="pitch" type="number" placeholder="e.g. 25" class="w-full border p-3 rounded-lg mt-1" />
-      </label>
-
-      <button onclick="calculateRafter()" class="w-full bg-black text-white py-2 rounded hover:bg-gray-900">Calculate Rafter Length</button>
-
-      <div id="result" class="text-center font-bold text-green-700 mt-4"></div>
-
-      <p class="text-sm text-gray-500 text-center mt-4">
-        Formula: run × tan(pitch°) = rise → Use Pythagoras to find hypotenuse (rafter)
-      </p>
-    </div>
-
-    <p class="text-sm text-center text-gray-500 mt-8 max-w-md">
-      Example: A 4500mm run with a 25° pitch has a rise of ~2094mm, giving a rafter length of ~4974mm.
+  <main class="max-w-xl mx-auto p-6">
+    <p class="mb-4 text-gray-700">
+      Enter your <strong>roof run</strong> (horizontal distance from wall to ridge) and <strong>roof pitch</strong> (in degrees). This tool uses basic trigonometry to calculate the sloping rafter length.
     </p>
+
+    <div class="space-y-4">
+      <div>
+        <label for="run" class="block font-medium">Roof Run (mm)</label>
+        <input type="number" id="run" class="w-full border p-3 rounded-lg" placeholder="e.g. 3000" />
+      </div>
+
+      <div>
+        <label for="pitch" class="block font-medium">Roof Pitch (degrees)</label>
+        <input type="number" id="pitch" class="w-full border p-3 rounded-lg" placeholder="e.g. 25" />
+      </div>
+
+      <button onclick="calculateRafter()" class="w-full bg-black text-white py-2 rounded hover:bg-gray-900 transition">Calculate Rafter Length</button>
+
+      <div id="result" class="text-lg font-semibold mt-4 text-green-700"></div>
+    </div>
   </main>
 
   <script>
     function calculateRafter() {
       const run = parseFloat(document.getElementById('run').value);
       const pitch = parseFloat(document.getElementById('pitch').value);
-      const resultBox = document.getElementById('result');
 
-      if (isNaN(run) || isNaN(pitch) || run <= 0 || pitch <= 0 || pitch >= 90) {
-        resultBox.textContent = "Please enter valid numbers for run and pitch.";
+      if (isNaN(run) || isNaN(pitch)) {
+        document.getElementById('result').textContent = "Please enter valid numbers for run and pitch.";
         return;
       }
 
-      const pitchRadians = pitch * Math.PI / 180;
-      const rise = Math.tan(pitchRadians) * run;
-      const rafterLength = Math.sqrt(run * run + rise * rise);
+      const angleRad = pitch * (Math.PI / 180);
+      const rafterLength = run / Math.cos(angleRad);
 
-      resultBox.textContent = `Rafter Length: ${rafterLength.toFixed(0)} mm (Rise: ${rise.toFixed(0)} mm)`;
+      document.getElementById('result').textContent =
+        `Estimated Rafter Length: ${rafterLength.toFixed(2)} mm`;
     }
   </script>
 </body>
