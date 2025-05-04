@@ -10,82 +10,66 @@
   </style>
 </head>
 <body class="bg-white text-gray-800">
-  <main class="max-w-3xl mx-auto p-8">
-    <h1 class="text-3xl font-bold text-center kaymar-green mb-6">Span Table Lookup</h1>
-    <p class="text-center text-gray-600 mb-8">Select your timber, spacing, and load type to check max allowable spans.</p>
+  <main class="min-h-screen flex flex-col items-center p-8">
+    <h1 class="text-2xl font-bold kaymar-green mb-6">Timber Span Estimator</h1>
 
-    <form id="spanForm" class="space-y-6">
-      <div>
-        <label class="font-semibold block mb-1">Timber Size</label>
-        <select id="timberSize" class="w-full border p-3 rounded" required>
+    <div class="w-full max-w-xl bg-white p-6 rounded-lg shadow-md space-y-4">
+      <label class="block">
+        <span class="font-medium">Timber Size</span>
+        <select id="timberSize" class="w-full border p-3 rounded-lg mt-1">
           <option value="">Select...</option>
-          <option value="90x35">90 x 35 mm</option>
-          <option value="140x45">140 x 45 mm</option>
-          <option value="190x45">190 x 45 mm</option>
+          <option value="90x35">90 x 35</option>
+          <option value="90x45">90 x 45</option>
+          <option value="120x45">120 x 45</option>
+          <option value="140x45">140 x 45</option>
+          <option value="190x45">190 x 45</option>
+          <option value="240x45">240 x 45</option>
         </select>
-      </div>
+      </label>
 
-      <div class="grid grid-cols-2 gap-4">
-        <div>
-          <label class="font-semibold block mb-1">Spacing</label>
-          <select id="spacing" class="w-full border p-3 rounded" required>
-            <option value="">Select...</option>
-            <option value="450">450 mm</option>
-            <option value="600">600 mm</option>
-          </select>
-        </div>
-        <div>
-          <label class="font-semibold block mb-1">Load Type</label>
-          <select id="loadType" class="w-full border p-3 rounded" required>
-            <option value="">Select...</option>
-            <option value="roof">Roof Load</option>
-            <option value="floor">Floor Load</option>
-            <option value="deck">Deck Load</option>
-          </select>
-        </div>
-      </div>
-
-      <div>
-        <label class="font-semibold block mb-1">Region</label>
-        <select id="region" class="w-full border p-3 rounded">
+      <label class="block">
+        <span class="font-medium">Spacing (centres)</span>
+        <select id="spacing" class="w-full border p-3 rounded-lg mt-1">
           <option value="">Select...</option>
-          <option value="NSW">NSW</option>
-          <option value="VIC">VIC</option>
-          <option value="QLD">QLD</option>
-          <option value="WA">WA</option>
-          <option value="SA">SA</option>
+          <option value="450">450 mm</option>
+          <option value="600">600 mm</option>
+          <option value="300">300 mm</option>
         </select>
-      </div>
+      </label>
 
-      <button type="submit" class="w-full bg-black text-white py-3 rounded hover:bg-gray-900 transition">Get Span</button>
-    </form>
+      <button onclick="estimateSpan()" class="w-full bg-black text-white py-2 rounded hover:bg-gray-900">Estimate Max Span</button>
 
-    <div id="resultBox" class="mt-10 bg-gray-100 p-6 rounded shadow hidden">
-      <h2 class="text-xl font-bold mb-2 kaymar-green">Maximum Span</h2>
-      <p id="spanResult" class="text-gray-700">Your span result will appear here.</p>
+      <div id="result" class="text-center font-bold text-green-700 mt-4"></div>
     </div>
+
+    <p class="text-sm text-center text-gray-500 mt-6 max-w-md">
+      This is an estimation only. Always confirm with AS1684 span tables or an engineer if unsure.
+    </p>
   </main>
 
   <script>
-    document.getElementById("spanForm").addEventListener("submit", function (e) {
-      e.preventDefault();
+    const spanLookup = {
+      "90x35": { "300": 1800, "450": 1600, "600": 1400 },
+      "90x45": { "300": 2100, "450": 1900, "600": 1700 },
+      "120x45": { "300": 2700, "450": 2500, "600": 2300 },
+      "140x45": { "300": 3200, "450": 3000, "600": 2800 },
+      "190x45": { "300": 4000, "450": 3700, "600": 3400 },
+      "240x45": { "300": 4800, "450": 4500, "600": 4200 }
+    };
 
-      const size = document.getElementById("timberSize").value;
+    function estimateSpan() {
+      const timber = document.getElementById("timberSize").value;
       const spacing = document.getElementById("spacing").value;
-      const load = document.getElementById("loadType").value;
-      const region = document.getElementById("region").value || "your region";
+      const resultBox = document.getElementById("result");
 
-      // Example static values
-      let span = "Unknown";
-      if (size === "90x35" && spacing === "450" && load === "roof") span = "2.7 m";
-      if (size === "140x45" && spacing === "600" && load === "floor") span = "3.5 m";
-      if (size === "190x45" && load === "deck") span = "4.2 m";
+      if (!timber || !spacing) {
+        resultBox.textContent = "Please select both timber size and spacing.";
+        return;
+      }
 
-      const resultBox = document.getElementById("resultBox");
-      const spanResult = document.getElementById("spanResult");
-      spanResult.innerHTML = `For <strong>${size}</strong> at <strong>${spacing} mm</strong> spacing under <strong>${load}</strong> load in <strong>${region}</strong>, the max span is <strong>${span}</strong>.`;
-      resultBox.classList.remove("hidden");
-    });
+      const span = spanLookup[timber][spacing];
+      resultBox.textContent = `Estimated max span: ${span} mm`;
+    }
   </script>
 </body>
 </html>
