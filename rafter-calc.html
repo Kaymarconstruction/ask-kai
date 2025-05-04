@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Rafter Length Calculator – Ask Kai</title>
+  <title>Rafter Calculator – Ask Kai</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
   <style>
     .kaymar-green { color: #7AC142; }
@@ -16,16 +16,19 @@
   </header>
 
   <main class="max-w-xl mx-auto p-8">
-    <p class="text-sm text-gray-600 mb-6">Estimate rafter lengths using rise and run. Calculated as a straight line — excludes overhang.</p>
+    <p class="text-sm text-gray-600 mb-6">
+      Estimate rafter length using roof pitch and horizontal run.<br>
+      Formula: rise = run × tan(pitch), length = √(rise² + run²)
+    </p>
 
     <div class="mb-4">
-      <label class="block text-sm font-medium mb-1">Rise (mm)</label>
-      <input id="rise" type="number" class="w-full border p-3 rounded-lg" placeholder="e.g. 2400" />
+      <label class="block text-sm font-medium mb-1">Horizontal Run (mm)</label>
+      <input id="run" type="number" class="w-full border p-3 rounded-lg" placeholder="e.g. 3000" />
     </div>
 
     <div class="mb-4">
-      <label class="block text-sm font-medium mb-1">Run (mm)</label>
-      <input id="run" type="number" class="w-full border p-3 rounded-lg" placeholder="e.g. 3000" />
+      <label class="block text-sm font-medium mb-1">Roof Pitch (degrees)</label>
+      <input id="pitch" type="number" class="w-full border p-3 rounded-lg" placeholder="e.g. 25" />
     </div>
 
     <button onclick="calculateRafter()" class="mt-4 bg-black text-white px-6 py-2 rounded-lg hover:bg-gray-900 transition">Calculate</button>
@@ -37,8 +40,6 @@
     const email = sessionStorage.getItem('askkaiUser') || '';
     const tokens = parseInt(localStorage.getItem('kaiTokens') || '0');
     const promptCount = parseInt(localStorage.getItem('promptCount') || '0');
-
-    // Full access override for developer
     const isDev = email === 'mark@kaymarconstruction.com';
 
     if (!isDev && promptCount >= 10 && tokens <= 0) {
@@ -47,17 +48,23 @@
     }
 
     function calculateRafter() {
-      const rise = parseFloat(document.getElementById('rise').value);
       const run = parseFloat(document.getElementById('run').value);
+      const pitch = parseFloat(document.getElementById('pitch').value);
       const result = document.getElementById('result');
 
-      if (isNaN(rise) || isNaN(run)) {
-        result.textContent = "Please enter valid numbers for rise and run.";
+      if (isNaN(run) || isNaN(pitch)) {
+        result.textContent = "Please enter valid numbers for both run and pitch.";
         return;
       }
 
-      const length = Math.sqrt(Math.pow(rise, 2) + Math.pow(run, 2));
-      result.textContent = `Estimated Rafter Length: ${length.toFixed(2)} mm`;
+      const radians = pitch * (Math.PI / 180);
+      const rise = run * Math.tan(radians);
+      const length = Math.sqrt(Math.pow(run, 2) + Math.pow(rise, 2));
+
+      result.innerHTML = `
+        Rise: ${rise.toFixed(1)} mm<br>
+        Rafter Length: ${length.toFixed(1)} mm
+      `;
     }
   </script>
 </body>
