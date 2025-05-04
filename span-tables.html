@@ -2,74 +2,101 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Span Tables – Ask Kai</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <style>
     .kaymar-green { color: #7AC142; }
+    table { width: 100%; border-collapse: collapse; }
+    th, td { border: 1px solid #ccc; padding: 8px; text-align: center; }
+    th { background-color: #f9f9f9; }
   </style>
 </head>
 <body class="bg-white text-gray-800">
-  <main class="min-h-screen flex flex-col items-center p-8">
-    <h1 class="text-2xl font-bold kaymar-green mb-6">Timber Span Estimator</h1>
+  <header class="bg-white shadow p-4 flex items-center justify-between">
+    <h1 class="text-xl font-bold kaymar-green">Basic Span Reference Tables</h1>
+    <a href="index.html" class="text-sm text-blue-600 hover:underline">Back to Chat</a>
+  </header>
 
-    <div class="w-full max-w-xl bg-white p-6 rounded-lg shadow-md space-y-4">
-      <label class="block">
-        <span class="font-medium">Timber Size</span>
-        <select id="timberSize" class="w-full border p-3 rounded-lg mt-1">
-          <option value="">Select...</option>
-          <option value="90x35">90 x 35</option>
-          <option value="90x45">90 x 45</option>
-          <option value="120x45">120 x 45</option>
-          <option value="140x45">140 x 45</option>
-          <option value="190x45">190 x 45</option>
-          <option value="240x45">240 x 45</option>
-        </select>
-      </label>
+  <main class="max-w-4xl mx-auto p-6 space-y-12">
+    <section>
+      <h2 class="text-2xl font-semibold mb-2">Floor Joists (MGP10, Domestic Load)</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Size (mm)</th>
+            <th>Spacing (mm)</th>
+            <th>Max Span (m)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>90×35</td><td>450</td><td>2.80</td></tr>
+          <tr><td>90×45</td><td>450</td><td>3.20</td></tr>
+          <tr><td>140×45</td><td>450</td><td>4.20</td></tr>
+          <tr><td>190×45</td><td>450</td><td>5.30</td></tr>
+          <tr><td>240×45</td><td>450</td><td>6.40</td></tr>
+        </tbody>
+      </table>
+    </section>
 
-      <label class="block">
-        <span class="font-medium">Spacing (centres)</span>
-        <select id="spacing" class="w-full border p-3 rounded-lg mt-1">
-          <option value="">Select...</option>
-          <option value="450">450 mm</option>
-          <option value="600">600 mm</option>
-          <option value="300">300 mm</option>
-        </select>
-      </label>
+    <section>
+      <h2 class="text-2xl font-semibold mb-2">Rafters (MGP10, Roof Dead + Live Load)</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Size (mm)</th>
+            <th>Spacing (mm)</th>
+            <th>Max Span (m)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>90×45</td><td>600</td><td>2.60</td></tr>
+          <tr><td>120×45</td><td>600</td><td>3.20</td></tr>
+          <tr><td>140×45</td><td>600</td><td>3.80</td></tr>
+          <tr><td>190×45</td><td>600</td><td>5.00</td></tr>
+        </tbody>
+      </table>
+    </section>
 
-      <button onclick="estimateSpan()" class="w-full bg-black text-white py-2 rounded hover:bg-gray-900">Estimate Max Span</button>
+    <section>
+      <h2 class="text-2xl font-semibold mb-2">Deck Bearers (F17 Hardwood)</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Size (mm)</th>
+            <th>Spacing Between Supports (m)</th>
+            <th>Max Deck Load</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>140×45</td><td>1.80</td><td>Standard Residential</td></tr>
+          <tr><td>190×45</td><td>2.70</td><td>Standard Residential</td></tr>
+          <tr><td>240×45</td><td>3.60</td><td>Light Commercial</td></tr>
+        </tbody>
+      </table>
+    </section>
 
-      <div id="result" class="text-center font-bold text-green-700 mt-4"></div>
-    </div>
-
-    <p class="text-sm text-center text-gray-500 mt-6 max-w-md">
-      This is an estimation only. Always confirm with AS1684 span tables or an engineer if unsure.
-    </p>
+    <section>
+      <h2 class="text-2xl font-semibold mb-2">Ceiling Joists (Non-Load Bearing)</h2>
+      <table>
+        <thead>
+          <tr>
+            <th>Size (mm)</th>
+            <th>Spacing (mm)</th>
+            <th>Max Span (m)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr><td>70×35</td><td>450</td><td>2.50</td></tr>
+          <tr><td>90×35</td><td>450</td><td>3.00</td></tr>
+          <tr><td>120×35</td><td>450</td><td>3.80</td></tr>
+        </tbody>
+      </table>
+    </section>
   </main>
 
-  <script>
-    const spanLookup = {
-      "90x35": { "300": 1800, "450": 1600, "600": 1400 },
-      "90x45": { "300": 2100, "450": 1900, "600": 1700 },
-      "120x45": { "300": 2700, "450": 2500, "600": 2300 },
-      "140x45": { "300": 3200, "450": 3000, "600": 2800 },
-      "190x45": { "300": 4000, "450": 3700, "600": 3400 },
-      "240x45": { "300": 4800, "450": 4500, "600": 4200 }
-    };
-
-    function estimateSpan() {
-      const timber = document.getElementById("timberSize").value;
-      const spacing = document.getElementById("spacing").value;
-      const resultBox = document.getElementById("result");
-
-      if (!timber || !spacing) {
-        resultBox.textContent = "Please select both timber size and spacing.";
-        return;
-      }
-
-      const span = spanLookup[timber][spacing];
-      resultBox.textContent = `Estimated max span: ${span} mm`;
-    }
-  </script>
+  <footer class="text-center text-gray-500 text-sm p-4">
+    &copy; 2025 Kaymar Construction | Structural span guides are indicative only.
+  </footer>
 </body>
 </html>
