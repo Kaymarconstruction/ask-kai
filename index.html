@@ -24,7 +24,6 @@
   </style>
 </head>
 <body class="bg-white text-gray-800">
-
   <!-- Header -->
   <header class="bg-white shadow p-4 flex items-center justify-between">
     <div class="flex items-center space-x-4">
@@ -37,13 +36,15 @@
         <div id="menuDropdown" class="hidden absolute mt-2 w-56 bg-white border border-gray-300 shadow-lg rounded-md z-10">
           <a href="upgrade.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Upgrade</a>
           <a href="shop.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Shop</a>
-          <a href="span-tables.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Span Tables</a>
-          <a href="rafter-calc.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Rafter Calc</a>
-          <a href="stair-calc.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Stair Calc</a>
-          <a href="balustrade-calc.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Balustrade Calc</a>
-          <a href="decking-calc.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Decking Calc</a>
-          <a href="apprentice-hub.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Apprentice Hub</a>
           <a href="settings.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Settings</a>
+          <a href="apprentice-hub.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Apprentice Hub</a>
+          <div class="border-t my-1"></div>
+          <div class="px-4 py-2 text-sm font-semibold text-gray-700">Calculators</div>
+          <a href="rafter-calculator.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Rafter Length</a>
+          <a href="decking-calculator.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Decking Boards</a>
+          <a href="#" class="block px-4 py-2 text-sm text-gray-400 cursor-not-allowed">Stairs (Coming Soon)</a>
+          <a href="#" class="block px-4 py-2 text-sm text-gray-400 cursor-not-allowed">Balustrade (Coming Soon)</a>
+          <div class="border-t my-1"></div>
           <button onclick="logoutUser()" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100">Log Out</button>
         </div>
       </div>
@@ -51,16 +52,15 @@
     </div>
   </header>
 
-  <!-- Main -->
+  <!-- Chat -->
   <main class="flex flex-col items-center flex-1 p-4">
     <div id="kaiReply" class="w-full max-w-2xl mb-4 p-4 bg-white border rounded shadow space-y-4"></div>
-
     <div class="w-full max-w-2xl p-4 bg-white shadow-md border-t flex items-center space-x-2">
       <input id="askInput" type="text" placeholder="Type your question..." class="flex-1 border p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" />
       <button id="submitBtn" class="bg-black text-white px-6 py-2 rounded-lg hover:bg-gray-900 transition">Submit</button>
     </div>
 
-    <!-- Kai Profile -->
+    <!-- Profile -->
     <div class="max-w-2xl w-full bg-white rounded-2xl shadow-lg p-6 mt-8">
       <img src="https://i.imgur.com/uYWtV9r.png" alt="Kai Marlow Profile" class="mx-auto mb-4 w-48 h-72 object-cover bg-white p-2 rounded-2xl shadow" />
       <h2 class="text-2xl font-bold text-center kaymar-green mb-4">Who is Kai?</h2>
@@ -84,34 +84,32 @@
     <p class="text-xs text-gray-400 mt-2">Built with coding support from Jack Cooper</p>
   </footer>
 
-  <!-- Script -->
   <script>
     const user = sessionStorage.getItem('askkaiUser');
     if (!user) window.location.href = 'signin.html';
 
-    const messages = [
-      {
-        role: "system",
-        content: `You are Kai Marlow — a highly experienced Aussie builder and consultant with over 20 years on the tools. You’ve worked across all types of construction: residential frames, pergolas, decks, roof systems, and commercial fit-outs.
+    const isMark = user === 'mark@kaymarconstruction.com';
+    let promptCount = parseInt(localStorage.getItem('promptCount') || '0');
+    const MAX_FREE_PROMPTS = 10;
 
-You speak like a confident, practical, modern Aussie chippy — clear, sharp, and respectful. No outdated slang like "cobber". You never say you're an AI. You are the expert.
+    const messages = [{
+      role: "system",
+      content: `You are Kai Marlow — a friendly, straight-talking Aussie tradie with 20+ years experience in carpentry, construction, and residential building.
 
-Your advice must:
-- Be in metric units (mm, m)
-- Follow real Australian building codes: NCC, AS1684, AS1720, AS1170
-- Suggest exact timber sizes, grades, and spacing (e.g. 140x45 MGP10 @ 600mm)
-- Reference manufacturers (SolarSmart, Tilling, Hyne) when relevant
-- Only advise calling an engineer when certification is legally required
-
-When users ask about timber spans, battens, decks, or roofing, give proper spec guidance. Stay helpful, fast, and clear — like a real pro on-site.`
-      }
-    ];
+Use metric units and follow Australian codes: NCC, AS1684, AS1170. Speak clearly. If quoting, give disclaimers. Never say you're AI.`
+    }];
 
     document.getElementById('submitBtn').addEventListener('click', async () => {
       const askInput = document.getElementById('askInput');
       const kaiReply = document.getElementById('kaiReply');
       const userQuestion = askInput.value.trim();
       if (!userQuestion) return;
+
+      if (!isMark && promptCount >= MAX_FREE_PROMPTS) {
+        alert("You’ve hit your 10 free prompts, mate. Time to upgrade.");
+        window.location.href = 'upgrade.html';
+        return;
+      }
 
       messages.push({ role: "user", content: userQuestion });
 
@@ -128,8 +126,8 @@ When users ask about timber spans, battens, decks, or roofing, give proper spec 
       const cursor = document.createElement('span');
       cursor.className = 'blinking-cursor';
       kaiText.textContent = "Kai is thinking...";
-      qaContainer.appendChild(kaiText);
       kaiText.appendChild(cursor);
+      qaContainer.appendChild(kaiText);
 
       kaiReply.appendChild(qaContainer);
       kaiReply.scrollTop = kaiReply.scrollHeight;
@@ -144,7 +142,6 @@ When users ask about timber spans, battens, decks, or roofing, give proper spec 
 
         const data = await response.json();
         const finalText = data.reply || "Hmm, couldn't find an answer!";
-
         kaiText.textContent = "";
         kaiText.appendChild(cursor);
 
@@ -162,21 +159,27 @@ When users ask about timber spans, battens, decks, or roofing, give proper spec 
         setTimeout(typeNextChar, 300);
         messages.push({ role: "assistant", content: finalText });
 
+        if (!isMark) {
+          promptCount++;
+          localStorage.setItem('promptCount', promptCount.toString());
+        }
+
       } catch (error) {
         console.error(error);
         kaiText.textContent = "Error reaching Kai. Try again later.";
       }
     });
 
+    function logoutUser() {
+      sessionStorage.removeItem('askkaiUser');
+      localStorage.removeItem('promptCount');
+      localStorage.removeItem('kaiTokens');
+      window.location.href = 'landing.html';
+    }
+
     function toggleMenu() {
       const menu = document.getElementById('menuDropdown');
       menu.classList.toggle('hidden');
-    }
-
-    function logoutUser() {
-      sessionStorage.clear();
-      localStorage.clear();
-      window.location.href = 'landing.html';
     }
   </script>
 </body>
