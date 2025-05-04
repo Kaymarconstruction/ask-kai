@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Rafter Length Calculator – Ask Kai</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+  <style>
+    .kaymar-green { color: #7AC142; }
+  </style>
+</head>
+<body class="bg-white text-gray-800">
+  <header class="bg-white shadow p-4 flex items-center justify-between">
+    <h1 class="text-xl font-bold kaymar-green">Rafter Length Calculator</h1>
+    <a href="index.html" class="text-sm text-blue-600 hover:underline">Back to Chat</a>
+  </header>
+
+  <main class="max-w-xl mx-auto p-8">
+    <p class="text-sm text-gray-600 mb-6">Estimate rafter lengths using rise and run. Calculated as a straight line — excludes overhang.</p>
+
+    <div class="mb-4">
+      <label class="block text-sm font-medium mb-1">Rise (mm)</label>
+      <input id="rise" type="number" class="w-full border p-3 rounded-lg" placeholder="e.g. 2400" />
+    </div>
+
+    <div class="mb-4">
+      <label class="block text-sm font-medium mb-1">Run (mm)</label>
+      <input id="run" type="number" class="w-full border p-3 rounded-lg" placeholder="e.g. 3000" />
+    </div>
+
+    <button onclick="calculateRafter()" class="mt-4 bg-black text-white px-6 py-2 rounded-lg hover:bg-gray-900 transition">Calculate</button>
+
+    <div id="result" class="mt-6 text-green-700 font-semibold text-lg"></div>
+  </main>
+
+  <script>
+    const email = sessionStorage.getItem('askkaiUser') || '';
+    const tokens = parseInt(localStorage.getItem('kaiTokens') || '0');
+    const promptCount = parseInt(localStorage.getItem('promptCount') || '0');
+
+    // Full access override for developer
+    const isDev = email === 'mark@kaymarconstruction.com';
+
+    if (!isDev && promptCount >= 10 && tokens <= 0) {
+      alert("This tool is available for Ask Kai Plus & Premium members.");
+      window.location.href = 'upgrade.html';
+    }
+
+    function calculateRafter() {
+      const rise = parseFloat(document.getElementById('rise').value);
+      const run = parseFloat(document.getElementById('run').value);
+      const result = document.getElementById('result');
+
+      if (isNaN(rise) || isNaN(run)) {
+        result.textContent = "Please enter valid numbers for rise and run.";
+        return;
+      }
+
+      const length = Math.sqrt(Math.pow(rise, 2) + Math.pow(run, 2));
+      result.textContent = `Estimated Rafter Length: ${length.toFixed(2)} mm`;
+    }
+  </script>
+</body>
+</html>
