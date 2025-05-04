@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Ask Kai – Kaymar Consulting</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
   <style>
     .kaymar-green { color: #7AC142; }
     html, body { height: 100%; margin: 0; padding: 0; display: flex; flex-direction: column; }
@@ -24,8 +24,6 @@
   </style>
 </head>
 <body class="bg-white text-gray-800">
-
-  <!-- Header -->
   <header class="bg-white shadow p-4 flex items-center justify-between">
     <div class="flex items-center space-x-4">
       <div class="relative">
@@ -36,6 +34,7 @@
         </button>
         <div id="menuDropdown" class="hidden absolute mt-2 w-48 bg-white border border-gray-300 shadow-lg rounded-md z-10">
           <a href="upgrade.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Upgrade</a>
+          <a href="shop.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Shop</a>
           <a href="settings.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Settings</a>
           <button onclick="logoutUser()" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100">Log Out</button>
         </div>
@@ -44,7 +43,6 @@
     </div>
   </header>
 
-  <!-- Main -->
   <main class="flex flex-col items-center flex-1 p-4">
     <div id="kaiReply" class="w-full max-w-2xl mb-4 p-4 bg-white border rounded shadow space-y-4"></div>
 
@@ -65,7 +63,6 @@
     </div>
   </main>
 
-  <!-- Footer -->
   <footer class="text-center text-gray-500 text-sm p-4">
     &copy; 2025 Kaymar Construction | Powered by Ask Kai
     <div class="flex justify-center space-x-6 mt-4">
@@ -77,29 +74,27 @@
     <p class="text-xs text-gray-400 mt-2">Built with coding support from Jack Cooper</p>
   </footer>
 
-  <!-- Scripts -->
   <script>
     const user = sessionStorage.getItem('askkaiUser');
     if (!user) window.location.href = 'signin.html';
 
     let promptCount = parseInt(localStorage.getItem('promptCount') || '0');
-    const MAX_FREE_PROMPTS = 10;
-    const isOwner = user === 'mark@kaymarconstruction.com';
-
+    const MAX_FREE_PROMPTS = 10; // updated to 10
     const messages = [
       {
         role: "system",
-        content: `You are Kai Marlow — a friendly, straight-talking Aussie tradie with 20+ years experience in carpentry, construction, and residential building.
+        content: `You are Kai Marlow — a highly experienced Aussie builder and consultant with over 20 years on the tools. You’ve worked across all types of construction: residential frames, pergolas, decks, roof systems, and commercial fit-outs.
 
-Adapt your tone and responses based on the user's region (AU, US, UK). Use local building codes, timber specs, terms, and humour when appropriate.
+You speak like a confident, practical, modern Aussie chippy — clear, sharp, and respectful. No outdated slang like "cobber". You never say you're an AI. You are the expert.
 
-You are an expert in:
-- Timber spans, structural loads, and framing layouts
-- Decking materials, installation, and planning
-- Pricing estimates, budget advice, and material costs
-- Tool selection, safety standards, and code compliance
+Your advice must:
+- Be in metric units (mm, m)
+- Follow real Australian building codes: NCC, AS1684, AS1720, AS1170
+- Suggest exact timber sizes, grades, and spacing (e.g. 140x45 MGP10 @ 600mm)
+- Reference manufacturers (SolarSmart, Tilling, Hyne) when relevant
+- Only advise calling an engineer when certification is legally required
 
-If unsure, prompt the user for more detail or give clear disclaimers for any assumptions made (especially quotes). Never say you're an AI — you’re Kai, the mate everyone wants on site.`
+When users ask about timber spans, battens, decks, or roofing, give proper spec guidance. Stay helpful, fast, and clear — like a real pro on-site.`
       }
     ];
 
@@ -109,8 +104,8 @@ If unsure, prompt the user for more detail or give clear disclaimers for any ass
       const userQuestion = askInput.value.trim();
       if (!userQuestion) return;
 
-      if (!isOwner && promptCount >= MAX_FREE_PROMPTS) {
-        alert("You've used your 10 free prompts. Please upgrade to continue.");
+      if (promptCount >= MAX_FREE_PROMPTS) {
+        alert("You’ve hit your 10 free prompts, mate. Time to upgrade.");
         window.location.href = 'upgrade.html';
         return;
       }
@@ -146,6 +141,7 @@ If unsure, prompt the user for more detail or give clear disclaimers for any ass
 
         const data = await response.json();
         const finalText = data.reply || "Hmm, couldn't find an answer!";
+
         kaiText.textContent = "";
         kaiText.appendChild(cursor);
 
@@ -159,14 +155,12 @@ If unsure, prompt the user for more detail or give clear disclaimers for any ass
             cursor.remove();
           }
         }
+
         setTimeout(typeNextChar, 300);
 
         messages.push({ role: "assistant", content: finalText });
-
-        if (!isOwner) {
-          promptCount++;
-          localStorage.setItem('promptCount', promptCount.toString());
-        }
+        promptCount++;
+        localStorage.setItem('promptCount', promptCount.toString());
 
       } catch (error) {
         console.error(error);
@@ -181,7 +175,8 @@ If unsure, prompt the user for more detail or give clear disclaimers for any ass
     }
 
     function toggleMenu() {
-      document.getElementById('menuDropdown').classList.toggle('hidden');
+      const menu = document.getElementById('menuDropdown');
+      menu.classList.toggle('hidden');
     }
   </script>
 </body>
