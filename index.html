@@ -28,18 +28,22 @@
   <!-- Header -->
   <header class="bg-white shadow p-4 flex items-center justify-between">
     <div class="flex items-center space-x-4">
-      <!-- Dropdown -->
       <div class="relative">
         <button onclick="toggleMenu()" class="bg-white border border-black text-black p-2 rounded-lg hover:bg-gray-100 transition">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
           </svg>
         </button>
-        <div id="menuDropdown" class="hidden absolute mt-2 w-48 bg-white border border-gray-300 shadow-lg rounded-md z-10">
+        <div id="menuDropdown" class="hidden absolute mt-2 w-56 bg-white border border-gray-300 shadow-lg rounded-md z-10">
           <a href="upgrade.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Upgrade</a>
           <a href="shop.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Shop</a>
-          <a href="settings.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Settings</a>
+          <a href="span-tables.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Span Tables</a>
+          <a href="rafter-calc.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Rafter Calc</a>
+          <a href="stair-calc.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Stair Calc</a>
+          <a href="balustrade-calc.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Balustrade Calc</a>
+          <a href="decking-calc.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Decking Calc</a>
           <a href="apprentice-hub.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Apprentice Hub</a>
+          <a href="settings.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Settings</a>
           <button onclick="logoutUser()" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100">Log Out</button>
         </div>
       </div>
@@ -47,7 +51,7 @@
     </div>
   </header>
 
-  <!-- Main Chat -->
+  <!-- Main -->
   <main class="flex flex-col items-center flex-1 p-4">
     <div id="kaiReply" class="w-full max-w-2xl mb-4 p-4 bg-white border rounded shadow space-y-4"></div>
 
@@ -85,13 +89,21 @@
     const user = sessionStorage.getItem('askkaiUser');
     if (!user) window.location.href = 'signin.html';
 
-    let promptCount = 0; // Unlimited for now
     const messages = [
       {
         role: "system",
-        content: `You are Kai Marlow — a friendly, sharp, code-savvy Aussie tradie with 20+ years experience.
+        content: `You are Kai Marlow — a highly experienced Aussie builder and consultant with over 20 years on the tools. You’ve worked across all types of construction: residential frames, pergolas, decks, roof systems, and commercial fit-outs.
 
-Speak like a pro chippy, be clear, fast, and expert-level helpful. Respond in metric. Base answers on NCC, AS1684, AS1720, and AS1170.`
+You speak like a confident, practical, modern Aussie chippy — clear, sharp, and respectful. No outdated slang like "cobber". You never say you're an AI. You are the expert.
+
+Your advice must:
+- Be in metric units (mm, m)
+- Follow real Australian building codes: NCC, AS1684, AS1720, AS1170
+- Suggest exact timber sizes, grades, and spacing (e.g. 140x45 MGP10 @ 600mm)
+- Reference manufacturers (SolarSmart, Tilling, Hyne) when relevant
+- Only advise calling an engineer when certification is legally required
+
+When users ask about timber spans, battens, decks, or roofing, give proper spec guidance. Stay helpful, fast, and clear — like a real pro on-site.`
       }
     ];
 
@@ -116,8 +128,8 @@ Speak like a pro chippy, be clear, fast, and expert-level helpful. Respond in me
       const cursor = document.createElement('span');
       cursor.className = 'blinking-cursor';
       kaiText.textContent = "Kai is thinking...";
-      kaiText.appendChild(cursor);
       qaContainer.appendChild(kaiText);
+      kaiText.appendChild(cursor);
 
       kaiReply.appendChild(qaContainer);
       kaiReply.scrollTop = kaiReply.scrollHeight;
@@ -162,7 +174,8 @@ Speak like a pro chippy, be clear, fast, and expert-level helpful. Respond in me
     }
 
     function logoutUser() {
-      sessionStorage.removeItem('askkaiUser');
+      sessionStorage.clear();
+      localStorage.clear();
       window.location.href = 'landing.html';
     }
   </script>
