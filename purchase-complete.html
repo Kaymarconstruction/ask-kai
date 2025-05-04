@@ -3,35 +3,50 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Thank You – Ask Kai</title>
+  <title>Purchase Complete – Ask Kai</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
   <style>
     .kaymar-green { color: #7AC142; }
   </style>
 </head>
-<body class="bg-white text-gray-800 flex flex-col items-center justify-center min-h-screen p-8 text-center">
-
-  <h1 class="text-3xl font-bold kaymar-green mb-4">Thanks for your purchase!</h1>
-  <p class="text-lg text-gray-700 mb-6">Your token pack has been added. You’re all set to Ask Kai.</p>
-  <a href="index.html" class="mt-4 inline-block bg-black text-white px-6 py-3 rounded hover:bg-gray-900 transition">Back to Chat</a>
+<body class="bg-white text-gray-800">
+  <main class="min-h-screen flex flex-col items-center justify-center text-center p-8">
+    <h1 class="text-3xl font-bold kaymar-green mb-4">Thanks for your purchase!</h1>
+    <p class="text-gray-700 mb-6">Your tokens are being added to your account...</p>
+    <p class="text-sm text-gray-500">Redirecting to your <a href="settings.html" class="text-blue-600 underline">Settings</a> page shortly.</p>
+  </main>
 
   <script>
-    const params = new URLSearchParams(window.location.search);
-    const url = window.location.href;
+    const query = new URLSearchParams(window.location.search);
+    const pack = query.get('pack');
 
-    let tokensToAdd = 0;
+    let tokens = parseInt(localStorage.getItem('kaiTokens') || '0');
 
-    // Match based on known live Stripe links
-    if (url.includes("4gw7tufx25EK8aQ6oo")) tokensToAdd = 10;         // Mini Pack
-    else if (url.includes("fZeg004Soebg1MsbIJ")) tokensToAdd = 50;     // Standard Pack
-    else if (url.includes("8wM8xy3Ok1ou4YE002")) tokensToAdd = 100;    // Pro Pack
-    else if (url.includes("bIYaFG2Kg1ou1Ms004")) tokensToAdd = 5000;   // Ask Kai Premium
-    else tokensToAdd = 0;
-
-    if (tokensToAdd > 0) {
-      const existing = parseInt(localStorage.getItem("kaiTokens") || "0");
-      localStorage.setItem("kaiTokens", (existing + tokensToAdd).toString());
+    switch (pack) {
+      case 'mini':
+        tokens += 10;
+        break;
+      case 'standard':
+        tokens += 50;
+        break;
+      case 'pro':
+        tokens += 100;
+        break;
+      case 'plus':
+        tokens += 7000;
+        break;
+      case 'premium':
+        tokens += 20000;
+        break;
+      default:
+        console.warn('Unknown pack type:', pack);
     }
+
+    localStorage.setItem('kaiTokens', tokens.toString());
+
+    setTimeout(() => {
+      window.location.href = 'settings.html';
+    }, 3000);
   </script>
 </body>
 </html>
