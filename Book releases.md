@@ -1,42 +1,60 @@
-# BOOK RELEASE SCHEDULE & IDEA LIST
+## CURRENT RELEASE PRIORITIES
 
-## Priority Release (Next Up)
-1. **Title:** Trade Hacks & Handy Sheets  
-   **Subtitle:** The One-Page Survival Guide for DIYers and Apprentices  
-   **Status:** In Planning — confirmed title, structure pending  
-   **Type:** Practical reference; visual + instructional cheat sheets  
-   **Audience:** DIY builders, apprentice tradies  
-   **Goal:** Quick, usable field reference for common tasks, tools, and safety  
+1. **Trade Hacks & Handy Sheets**
+   - Subtitle: The One-Page Survival Guide for DIYers and Apprentices
+   - Status: First-priority upcoming release
+   - Format: Cheat sheets / templates / workflows / checklists
+   - Purpose: Rapid reference tool for tradespeople
+   - Release: TBA
 
-## Active Development
-2. **Title:** Tools of the Trade  
-   **Subtitle:** A Tool and Skill-Building Guide for Apprentice Carpenters and DIYers  
-   **Status:** Final chapters complete, cover finalized, formatting pending  
-   **Type:** Core apprentice skills and tool use guide  
-   **Audience:** Entry-level apprentices, DIYers, school-based learners  
+2. **Tools of the Trade**
+   - Subtitle: A Practical Guide for Apprentice Carpenters and DIY Builders to Master Tools, Site Skills, and Safe Work Practices
+   - Author: K. Marlowe
+   - Status: Released
+   - Format: Kindle + Paperback (Amazon)
+   - Target: Apprentices, pre-apprenticeship students, and DIYers
+   - Chapters: 15 Chapters covering tools, safety, plans, and site conduct
 
-3. **Title:** The Lean Tradie  
-   **Subtitle:** Applying Lean, Kaizen, and Japanese Manufacturing Principles to Modern Trade Work  
-   **Status:** Published on KDP — eBook complete, paperback launched  
-   **Tasks Remaining:** Promo materials, optional workbook companion  
+3. **The Lean Tradie**
+   - Subtitle: Applying Lean, Kaizen and Japanese Manufacturing Principles to Modern Trade Work
+   - Status: Released
+   - Format: Kindle Global (paperback optional)
+   - Focus: Efficiency, systems, and leadership for tradespeople
 
-## Locked-In Future Releases
-4. **Title:** Apprentice Punch Lists  
-   **Subtitle:** Weekly Checklists and Daily Wins for Smarter Site Learning  
-   **Type:** Daily/weekly structured apprentice journal and planner  
-   **Status:** Idea captured, outline pending  
+4. **Certificate III in Carpentry – Training Manual**
+   - Subtitle: Practical Workbook + Systems for RTOs and Trainees
+   - Status: In production
+   - Format: Digital + Printable (modular workstreams)
+   - Integration: Part of the final Apprentice Series set
 
-5. **Title:** Managing Cash Flow as a Tradie  
-   **Subtitle:** Practical Financial Smarts for Builders, Subbies, and Site Workers  
-   **Type:** Business/personal finance — money management for trades  
-   **Status:** Idea confirmed, outline and chapters pending  
+---
 
-## Additional Idea Concepts (Backlog)
-- “The Smart Apprentice: 90-Day Kickstart for Trade Success”
-- “Pre-Apprentice Ready Kit: Tools, Attitude, and What to Know”
-- “Tradie Systems: Time, Gear, and People Management for Small Crews”
+## UPCOMING IDEAS & IN-DEVELOPMENT TITLES
 
-# Notes:
-- All books include strong SEO focus on apprentice carpenters, DIY, site setup, and trade efficiency.
-- Working titles are locked once cover and subtitle are approved.
-- Central publishing brand: **K. Marlowe / ask.kaymarconstruction.com**
+- **Managing Cash Flow as a Tradie**
+  - Type: Standalone Guide
+  - Focus: Budgeting, quoting, overheads, financial clarity
+
+- **DIY Master Kit: The Visual Guide**
+  - Working Title: *DIY Fix-Ups and Fast Hacks: Your Visual Home Tool Guide*
+  - Audience: DIYers and homeowners
+  - Style: Illustrated step-by-step repairs and tool setup
+
+- **The Apprentice Punch Lists**
+  - Format: Step-by-step job cards and task sheets
+  - Purpose: Streamline apprentice training with ready-made reference guides
+
+- **Pro Series Expansion (All Trades)**
+  - Carpentry, Plumbing, Electrical, Concrete, Bricklaying, Landscaping, Plastering
+  - Format: Deep-dive expert systems with 2x content of apprentice series
+  - Status: Begins after Cheat Sheet book release
+
+---
+
+## NOTES TO ASSISTANT
+
+- All releases must follow KDP formatting (6x9 inches, high-res covers, CMYK PDF)
+- Include ask.kaymarconstruction.com and author credit (“K. Marlowe”) on all covers
+- Copyright pages must be included in every book
+- Confirm interior flow and TOC accuracy before final export
+- Last saved working file: `Tools_of_the_Trade_Manuscript_v1.0.docx`
