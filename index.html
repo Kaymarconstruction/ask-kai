@@ -3,8 +3,8 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Ask Kai – Kaymar Construction</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+  <title>Ask Kai – Kaymar Consulting</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <style>
     .kaymar-green { color: #7AC142; }
     html, body { height: 100%; margin: 0; padding: 0; display: flex; flex-direction: column; }
@@ -36,7 +36,6 @@
         </button>
         <div id="menuDropdown" class="hidden absolute mt-2 w-48 bg-white border border-gray-300 shadow-lg rounded-md z-10">
           <a href="upgrade.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Upgrade</a>
-          <a href="shop.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Shop</a>
           <a href="settings.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Settings</a>
           <button onclick="logoutUser()" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100">Log Out</button>
         </div>
@@ -60,8 +59,8 @@
       <h2 class="text-2xl font-bold text-center kaymar-green mb-4">Who is Kai?</h2>
       <p class="text-gray-700 text-center mb-4">
         Kai Marlow is your trusted mate in the building world.<br>
-        With over 20 years of hands-on experience across Australia, the UK, and the USA, Kai offers down-to-earth advice on construction, materials, framing, and design.<br>
-        Whether you're a homeowner or a seasoned tradie — <strong>Ask Kai</strong>.
+        With over 20 years of hands-on experience across Australia, the UK, the USA, and beyond, Kai offers fast, down-to-earth advice on construction, carpentry, materials, and design.<br>
+        Whether you're a homeowner starting a renovation or a tradie chasing specs — <strong>Ask Kai</strong>.
       </p>
     </div>
   </main>
@@ -78,38 +77,29 @@
     <p class="text-xs text-gray-400 mt-2">Built with coding support from Jack Cooper</p>
   </footer>
 
-  <!-- Script -->
+  <!-- Scripts -->
   <script>
     const user = sessionStorage.getItem('askkaiUser');
     if (!user) window.location.href = 'signin.html';
 
     let promptCount = parseInt(localStorage.getItem('promptCount') || '0');
-    const MAX_FREE_PROMPTS = 25;
+    const MAX_FREE_PROMPTS = 10;
+    const isOwner = user === 'mark@kaymarconstruction.com';
 
     const messages = [
       {
         role: "system",
-        content: `You are Kai Marlow — a friendly, sharp-witted Aussie carpenter and trade consultant with over 20 years on the tools. You’re here to give fast, accurate advice to tradies and homeowners alike.
+        content: `You are Kai Marlow — a friendly, straight-talking Aussie tradie with 20+ years experience in carpentry, construction, and residential building.
 
-Tone: Clear, confident, and down-to-earth. You’re practical and straight-talking — a real pro who knows his stuff. No “cobber” or outdated slang. You never say you're an AI.
-
-Always:
-- Use metric units (mm, m)
-- Follow Australian building codes (NCC, AS1684, AS1720, AS1170)
-- Recommend specific timber sizes, grades, spacings
-- Reference manufacturers (e.g. Hyne, Tilling, Carter Holt) where helpful
-- Include cost ranges if asked (ballpark quotes OK)
-- Offer clear disclaimers when assumptions are made
-- Ask for clarification when needed
+Adapt your tone and responses based on the user's region (AU, US, UK). Use local building codes, timber specs, terms, and humour when appropriate.
 
 You are an expert in:
-- Timber spans, deck design, framing layouts
-- Quoting jobs, generating specs, carpentry tools
-- Drafting emails and reports for clients or engineers
-- Material selection and pricing
-- CAD/drafting guidance and permit prep
+- Timber spans, structural loads, and framing layouts
+- Decking materials, installation, and planning
+- Pricing estimates, budget advice, and material costs
+- Tool selection, safety standards, and code compliance
 
-Keep replies clear and concise — 10–30 words unless more is genuinely needed.`
+If unsure, prompt the user for more detail or give clear disclaimers for any assumptions made (especially quotes). Never say you're an AI — you’re Kai, the mate everyone wants on site.`
       }
     ];
 
@@ -119,8 +109,8 @@ Keep replies clear and concise — 10–30 words unless more is genuinely needed
       const userQuestion = askInput.value.trim();
       if (!userQuestion) return;
 
-      if (promptCount >= MAX_FREE_PROMPTS) {
-        alert("You've hit your 25 free prompts, mate. Time to upgrade.");
+      if (!isOwner && promptCount >= MAX_FREE_PROMPTS) {
+        alert("You've used your 10 free prompts. Please upgrade to continue.");
         window.location.href = 'upgrade.html';
         return;
       }
@@ -140,8 +130,8 @@ Keep replies clear and concise — 10–30 words unless more is genuinely needed
       const cursor = document.createElement('span');
       cursor.className = 'blinking-cursor';
       kaiText.textContent = "Kai is thinking...";
-      kaiText.appendChild(cursor);
       qaContainer.appendChild(kaiText);
+      kaiText.appendChild(cursor);
 
       kaiReply.appendChild(qaContainer);
       kaiReply.scrollTop = kaiReply.scrollHeight;
@@ -156,7 +146,6 @@ Keep replies clear and concise — 10–30 words unless more is genuinely needed
 
         const data = await response.json();
         const finalText = data.reply || "Hmm, couldn't find an answer!";
-
         kaiText.textContent = "";
         kaiText.appendChild(cursor);
 
@@ -170,11 +159,14 @@ Keep replies clear and concise — 10–30 words unless more is genuinely needed
             cursor.remove();
           }
         }
-
         setTimeout(typeNextChar, 300);
+
         messages.push({ role: "assistant", content: finalText });
-        promptCount++;
-        localStorage.setItem('promptCount', promptCount.toString());
+
+        if (!isOwner) {
+          promptCount++;
+          localStorage.setItem('promptCount', promptCount.toString());
+        }
 
       } catch (error) {
         console.error(error);
@@ -189,8 +181,7 @@ Keep replies clear and concise — 10–30 words unless more is genuinely needed
     }
 
     function toggleMenu() {
-      const menu = document.getElementById('menuDropdown');
-      menu.classList.toggle('hidden');
+      document.getElementById('menuDropdown').classList.toggle('hidden');
     }
   </script>
 </body>
