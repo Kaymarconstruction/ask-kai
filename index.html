@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Ask Kai – Kaymar Consulting</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
   <style>
     .kaymar-green { color: #7AC142; }
     html, body { height: 100%; margin: 0; padding: 0; display: flex; flex-direction: column; }
@@ -50,7 +50,6 @@
       <button id="submitBtn" class="bg-black text-white px-6 py-2 rounded-lg hover:bg-gray-900 transition">Submit</button>
     </div>
 
-    <!-- Kai Profile Section -->
     <div class="max-w-2xl w-full bg-white rounded-2xl shadow-lg p-6 mt-8">
       <img src="https://i.imgur.com/uYWtV9r.png" alt="Kai Marlow Profile" class="mx-auto mb-4 w-48 h-72 object-cover bg-white p-2 rounded-2xl shadow" />
       <h2 class="text-2xl font-bold text-center kaymar-green mb-4">Who is Kai?</h2>
@@ -77,8 +76,11 @@
     const user = sessionStorage.getItem('askkaiUser');
     if (!user) window.location.href = 'signin.html';
 
+    const isAdmin = user === "mark@kaymarconstruction.com";
     let promptCount = parseInt(localStorage.getItem('promptCount') || '0');
+    let kaiTokens = parseInt(localStorage.getItem('kaiTokens') || '0');
     const MAX_FREE_PROMPTS = 25;
+
     const messages = [
       {
         role: "system",
@@ -102,8 +104,8 @@ If unsure, prompt the user for more detail or give clear disclaimers for any ass
       const userQuestion = askInput.value.trim();
       if (!userQuestion) return;
 
-      if (promptCount >= MAX_FREE_PROMPTS) {
-        alert("You’ve hit your 25 free prompts, mate. Time to upgrade.");
+      if (!isAdmin && promptCount >= MAX_FREE_PROMPTS && kaiTokens <= 0) {
+        alert("You’ve used all 25 free prompts. Time to upgrade or buy tokens.");
         window.location.href = 'upgrade.html';
         return;
       }
@@ -157,8 +159,16 @@ If unsure, prompt the user for more detail or give clear disclaimers for any ass
         setTimeout(typeNextChar, 300);
 
         messages.push({ role: "assistant", content: finalText });
-        promptCount++;
-        localStorage.setItem('promptCount', promptCount.toString());
+
+        if (!isAdmin) {
+          if (promptCount < MAX_FREE_PROMPTS) {
+            promptCount++;
+            localStorage.setItem('promptCount', promptCount.toString());
+          } else {
+            kaiTokens--;
+            localStorage.setItem('kaiTokens', kaiTokens.toString());
+          }
+        }
 
       } catch (error) {
         console.error(error);
@@ -169,6 +179,7 @@ If unsure, prompt the user for more detail or give clear disclaimers for any ass
     function logoutUser() {
       sessionStorage.removeItem('askkaiUser');
       localStorage.removeItem('promptCount');
+      localStorage.removeItem('kaiTokens');
       window.location.href = 'landing.html';
     }
 
