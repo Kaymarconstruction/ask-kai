@@ -3,181 +3,49 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Ask Kai – Kaymar Consulting</title>
+  <title>Shop – Ask Kai</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
   <style>
     .kaymar-green { color: #7AC142; }
-    html, body { height: 100%; margin: 0; padding: 0; display: flex; flex-direction: column; }
-    #kaiReply { max-height: 60vh; overflow-y: auto; }
-    .blinking-cursor {
-      display: inline-block;
-      width: 10px;
-      height: 1em;
-      background-color: #7AC142;
-      margin-left: 4px;
-      animation: blink 1s steps(2, start) infinite;
-    }
-    @keyframes blink {
-      0%, 100% { opacity: 0; }
-      50% { opacity: 1; }
-    }
   </style>
 </head>
 <body class="bg-white text-gray-800">
+  <!-- Header -->
   <header class="bg-white shadow p-4 flex items-center justify-between">
-    <div class="flex items-center space-x-4">
-      <div class="relative">
-        <button onclick="toggleMenu()" class="bg-white border border-black text-black p-2 rounded-lg hover:bg-gray-100 transition">
-          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-          </svg>
-        </button>
-        <div id="menuDropdown" class="hidden absolute mt-2 w-48 bg-white border border-gray-300 shadow-lg rounded-md z-10">
-          <a href="upgrade.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Upgrade</a>
-          <a href="shop.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Shop</a>
-          <a href="settings.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Settings</a>
-          <button onclick="logoutUser()" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100">Log Out</button>
-        </div>
-      </div>
-      <h1 class="text-xl font-bold kaymar-green">Ask Kai</h1>
-    </div>
+    <h1 class="text-xl font-bold kaymar-green">Kai’s Shop</h1>
+    <a href="index.html" class="text-sm text-blue-600 hover:underline">Back to Chat</a>
   </header>
 
-  <main class="flex flex-col items-center flex-1 p-4">
-    <div id="kaiReply" class="w-full max-w-2xl mb-4 p-4 bg-white border rounded shadow space-y-4"></div>
+  <!-- Main -->
+  <main class="max-w-5xl mx-auto p-8">
+    <h2 class="text-2xl font-bold text-center mb-6">Digital Downloads & Books</h2>
 
-    <div class="w-full max-w-2xl p-4 bg-white shadow-md border-t flex items-center space-x-2">
-      <input id="askInput" type="text" placeholder="Type your question..." class="flex-1 border p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" />
-      <button id="submitBtn" class="bg-black text-white px-6 py-2 rounded-lg hover:bg-gray-900 transition">Submit</button>
-    </div>
+    <div class="grid md:grid-cols-2 gap-8">
+      <!-- The Lean Tradie -->
+      <div class="bg-white border rounded-lg shadow p-4">
+        <img src="https://i.imgur.com/uvA4WQE.jpg" alt="The Lean Tradie Cover" class="w-full h-auto object-cover rounded mb-4" />
+        <h3 class="text-xl font-semibold mb-2">The Lean Tradie</h3>
+        <p class="text-gray-700 text-sm mb-4">
+          Applying Lean, Kaizen & Japanese manufacturing principles to tradework — for smarter, faster, cleaner construction.
+        </p>
+        <button disabled class="w-full bg-gray-300 text-gray-600 py-2 rounded cursor-not-allowed">Buy on Amazon – Coming Soon</button>
+      </div>
 
-    <!-- Kai Profile Section -->
-    <div class="max-w-2xl w-full bg-white rounded-2xl shadow-lg p-6 mt-8">
-      <img src="https://i.imgur.com/uYWtV9r.png" alt="Kai Marlow Profile" class="mx-auto mb-4 w-48 h-72 object-cover bg-white p-2 rounded-2xl shadow" />
-      <h2 class="text-2xl font-bold text-center kaymar-green mb-4">Who is Kai?</h2>
-      <p class="text-gray-700 text-center mb-4">
-        Kai Marlow is your trusted mate in the building world.<br>
-        With over 20 years of hands-on experience across Australia, the UK, the USA, and beyond, Kai offers fast, down-to-earth advice on construction, carpentry, materials, and design.<br>
-        Whether you're a homeowner starting a renovation or a tradie chasing specs — <strong>Ask Kai</strong>.
-      </p>
+      <!-- Tools of the Trade -->
+      <div class="bg-white border rounded-lg shadow p-4">
+        <img src="https://i.imgur.com/o06UV7O.jpg" alt="Tools of the Trade Cover" class="w-full h-auto object-cover rounded mb-4" />
+        <h3 class="text-xl font-semibold mb-2">Tools of the Trade</h3>
+        <p class="text-gray-700 text-sm mb-4">
+          A practical guide for apprentice carpenters & DIYers — tool knowledge, safety, setup and purchasing advice from Kai himself.
+        </p>
+        <button disabled class="w-full bg-gray-300 text-gray-600 py-2 rounded cursor-not-allowed">Buy on Amazon – Coming Soon</button>
+      </div>
     </div>
   </main>
 
-  <footer class="text-center text-gray-500 text-sm p-4">
+  <footer class="text-center text-gray-500 text-sm p-6">
     &copy; 2025 Kaymar Construction | Powered by Ask Kai
-    <div class="flex justify-center space-x-6 mt-4">
-      <a href="https://www.instagram.com/askkai_official" target="_blank" class="text-blue-600 hover:underline">Instagram</a>
-      <a href="https://www.facebook.com/askkai_official" target="_blank" class="text-blue-600 hover:underline">Facebook</a>
-      <a href="https://www.tiktok.com/@askkai_official" target="_blank" class="text-blue-600 hover:underline">TikTok</a>
-      <a href="https://www.youtube.com/@askkai_official" target="_blank" class="text-blue-600 hover:underline">YouTube</a>
-    </div>
-    <p class="text-xs text-gray-400 mt-2">Built with coding support from Jack Cooper</p>
+    <p class="text-xs mt-2 text-gray-400">Built with support from Jack Cooper</p>
   </footer>
-
-  <script>
-    const user = sessionStorage.getItem('askkaiUser');
-    if (!user) window.location.href = 'signin.html';
-
-    let promptCount = parseInt(localStorage.getItem('promptCount') || '0');
-    const MAX_FREE_PROMPTS = 10; // updated to 10
-    const messages = [
-      {
-        role: "system",
-        content: `You are Kai Marlow — a highly experienced Aussie builder and consultant with over 20 years on the tools. You’ve worked across all types of construction: residential frames, pergolas, decks, roof systems, and commercial fit-outs.
-
-You speak like a confident, practical, modern Aussie chippy — clear, sharp, and respectful. No outdated slang like "cobber". You never say you're an AI. You are the expert.
-
-Your advice must:
-- Be in metric units (mm, m)
-- Follow real Australian building codes: NCC, AS1684, AS1720, AS1170
-- Suggest exact timber sizes, grades, and spacing (e.g. 140x45 MGP10 @ 600mm)
-- Reference manufacturers (SolarSmart, Tilling, Hyne) when relevant
-- Only advise calling an engineer when certification is legally required
-
-When users ask about timber spans, battens, decks, or roofing, give proper spec guidance. Stay helpful, fast, and clear — like a real pro on-site.`
-      }
-    ];
-
-    document.getElementById('submitBtn').addEventListener('click', async () => {
-      const askInput = document.getElementById('askInput');
-      const kaiReply = document.getElementById('kaiReply');
-      const userQuestion = askInput.value.trim();
-      if (!userQuestion) return;
-
-      if (promptCount >= MAX_FREE_PROMPTS) {
-        alert("You’ve hit your 10 free prompts, mate. Time to upgrade.");
-        window.location.href = 'upgrade.html';
-        return;
-      }
-
-      messages.push({ role: "user", content: userQuestion });
-
-      const qaContainer = document.createElement('div');
-      qaContainer.className = 'mb-6';
-
-      const userText = document.createElement('p');
-      userText.className = 'text-right text-blue-700 font-semibold mb-2';
-      userText.textContent = `You: ${userQuestion}`;
-      qaContainer.appendChild(userText);
-
-      const kaiText = document.createElement('p');
-      kaiText.className = 'text-left text-green-600 font-semibold';
-      const cursor = document.createElement('span');
-      cursor.className = 'blinking-cursor';
-      kaiText.textContent = "Kai is thinking...";
-      qaContainer.appendChild(kaiText);
-      kaiText.appendChild(cursor);
-
-      kaiReply.appendChild(qaContainer);
-      kaiReply.scrollTop = kaiReply.scrollHeight;
-      askInput.value = "";
-
-      try {
-        const response = await fetch('https://askkai-backend-clean.onrender.com/ask', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ messages })
-        });
-
-        const data = await response.json();
-        const finalText = data.reply || "Hmm, couldn't find an answer!";
-
-        kaiText.textContent = "";
-        kaiText.appendChild(cursor);
-
-        let i = 0;
-        function typeNextChar() {
-          if (i < finalText.length) {
-            cursor.before(document.createTextNode(finalText.charAt(i)));
-            i++;
-            setTimeout(typeNextChar, 20);
-          } else {
-            cursor.remove();
-          }
-        }
-
-        setTimeout(typeNextChar, 300);
-
-        messages.push({ role: "assistant", content: finalText });
-        promptCount++;
-        localStorage.setItem('promptCount', promptCount.toString());
-
-      } catch (error) {
-        console.error(error);
-        kaiText.textContent = "Error reaching Kai. Try again later.";
-      }
-    });
-
-    function logoutUser() {
-      sessionStorage.removeItem('askkaiUser');
-      localStorage.removeItem('promptCount');
-      window.location.href = 'landing.html';
-    }
-
-    function toggleMenu() {
-      const menu = document.getElementById('menuDropdown');
-      menu.classList.toggle('hidden');
-    }
-  </script>
 </body>
 </html>
