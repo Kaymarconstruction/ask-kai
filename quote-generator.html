@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Quote Generator – Ask Kai</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+  <style>
+    .kaymar-green { color: #7AC142; }
+  </style>
+</head>
+<body class="bg-white text-gray-800">
+
+  <main class="max-w-3xl mx-auto p-8">
+    <h1 class="text-3xl font-bold text-center kaymar-green mb-6">Quick Quote Generator</h1>
+    <p class="text-center text-gray-600 mb-10">Estimate materials and labour for simple projects like decks, fences, pergolas and more.</p>
+
+    <form id="quoteForm" class="space-y-6">
+      <div>
+        <label class="block font-semibold mb-1">Project Type</label>
+        <select class="w-full border p-3 rounded" id="projectType" required>
+          <option value="">Select...</option>
+          <option>Deck</option>
+          <option>Fence</option>
+          <option>Pergola</option>
+          <option>Renovation</option>
+        </select>
+      </div>
+
+      <div class="grid grid-cols-2 gap-4">
+        <div>
+          <label class="block font-semibold mb-1">Length (m)</label>
+          <input type="number" id="length" min="0" class="w-full border p-3 rounded" required />
+        </div>
+        <div>
+          <label class="block font-semibold mb-1">Width (m)</label>
+          <input type="number" id="width" min="0" class="w-full border p-3 rounded" required />
+        </div>
+      </div>
+
+      <div>
+        <label class="block font-semibold mb-1">Location</label>
+        <input type="text" id="location" placeholder="e.g. Brisbane, VIC, Sydney" class="w-full border p-3 rounded" />
+      </div>
+
+      <button type="submit" class="w-full bg-black text-white py-3 rounded hover:bg-gray-900 transition">Generate Quote</button>
+    </form>
+
+    <div id="quoteResult" class="mt-10 bg-gray-100 p-6 rounded shadow hidden">
+      <h2 class="text-xl font-bold mb-2 kaymar-green">Estimated Quote</h2>
+      <p class="text-gray-700" id="quoteOutput">Your estimate will appear here.</p>
+    </div>
+  </main>
+
+  <script>
+    document.getElementById('quoteForm').addEventListener('submit', function (e) {
+      e.preventDefault();
+
+      const type = document.getElementById('projectType').value;
+      const length = parseFloat(document.getElementById('length').value);
+      const width = parseFloat(document.getElementById('width').value);
+      const area = length * width;
+      const location = document.getElementById('location').value.trim() || "your region";
+
+      let pricePerSqm = 350;
+      if (type === "Fence") pricePerSqm = 180;
+      if (type === "Pergola") pricePerSqm = 400;
+
+      const estimate = area * pricePerSqm;
+      const resultBox = document.getElementById('quoteResult');
+      const quoteOutput = document.getElementById('quoteOutput');
+
+      quoteOutput.innerHTML = `Based on a <strong>${area.toFixed(1)} m²</strong> ${type.toLowerCase()} in <strong>${location}</strong>, your estimated project cost is <strong>$${estimate.toLocaleString()}</strong>.`;
+      resultBox.classList.remove('hidden');
+    });
+  </script>
+</body>
+</html>
