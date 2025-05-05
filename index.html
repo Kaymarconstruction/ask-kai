@@ -25,11 +25,16 @@
 </head>
 <body class="bg-white text-gray-800">
 
+  <!-- Banner -->
+  <div class="w-full bg-black">
+    <img src="https://i.imgur.com/nDIhtRr_d.png?maxwidth=520&shape=thumb&fidelity=high" alt="Kaymar Construction Banner" class="mx-auto w-full max-w-6xl h-auto" />
+  </div>
+
   <!-- Header -->
   <header class="bg-white shadow p-4 flex items-center justify-between">
     <div class="flex items-center space-x-4">
       <div class="relative">
-        <button onclick="toggleMenu()" class="bg-white border border-black text-black p-2 rounded-lg hover:bg-gray-100 transition">
+        <button onclick="toggleMenu()" class="bg-black text-white p-2 rounded-lg hover:bg-gray-800 transition">
           <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
           </svg>
@@ -44,7 +49,6 @@
           <div class="px-4 py-2 text-sm font-semibold text-gray-700">Calculators</div>
           <a href="rafter-calc.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Rafter Length</a>
           <a href="decking-calculator.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Decking Boards</a>
-          <a href="span-tables.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Span Tables</a>
           <a href="#" class="block px-4 py-2 text-sm text-gray-400 cursor-not-allowed">Stairs (Coming Soon)</a>
           <a href="#" class="block px-4 py-2 text-sm text-gray-400 cursor-not-allowed">Balustrade (Coming Soon)</a>
           <div class="border-t my-1"></div>
@@ -55,7 +59,7 @@
     </div>
   </header>
 
-  <!-- Chat -->
+  <!-- Main -->
   <main class="flex flex-col items-center flex-1 p-4">
     <div id="kaiReply" class="w-full max-w-2xl mb-4 p-4 bg-white border rounded shadow space-y-4"></div>
     <div class="w-full max-w-2xl p-4 bg-white shadow-md border-t flex items-center space-x-2">
@@ -87,20 +91,20 @@
     <p class="text-xs text-gray-400 mt-2">Built with coding support from Jack Cooper</p>
   </footer>
 
-  <!-- Chat Logic -->
+  <!-- Script -->
   <script>
     const user = sessionStorage.getItem('askkaiUser');
     if (!user) window.location.href = 'signin.html';
 
     const isMark = user === 'mark@kaymarconstruction.com';
     let promptCount = parseInt(localStorage.getItem('promptCount') || '0');
-    let kaiTokens = parseInt(localStorage.getItem('kaiTokens') || '0');
     const MAX_FREE_PROMPTS = 10;
 
     const messages = [{
       role: "system",
       content: `You are Kai Marlow — a friendly, straight-talking Aussie tradie with 20+ years experience in carpentry, construction, and residential building.
-Use metric units. Follow Australian codes: NCC, AS1684, AS1170. Never say you're AI. Be smart, clear and helpful.`
+
+Use metric units and follow Australian codes: NCC, AS1684, AS1170. Speak clearly. If quoting, give disclaimers. Never say you're AI.`
     }];
 
     document.getElementById('submitBtn').addEventListener('click', async () => {
@@ -109,8 +113,8 @@ Use metric units. Follow Australian codes: NCC, AS1684, AS1170. Never say you're
       const userQuestion = askInput.value.trim();
       if (!userQuestion) return;
 
-      if (!isMark && promptCount >= MAX_FREE_PROMPTS && kaiTokens <= 0) {
-        alert("You’ve used your free prompts. Please upgrade or buy tokens.");
+      if (!isMark && promptCount >= MAX_FREE_PROMPTS) {
+        alert("You’ve hit your 10 free prompts, mate. Time to upgrade.");
         window.location.href = 'upgrade.html';
         return;
       }
@@ -164,13 +168,8 @@ Use metric units. Follow Australian codes: NCC, AS1684, AS1170. Never say you're
         messages.push({ role: "assistant", content: finalText });
 
         if (!isMark) {
-          if (promptCount < MAX_FREE_PROMPTS) {
-            promptCount++;
-            localStorage.setItem('promptCount', promptCount.toString());
-          } else if (kaiTokens > 0) {
-            kaiTokens--;
-            localStorage.setItem('kaiTokens', kaiTokens.toString());
-          }
+          promptCount++;
+          localStorage.setItem('promptCount', promptCount.toString());
         }
 
       } catch (error) {
