@@ -121,7 +121,8 @@
       if (!supplierEmail) return alert('Please select a supplier.');
 
       const subject = encodeURIComponent("Material Quote Request");
-      const body = encodeURIComponent(`Hi,\n\nI would like a quote for the following materials to be delivered to this address on this date:\n\n${generatedQuote}\n\nRegards,\n[Your Name]`);
+      const body = encodeURIComponent(`Hi [Rep's Name or Supplier Name],\n\nHope you're well.\n\nI’m putting together a quote for a client and need pricing on the following materials:\n\nJob Location: [Suburb or address if relevant]\nRequired Materials:\n\n${generatedQuote}\n\nIf you could send through availability and pricing (inc. GST and delivery if possible), that’d be appreciated. Keen to lock this one in ASAP.\n\nLet me know if you need any more info.\n\nCheers,\n[Your Name]`);
+
       const mailto = `mailto:${supplierEmail}?subject=${subject}&body=${body}`;
       window.location.href = mailto;
     });
