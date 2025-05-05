@@ -1,62 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Settings – Ask Kai</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
-  <style>
-    .kaymar-green { color: #7AC142; }
-  </style>
-</head>
-<body class="bg-white text-gray-800">
+Account Settings – Ask Kai 
 
-  <!-- Header -->
-  <header class="bg-white shadow p-4 flex items-center justify-between">
-    <h1 class="text-xl font-bold kaymar-green">Account Settings</h1>
-    <a href="index.html" class="text-sm text-blue-600 hover:underline">Back to Chat</a>
-  </header>
+Account Settings Back to Chat 
 
-  <!-- Main -->
-  <main class="max-w-xl mx-auto p-8">
-    <h2 class="text-2xl font-bold mb-6">Your Details</h2>
+<!-- Profile Picture Upload --> <div> <label class="block font-semibold mb-1">Profile Picture</label> <input type="file" accept="image/*" class="block w-full border rounded p-2" /> <p class="text-xs text-gray-500 mt-1">(Feature coming soon – not yet functional)</p> </div> <!-- Email + Plan Info --> <div> <label class="block font-semibold mb-1">Email:</label> <p id="userEmail" class="text-sm text-gray-700">Loading...</p> </div> <div> <label class="block font-semibold mb-1">Subscription Plan:</label> <p id="userPlan" class="text-sm text-gray-700">Loading...</p> </div> <div> <label class="block font-semibold mb-1">Prompt Tokens Used:</label> <p id="tokenCount" class="text-sm text-gray-700">Loading...</p> </div> </div> © 2025 Kaymar Construction | Powered by Ask Kai 
 
-    <div class="mb-4">
-      <label class="block text-sm font-medium mb-1">Email Address</label>
-      <input id="email" type="email" class="w-full border p-3 rounded-lg bg-gray-100" readonly />
-    </div>
+Instagram TikTok Facebook YouTube Threads 
 
-    <div class="mb-4">
-      <label class="block text-sm font-medium mb-1">Prompts Used</label>
-      <p class="text-gray-700"><span id="promptCount">0</span> of 25 free prompts</p>
-    </div>
+const user = sessionStorage.getItem('askkaiUser') || ''; document.getElementById('userEmail').textContent = user; const isMark = user === 'mark@kaymarconstruction.com'; const promptCount = localStorage.getItem('promptCount') || '0'; document.getElementById('tokenCount').textContent = `${promptCount} used`; if (isMark) { document.getElementById('userPlan').textContent = 'Unlimited (Admin)'; } else if (promptCount 
 
-    <div class="mb-4">
-      <label class="block text-sm font-medium mb-1">Tokens Remaining</label>
-      <p class="text-gray-700"><span id="kaiTokens">0</span> tokens available</p>
-    </div>
-
-    <div class="flex space-x-4 mt-6">
-      <a href="upgrade.html" class="bg-black text-white px-4 py-2 rounded hover:bg-gray-900 transition">Upgrade Plan</a>
-      <button onclick="logoutUser()" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 transition">Log Out</button>
-    </div>
-  </main>
-
-  <script>
-    const email = sessionStorage.getItem('askkaiUser');
-    const promptCount = localStorage.getItem('promptCount') || '0';
-    const kaiTokens = localStorage.getItem('kaiTokens') || '0';
-
-    document.getElementById('email').value = email || 'Unknown';
-    document.getElementById('promptCount').textContent = promptCount;
-    document.getElementById('kaiTokens').textContent = kaiTokens;
-
-    function logoutUser() {
-      sessionStorage.clear();
-      localStorage.removeItem('promptCount');
-      localStorage.removeItem('kaiTokens');
-      window.location.href = 'logout.html';
-    }
-  </script>
-</body>
-</html>
