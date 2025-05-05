@@ -20,6 +20,7 @@
       <div>
         <label for="profilePic" class="block text-sm font-medium">Profile Picture</label>
         <input id="profilePic" type="file" accept="image/*" class="mt-1 block w-full" />
+        <img id="profilePreview" src="https://i.imgur.com/uYWtV9r.png" alt="Profile Preview" class="mt-2 w-24 h-24 rounded-full object-cover" />
       </div>
 
       <div>
@@ -29,13 +30,15 @@
 
       <div>
         <label for="supplierEmails" class="block text-sm font-medium">Saved Supplier Emails</label>
-        <textarea id="supplierEmails" class="mt-1 block w-full border rounded p-2" rows="4" placeholder="e.g. supplier1@email.com&#10;supplier2@email.com"></textarea>
+        <textarea id="supplierEmails" class="mt-1 block w-full border rounded p-2" rows="4" placeholder="e.g. supplier1@email.com\nsupplier2@email.com"></textarea>
       </div>
 
       <div>
         <label for="promptUsage" class="block text-sm font-medium">Token Usage</label>
         <p id="promptUsage" class="text-gray-700">0 / 10</p>
       </div>
+
+      <button id="saveBtn" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Save Settings</button>
     </div>
 
     <a href="index.html" class="text-blue-600 underline text-sm">Back to Chat</a>
@@ -45,10 +48,31 @@
     const user = sessionStorage.getItem('askkaiUser') || 'demo@email.com';
     const promptCount = localStorage.getItem('promptCount') || '0';
     const plan = localStorage.getItem('planTier') || 'Free Plan';
+    const savedEmails = localStorage.getItem('supplierEmails') || '';
+    const savedProfile = localStorage.getItem('profilePreview');
 
     document.getElementById('userEmail').textContent = user;
     document.getElementById('promptUsage').textContent = `${promptCount} / ${plan === 'Free Plan' ? '10' : '∞'}`;
     document.getElementById('planTier').textContent = plan;
+    document.getElementById('supplierEmails').value = savedEmails;
+    if (savedProfile) document.getElementById('profilePreview').src = savedProfile;
+
+    document.getElementById('profilePic').addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        document.getElementById('profilePreview').src = reader.result;
+        localStorage.setItem('profilePreview', reader.result);
+      };
+      reader.readAsDataURL(file);
+    });
+
+    document.getElementById('saveBtn').addEventListener('click', () => {
+      localStorage.setItem('supplierEmails', document.getElementById('supplierEmails').value);
+      alert('Settings saved!');
+    });
   </script>
+
 </body>
 </html>
