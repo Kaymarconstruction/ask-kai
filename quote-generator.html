@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Quote Generator – Ask Kai</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
   <style>
     .kaymar-green { color: #7AC142; }
     .blinking-cursor {
@@ -24,72 +24,65 @@
 <body class="bg-white text-gray-800">
 
   <!-- Header -->
-  <header class="bg-black text-white p-4 flex items-center justify-between">
-    <img src="https://i.imgur.com/zcqscCO_d.png" alt="Kaymar Logo" class="h-10">
-    <h1 class="text-lg font-bold">Quote Generator</h1>
-    <a href="index.html" class="text-sm text-blue-300 hover:underline">Back to Chat</a>
+  <header class="bg-black p-4 flex items-center justify-between">
+    <img src="https://i.imgur.com/zcqscCO_d.png" alt="Kaymar Logo" class="h-10" />
+    <h1 class="text-xl font-bold text-white">Ask Kai – Quote Generator</h1>
   </header>
 
   <!-- Main -->
-  <main class="max-w-3xl mx-auto p-6">
-    <!-- Profile -->
-    <div class="flex items-center mb-6">
-      <img src="https://i.imgur.com/uYWtV9r.png" alt="Kai Marlow" class="w-20 h-28 object-cover rounded-2xl shadow mr-4" />
-      <div>
-        <h2 class="text-xl font-bold kaymar-green">Quote with Kai</h2>
-        <p class="text-sm text-gray-600">Describe your project — Kai will work out rough material quantities and costs.</p>
-      </div>
+  <main class="flex flex-col items-center p-6">
+    <img src="https://i.imgur.com/uYWtV9r_d.png" alt="Kai" class="w-36 h-56 rounded-xl shadow mb-4" />
+    <p class="text-center max-w-xl text-gray-600 mb-6">
+      Describe your project and Kai will estimate the materials you’ll need.
+    </p>
+
+    <div class="w-full max-w-2xl p-4 bg-white border rounded shadow space-y-4">
+      <textarea id="quoteInput" placeholder="e.g. I need a 6m x 3m deck using 140mm boards" class="w-full border p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" rows="3"></textarea>
+      <button id="quoteSubmit" class="bg-black text-white px-6 py-2 rounded-lg hover:bg-gray-900 transition">Generate Quote</button>
+
+      <div id="quoteReply" class="text-left text-gray-800 whitespace-pre-wrap"></div>
+      <p class="text-xs text-gray-500 mt-4 border-t pt-2">
+        This quote is an approximate guide for materials only. Always confirm local specs and supplier availability. Copy and paste this into your accounting software.
+      </p>
     </div>
-
-    <!-- Chat Section -->
-    <div id="quoteOutput" class="bg-gray-100 p-4 rounded-lg mb-4 min-h-[100px] text-gray-700 whitespace-pre-line"></div>
-
-    <div class="flex space-x-2">
-      <input id="quoteInput" type="text" placeholder="e.g. 6m x 4m deck using 90mm boards" class="flex-1 border p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" />
-      <button id="generateQuoteBtn" class="bg-black text-white px-4 py-2 rounded hover:bg-gray-900">Generate</button>
-    </div>
-
-    <p class="text-xs text-gray-500 mt-4">* Results are estimates only. Copy into QuickBooks, Xero, MYOB or other system. Always confirm specs with suppliers or engineer.</p>
   </main>
 
   <!-- Script -->
   <script>
-    const btn = document.getElementById('generateQuoteBtn');
-    const input = document.getElementById('quoteInput');
-    const output = document.getElementById('quoteOutput');
+    const quoteSubmit = document.getElementById("quoteSubmit");
+    const quoteInput = document.getElementById("quoteInput");
+    const quoteReply = document.getElementById("quoteReply");
 
-    const quoteMessages = [{
-      role: "system",
-      content: "You are Kai, a builder and estimator. Estimate building material requirements and costs. Use metric units. Keep responses under 100 words and include a disclaimer."
-    }];
+    quoteSubmit.addEventListener("click", async () => {
+      const question = quoteInput.value.trim();
+      if (!question) return;
 
-    btn.addEventListener('click', async () => {
-      const userMsg = input.value.trim();
-      if (!userMsg) return;
-
-      output.innerHTML = "Kai is thinking... <span class='blinking-cursor'></span>";
-      quoteMessages.push({ role: "user", content: userMsg });
+      quoteReply.textContent = "Kai is calculating...";
+      const messages = [
+        {
+          role: "system",
+          content: `You are Kai Marlow, a professional Aussie builder who generates clear, material-only quotes based on user input. Always ask for needed dimensions, product types, or board widths if missing.`
+        },
+        {
+          role: "user",
+          content: question
+        }
+      ];
 
       try {
-        const response = await fetch("https://askkai-backend-clean.onrender.com/api/quote", {
+        const response = await fetch("https://askkai-backend-clean.onrender.com/quote", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ messages: quoteMessages })
+          body: JSON.stringify({ messages })
         });
 
         const data = await response.json();
-        const finalText = data.reply || "Hmm, couldn't create a quote.";
-
-        quoteMessages.push({ role: "assistant", content: finalText });
-        output.textContent = finalText;
-        input.value = "";
-
-      } catch (err) {
-        console.error(err);
-        output.textContent = "Something went wrong. Try again later.";
+        quoteReply.textContent = data.reply || "No quote returned.";
+      } catch (error) {
+        console.error(error);
+        quoteReply.textContent = "Something went wrong. Try again later.";
       }
     });
   </script>
-
 </body>
 </html>
