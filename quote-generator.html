@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Quote Generator – Ask Kai</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet"/>
   <style>
     .kaymar-green { color: #7AC142; }
     .blinking-cursor {
@@ -23,100 +23,73 @@
 </head>
 <body class="bg-white text-gray-800">
 
-  <header class="bg-white shadow p-4 flex items-center justify-between">
-    <img src="https://i.imgur.com/zcqscCO_d.png" alt="Kaymar Logo" class="h-10" />
-    <h1 class="text-xl font-bold kaymar-green">Quote Generator</h1>
-    <a href="index.html" class="text-sm text-blue-600 hover:underline">Back to Chat</a>
+  <!-- Header -->
+  <header class="bg-black text-white p-4 flex items-center justify-between">
+    <img src="https://i.imgur.com/zcqscCO_d.png" alt="Kaymar Logo" class="h-10">
+    <h1 class="text-lg font-bold">Quote Generator</h1>
+    <a href="index.html" class="text-sm text-blue-300 hover:underline">Back to Chat</a>
   </header>
 
-  <main class="flex flex-col items-center p-6">
-    <div class="w-full max-w-3xl bg-white shadow p-4 rounded mb-6">
-      <div id="chatHistory" class="space-y-4 max-h-96 overflow-y-auto mb-4"></div>
-      <div class="flex space-x-2">
-        <input id="quoteInput" type="text" placeholder="Describe your project..." class="flex-1 border p-3 rounded-lg focus:ring-green-500 focus:outline-none" />
-        <button id="quoteBtn" class="bg-black text-white px-4 py-2 rounded hover:bg-gray-900 transition">Generate</button>
+  <!-- Main -->
+  <main class="max-w-3xl mx-auto p-6">
+    <!-- Profile -->
+    <div class="flex items-center mb-6">
+      <img src="https://i.imgur.com/uYWtV9r.png" alt="Kai Marlow" class="w-20 h-28 object-cover rounded-2xl shadow mr-4" />
+      <div>
+        <h2 class="text-xl font-bold kaymar-green">Quote with Kai</h2>
+        <p class="text-sm text-gray-600">Describe your project — Kai will work out rough material quantities and costs.</p>
       </div>
     </div>
 
-    <div id="quoteOutput" class="w-full max-w-3xl bg-gray-50 border rounded-lg p-6 text-sm shadow hidden">
-      <h2 class="text-xl font-semibold mb-3 kaymar-green">Estimated Materials Quote</h2>
-      <div id="quoteText" class="text-gray-800 whitespace-pre-wrap"></div>
-      <p class="mt-4 text-gray-500 text-xs italic">
-        This quote is for general materials only. Please double-check quantities, specs, and prices with local suppliers before purchasing.<br />
-        You can copy and paste this quote into your accounting system (e.g. Xero, MYOB, QuickBooks).
-      </p>
+    <!-- Chat Section -->
+    <div id="quoteOutput" class="bg-gray-100 p-4 rounded-lg mb-4 min-h-[100px] text-gray-700 whitespace-pre-line"></div>
+
+    <div class="flex space-x-2">
+      <input id="quoteInput" type="text" placeholder="e.g. 6m x 4m deck using 90mm boards" class="flex-1 border p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" />
+      <button id="generateQuoteBtn" class="bg-black text-white px-4 py-2 rounded hover:bg-gray-900">Generate</button>
     </div>
+
+    <p class="text-xs text-gray-500 mt-4">* Results are estimates only. Copy into QuickBooks, Xero, MYOB or other system. Always confirm specs with suppliers or engineer.</p>
   </main>
 
+  <!-- Script -->
   <script>
-    const quoteBtn = document.getElementById("quoteBtn");
-    const quoteInput = document.getElementById("quoteInput");
-    const quoteOutput = document.getElementById("quoteOutput");
-    const quoteText = document.getElementById("quoteText");
-    const chatHistory = document.getElementById("chatHistory");
+    const btn = document.getElementById('generateQuoteBtn');
+    const input = document.getElementById('quoteInput');
+    const output = document.getElementById('quoteOutput');
 
-    const messages = [
-      {
-        role: "system",
-        content: `You are Kai, a senior estimator and builder. You help users generate accurate material takeoffs and quotes for construction jobs.
+    const quoteMessages = [{
+      role: "system",
+      content: "You are Kai, a builder and estimator. Estimate building material requirements and costs. Use metric units. Keep responses under 100 words and include a disclaimer."
+    }];
 
-Before giving numbers, ask for:
-- location (for code/materials)
-- dimensions
-- type of product (decking, cladding, roof etc.)
-- board size or timber type
+    btn.addEventListener('click', async () => {
+      const userMsg = input.value.trim();
+      if (!userMsg) return;
 
-Always round timber lengths to the nearest 0.6m starting from 1.8m up to 6m. Give totals for:
-- Lineal metres
-- Number of pieces
-- Material type
-- Estimated cost if known
-
-Do not give full paragraphs unless clarification is needed. Output should be copy-paste ready for quoting tools.
-
-End each quote with: “All quantities approximate – confirm locally.”`
-      }
-    ];
-
-    quoteBtn.addEventListener("click", async () => {
-      const userInput = quoteInput.value.trim();
-      if (!userInput) return;
-
-      messages.push({ role: "user", content: userInput });
-
-      const userLine = document.createElement("div");
-      userLine.className = "text-right text-blue-700 font-medium";
-      userLine.textContent = `You: ${userInput}`;
-      chatHistory.appendChild(userLine);
-      quoteInput.value = "";
-
-      const botLine = document.createElement("div");
-      botLine.className = "text-left text-green-600 font-semibold";
-      botLine.textContent = "Kai is working on your quote...";
-      chatHistory.appendChild(botLine);
+      output.innerHTML = "Kai is thinking... <span class='blinking-cursor'></span>";
+      quoteMessages.push({ role: "user", content: userMsg });
 
       try {
-        const res = await fetch("https://askkai-backend-clean.onrender.com/ask", {
+        const response = await fetch("https://askkai-backend-clean.onrender.com/api/quote", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ messages })
+          body: JSON.stringify({ messages: quoteMessages })
         });
-        const data = await res.json();
-        const reply = data.reply || "Something went wrong. Try again later.";
 
-        botLine.textContent = reply;
-        quoteText.textContent = reply;
-        quoteOutput.classList.remove("hidden");
+        const data = await response.json();
+        const finalText = data.reply || "Hmm, couldn't create a quote.";
 
-        messages.push({ role: "assistant", content: reply });
+        quoteMessages.push({ role: "assistant", content: finalText });
+        output.textContent = finalText;
+        input.value = "";
 
       } catch (err) {
         console.error(err);
-        botLine.textContent = "Error getting quote. Try again.";
+        output.textContent = "Something went wrong. Try again later.";
       }
-
-      chatHistory.scrollTop = chatHistory.scrollHeight;
     });
   </script>
+
 </body>
 </html>
