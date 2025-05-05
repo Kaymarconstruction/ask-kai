@@ -25,9 +25,13 @@
   <!-- Prompt Input -->
   <main class="max-w-3xl mx-auto py-8 px-4 space-y-6">
     <div class="bg-white p-6 rounded-xl shadow">
-      <label for="quoteInput" class="block font-semibold mb-2">Describe your job in detail. <span class="text-red-600">Be very specific</span> — location, materials, sizes, etc.</label>
+      <label for="quoteInput" class="block font-semibold mb-2">
+        Describe your job in detail. <span class="text-red-600">Be very specific</span> — location, materials, sizes, etc.
+      </label>
       <textarea id="quoteInput" rows="4" class="w-full border rounded-lg p-3" placeholder="e.g. 4x4 deck, 600mm off ground, treated pine stumps, 90x45 joists, in NSW"></textarea>
-      <button id="submitQuote" class="mt-4 w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg">Generate Materials List</button>
+      <button id="submitQuote" class="mt-4 w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg">
+        Generate Materials List
+      </button>
     </div>
 
     <!-- Quote Output -->
@@ -37,12 +41,14 @@
     <div id="emailExport" class="hidden bg-white p-6 rounded-xl shadow">
       <label class="block text-sm font-semibold mb-2">Select a supplier to email this quote:</label>
       <select id="supplierSelect" class="w-full mb-4 border p-2 rounded"></select>
-      <button id="emailSupplierBtn" class="bg-black text-white px-4 py-2 rounded hover:bg-gray-900 transition">Email Supplier</button>
+      <button id="emailSupplierBtn" class="bg-black text-white px-4 py-2 rounded hover:bg-gray-900 transition">
+        Email Supplier
+      </button>
     </div>
 
     <!-- Export Disclaimer -->
     <div class="bg-yellow-50 border-l-4 border-yellow-500 text-yellow-700 p-4 rounded shadow">
-      <p>This estimate is for materials only. Always confirm with your supplier or engineer before purchasing. Export feature now available below.</p>
+      <p>This estimate is for materials only. Always confirm with your supplier or engineer before purchasing.</p>
     </div>
   </main>
 
@@ -98,6 +104,7 @@
       const data = await response.json();
       generatedQuote = data.reply || "Kai couldn’t generate a quote. Try again.";
       quoteBox.textContent = generatedQuote;
+
       if (generatedQuote.includes('✓') || generatedQuote.length > 10) {
         emailExport.classList.remove('hidden');
       }
@@ -109,10 +116,10 @@
 
       const subject = encodeURIComponent("Material Quote Request");
       const body = encodeURIComponent(`Hi,\n\nI would like a quote for the following materials to be delivered to this address on this date:\n\n${generatedQuote}\n\nRegards,\n[Your Name]`);
-
       const mailto = `mailto:${supplierEmail}?subject=${subject}&body=${body}`;
       window.location.href = mailto;
     });
   </script>
+
 </body>
 </html>
