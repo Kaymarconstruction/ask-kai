@@ -24,6 +24,12 @@
   </style>
 </head>
 <body class="bg-white text-gray-800">
+
+  <!-- Banner -->
+  <div class="w-full bg-black">
+    <img src="https://i.imgur.com/zcqscCO_d.png" alt="Kaymar Construction Logo" class="mx-auto max-w-full h-20 object-contain" />
+  </div>
+
   <!-- Header -->
   <header class="bg-white shadow p-4 flex items-center justify-between">
     <div class="flex items-center space-x-4">
@@ -36,16 +42,17 @@
         <div id="menuDropdown" class="hidden absolute mt-2 w-56 bg-white border border-gray-300 shadow-lg rounded-md z-10">
           <a href="upgrade.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Upgrade</a>
           <a href="shop.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Shop</a>
-          <a href="settings.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Settings</a>
           <a href="apprentice-hub.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Apprentice Hub</a>
           <a href="quote-generator.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Quote Generator</a>
           <div class="border-t my-1"></div>
           <div class="px-4 py-2 text-sm font-semibold text-gray-700">Calculators</div>
           <a href="rafter-calc.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Rafter Length</a>
           <a href="decking-calculator.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Decking Boards</a>
-          <a href="span-tables.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Span Tables</a>
-          <a href="team.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Meet the Team</a>
+          <a href="#" class="block px-4 py-2 text-sm text-gray-400 cursor-not-allowed">Stairs (Coming Soon)</a>
+          <a href="#" class="block px-4 py-2 text-sm text-gray-400 cursor-not-allowed">Balustrade (Coming Soon)</a>
           <div class="border-t my-1"></div>
+          <a href="team.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Meet the Team</a>
+          <a href="settings.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Settings</a>
           <button onclick="logoutUser()" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100">Log Out</button>
         </div>
       </div>
@@ -53,22 +60,23 @@
     </div>
   </header>
 
-  <!-- Main Chat -->
+  <!-- Main Chat Section -->
   <main class="flex flex-col items-center flex-1 p-4">
     <div id="kaiReply" class="w-full max-w-2xl mb-4 p-4 bg-white border rounded shadow space-y-4"></div>
+
     <div class="w-full max-w-2xl p-4 bg-white shadow-md border-t flex items-center space-x-2">
       <input id="askInput" type="text" placeholder="Type your question..." class="flex-1 border p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" />
       <button id="submitBtn" class="bg-black text-white px-6 py-2 rounded-lg hover:bg-gray-900 transition">Submit</button>
     </div>
 
-    <!-- Profile Section -->
+    <!-- Kai Profile Section -->
     <div class="max-w-2xl w-full bg-white rounded-2xl shadow-lg p-6 mt-8">
-      <img src="https://i.imgur.com/uYWtV9r.png" alt="Kai Marlow Profile" class="mx-auto mb-4 w-48 h-72 object-cover bg-white p-2 rounded-2xl shadow" />
+      <img src="https://i.imgur.com/uYWtV9r_d.png" alt="Kai Marlow Profile" class="mx-auto mb-4 w-48 h-72 object-cover bg-white p-2 rounded-2xl shadow" />
       <h2 class="text-2xl font-bold text-center kaymar-green mb-4">Who is Kai?</h2>
       <p class="text-gray-700 text-center mb-4">
         Kai Marlow is your trusted mate in the building world.<br />
-        With over 20 years of hands-on experience across Australia, the UK, the USA, and beyond, Kai offers fast, down-to-earth advice on construction, carpentry, materials, and design.<br />
-        Whether you're a homeowner starting a renovation or a tradie chasing specs — <strong>Ask Kai</strong>.
+        With 20+ years on the tools across Australia, the UK, and USA — he delivers fast, code-correct advice on framing, specs, timber, quotes, and more.<br />
+        Whether you're a seasoned tradie or DIY weekend warrior, <strong>Ask Kai</strong>.
       </p>
     </div>
   </main>
@@ -85,7 +93,7 @@
     <p class="text-xs text-gray-400 mt-2">Built with coding support from Jack Cooper</p>
   </footer>
 
-  <!-- Script -->
+  <!-- Scripts -->
   <script>
     const user = sessionStorage.getItem('askkaiUser');
     if (!user) window.location.href = 'signin.html';
@@ -98,7 +106,7 @@
       role: "system",
       content: `You are Kai Marlow — a friendly, straight-talking Aussie tradie with 20+ years experience in carpentry, construction, and residential building.
 
-Use metric units and follow Australian codes: NCC, AS1684, AS1170. Speak clearly. If quoting, give disclaimers. Never say you're AI.`
+Use metric units and follow Australian codes: NCC, AS1684, AS1170. Speak clearly. If quoting, give disclaimers. Never say you're AI. Always ask for location, timber size, spacing, product specs when quoting or calculating material.`
     }];
 
     document.getElementById('submitBtn').addEventListener('click', async () => {
@@ -108,7 +116,7 @@ Use metric units and follow Australian codes: NCC, AS1684, AS1170. Speak clearly
       if (!userQuestion) return;
 
       if (!isMark && promptCount >= MAX_FREE_PROMPTS) {
-        alert("You’ve hit your 10 free prompts, mate. Time to upgrade.");
+        alert("You've used your 10 free prompts. Time to upgrade.");
         window.location.href = 'upgrade.html';
         return;
       }
