@@ -2,62 +2,45 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Ask Kai – Quote Generator</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Quote Generator – Ask Kai</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <style>
-    html, body { height: 100%; margin: 0; padding: 0; display: flex; flex-direction: column; }
-    #kaiReply { max-height: 60vh; overflow-y: auto; }
-    .blinking-cursor {
-      display: inline-block;
-      width: 10px;
-      height: 1em;
-      background-color: #7AC142;
-      margin-left: 4px;
-      animation: blink 1s steps(2, start) infinite;
-    }
-    @keyframes blink {
-      0%, 100% { opacity: 0; }
-      50% { opacity: 1; }
-    }
+    #quoteBox { max-height: 50vh; overflow-y: auto; white-space: pre-wrap; }
   </style>
 </head>
-<body class="bg-white text-gray-800">
+<body class="bg-gray-100 text-gray-800">
+
   <!-- Banner -->
   <div class="w-full bg-black">
-    <img src="https://i.imgur.com/nDIhtRr.png" alt="Kaymar Banner" class="w-full max-h-24 object-contain mx-auto" />
+    <img src="https://i.imgur.com/nDIhtRr.png" alt="Kaymar Banner" class="w-full max-h-24 object-contain mx-auto">
   </div>
 
   <!-- Header -->
   <header class="bg-white shadow p-4 flex items-center justify-between">
-    <h1 class="text-xl font-bold text-green-600">Ask Kai – Quote Generator</h1>
+    <h1 class="text-xl font-bold text-green-600">Quote Generator</h1>
     <a href="index.html" class="text-sm text-blue-600 hover:underline">Back to Chat</a>
   </header>
 
-  <!-- Chat Area -->
-  <main class="flex flex-col items-center flex-1 p-4">
-    <div class="mb-4 w-full max-w-2xl text-sm text-gray-500">
-      Please describe your job in detail. <strong>Be very specific</strong> – location, materials, sizes, etc.
-    </div>
-    <div id="kaiReply" class="w-full max-w-2xl mb-4 p-4 bg-white border rounded shadow space-y-4"></div>
-    <div class="w-full max-w-2xl p-4 bg-white shadow-md border-t flex items-center space-x-2">
-      <input id="askInput" type="text" placeholder="Describe your project..." class="flex-1 border p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" />
-      <button id="submitBtn" class="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-900 transition text-sm">Submit</button>
+  <!-- Prompt Input -->
+  <main class="max-w-3xl mx-auto py-8 px-4 space-y-6">
+    <div class="bg-white p-6 rounded-xl shadow">
+      <label for="quoteInput" class="block font-semibold mb-2">Describe your job in detail. <span class="text-red-600">Be very specific</span> — location, materials, sizes, etc.</label>
+      <textarea id="quoteInput" rows="4" class="w-full border rounded-lg p-3" placeholder="e.g. 4x4 deck, 600mm off ground, treated pine stumps, 90x45 joists, in NSW"></textarea>
+      <button id="submitQuote" class="mt-4 w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg">Generate Materials List</button>
     </div>
 
-    <!-- Kai Profile -->
-    <div class="max-w-2xl w-full bg-white rounded-2xl shadow-lg p-6 mt-8">
-      <img src="https://i.imgur.com/uYWtV9r.png" alt="Kai Marlow" class="mx-auto mb-4 w-48 h-72 object-cover bg-white p-2 rounded-2xl shadow" />
-      <h2 class="text-2xl font-bold text-center text-green-600 mb-4">Who is Kai?</h2>
-      <p class="text-gray-700 text-center">
-        With 20+ years across carpentry and building in Australia, Kai gives sharp, clear advice backed by code, tools, and know-how.<br>
-        He’s your mate on-site, online. Ask him anything.
-      </p>
+    <!-- Quote Output -->
+    <div id="quoteBox" class="bg-white p-6 rounded-xl shadow text-sm text-gray-800"></div>
+
+    <!-- Export Disclaimer -->
+    <div class="bg-yellow-50 border-l-4 border-yellow-500 text-yellow-700 p-4 rounded shadow">
+      <p>This estimate is for materials only. Always confirm with your supplier or engineer before purchasing. Export feature coming soon.</p>
     </div>
   </main>
 
   <!-- Footer -->
-  <footer class="text-center text-gray-500 text-sm p-4">
+  <footer class="text-center text-gray-500 text-sm p-6">
     &copy; 2025 Kaymar Construction | Powered by Ask Kai
     <div class="flex justify-center space-x-6 mt-2">
       <a href="https://www.instagram.com/askkai_official" class="text-blue-600 hover:underline">Instagram</a>
@@ -66,94 +49,27 @@
       <a href="https://www.youtube.com/@askkai_official" class="text-blue-600 hover:underline">YouTube</a>
       <a href="https://www.threads.net/@askkai_official" class="text-blue-600 hover:underline">Threads</a>
     </div>
-    <p class="text-xs text-gray-400 mt-2">Built with coding support from Jack Cooper</p>
   </footer>
 
   <!-- JS -->
   <script>
-    const user = sessionStorage.getItem('askkaiUser');
-    if (!user) window.location.href = 'signin.html';
+    document.getElementById('submitQuote').addEventListener('click', async () => {
+      const input = document.getElementById('quoteInput').value.trim();
+      const quoteBox = document.getElementById('quoteBox');
+      if (!input) return;
 
-    const isMark = user === 'mark@kaymarconstruction.com';
-    let promptCount = parseInt(localStorage.getItem('promptCount') || '0');
-    const MAX_FREE_PROMPTS = 10;
+      quoteBox.innerHTML = "<span class='text-green-600 font-medium'>Kai is generating your materials list...</span>";
 
-    const messages = [{
-      role: "system",
-      content: "You are Kai, a senior estimator and builder. Always ask for detailed project info, estimate all parts of structure: stumps, bearers, joists, decking, fasteners. Output in markdown dot-point format."
-    }];
+      const response = await fetch("https://askkai-backend-clean.onrender.com/quote", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ messages: [ { role: "user", content: input } ] })
+      });
 
-    document.getElementById('submitBtn').addEventListener('click', async () => {
-      const askInput = document.getElementById('askInput');
-      const kaiReply = document.getElementById('kaiReply');
-      const userQuestion = askInput.value.trim();
-      if (!userQuestion) return;
-
-      if (!isMark && promptCount >= MAX_FREE_PROMPTS) {
-        alert("You’ve hit your free limit. Time to upgrade.");
-        window.location.href = 'upgrade.html';
-        return;
-      }
-
-      messages.push({ role: "user", content: userQuestion });
-
-      const qaContainer = document.createElement('div');
-      qaContainer.className = 'mb-6';
-
-      const userText = document.createElement('p');
-      userText.className = 'text-right text-blue-700 font-semibold mb-2';
-      userText.textContent = `You: ${userQuestion}`;
-      qaContainer.appendChild(userText);
-
-      const kaiText = document.createElement('p');
-      kaiText.className = 'text-left text-green-600 font-semibold whitespace-pre-wrap';
-      const cursor = document.createElement('span');
-      cursor.className = 'blinking-cursor';
-      kaiText.textContent = "Kai is thinking...";
-      kaiText.appendChild(cursor);
-      qaContainer.appendChild(kaiText);
-
-      kaiReply.appendChild(qaContainer);
-      kaiReply.scrollTop = kaiReply.scrollHeight;
-      askInput.value = "";
-
-      try {
-        const response = await fetch('https://askkai-backend-clean.onrender.com/quote', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ messages })
-        });
-
-        const data = await response.json();
-        const finalText = data.reply || "Kai’s stumped. Try again shortly.";
-
-        kaiText.textContent = "";
-        kaiText.appendChild(cursor);
-
-        let i = 0;
-        function typeNextChar() {
-          if (i < finalText.length) {
-            cursor.before(document.createTextNode(finalText.charAt(i)));
-            i++;
-            setTimeout(typeNextChar, 20);
-          } else {
-            cursor.remove();
-          }
-        }
-
-        setTimeout(typeNextChar, 300);
-        messages.push({ role: "assistant", content: finalText });
-
-        if (!isMark) {
-          promptCount++;
-          localStorage.setItem('promptCount', promptCount.toString());
-        }
-
-      } catch (error) {
-        console.error(error);
-        kaiText.textContent = "Error reaching Kai. Try again later.";
-      }
+      const data = await response.json();
+      quoteBox.textContent = data.reply || "Kai couldn’t generate a quote. Try again.";
     });
   </script>
+
 </body>
 </html>
