@@ -2,77 +2,84 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Quote Generator – Ask Kai</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <style>
-    .kaymar-green { color: #7AC142; }
+    .askkai-black { color: #000; }
+    .askkai-bg { background-color: #000; }
   </style>
 </head>
-<body class="bg-white text-gray-800">
+<body class="bg-white text-gray-800 min-h-screen flex flex-col">
 
-  <main class="max-w-3xl mx-auto p-8">
-    <h1 class="text-3xl font-bold text-center kaymar-green mb-6">Quick Quote Generator</h1>
-    <p class="text-center text-gray-600 mb-10">Estimate materials and labour for simple projects like decks, fences, pergolas and more.</p>
+  <!-- Header -->
+  <header class="bg-white shadow p-4 flex items-center justify-between">
+    <div class="flex items-center space-x-4">
+      <img src="https://i.imgur.com/zcqscCO_d.png?maxwidth=520&shape=thumb&fidelity=high" alt="Logo" class="h-10 w-auto"/>
+      <h1 class="text-xl font-bold askkai-black">Ask Kai Quote Generator</h1>
+    </div>
+    <a href="index.html" class="text-sm text-blue-600 hover:underline">Back to Chat</a>
+  </header>
 
-    <form id="quoteForm" class="space-y-6">
-      <div>
-        <label class="block font-semibold mb-1">Project Type</label>
-        <select class="w-full border p-3 rounded" id="projectType" required>
-          <option value="">Select...</option>
-          <option>Deck</option>
-          <option>Fence</option>
-          <option>Pergola</option>
-          <option>Renovation</option>
-        </select>
-      </div>
-
-      <div class="grid grid-cols-2 gap-4">
+  <!-- Main -->
+  <main class="flex-1 max-w-4xl mx-auto p-6">
+    <div class="bg-white p-6 rounded-lg shadow-lg">
+      <div class="flex flex-col md:flex-row items-center mb-6">
+        <img src="https://i.imgur.com/uYWtV9r_d.png?maxwidth=520&shape=thumb&fidelity=high" alt="Kai" class="w-32 h-48 object-cover rounded-xl shadow mr-6">
         <div>
-          <label class="block font-semibold mb-1">Length (m)</label>
-          <input type="number" id="length" min="0" class="w-full border p-3 rounded" required />
-        </div>
-        <div>
-          <label class="block font-semibold mb-1">Width (m)</label>
-          <input type="number" id="width" min="0" class="w-full border p-3 rounded" required />
+          <h2 class="text-2xl font-bold askkai-black mb-2">How Can I Help With Your Quote?</h2>
+          <p class="text-gray-700">Describe your job and I’ll calculate materials, quantities, and rough estimates using real Aussie specs and trade logic.</p>
         </div>
       </div>
 
-      <div>
-        <label class="block font-semibold mb-1">Location</label>
-        <input type="text" id="location" placeholder="e.g. Brisbane, VIC, Sydney" class="w-full border p-3 rounded" />
-      </div>
+      <textarea id="projectInput" rows="4" class="w-full border p-4 rounded-lg mb-4" placeholder="E.g. I need to build a 6m x 4m deck, what timber do I need?"></textarea>
+      <button onclick="getQuote()" class="bg-black text-white px-6 py-2 rounded hover:bg-gray-800 transition">Generate Quote</button>
 
-      <button type="submit" class="w-full bg-black text-white py-3 rounded hover:bg-gray-900 transition">Generate Quote</button>
-    </form>
-
-    <div id="quoteResult" class="mt-10 bg-gray-100 p-6 rounded shadow hidden">
-      <h2 class="text-xl font-bold mb-2 kaymar-green">Estimated Quote</h2>
-      <p class="text-gray-700" id="quoteOutput">Your estimate will appear here.</p>
+      <div id="quoteResult" class="mt-6 bg-gray-100 p-4 rounded-lg text-gray-800 whitespace-pre-wrap"></div>
     </div>
   </main>
 
+  <!-- Footer -->
+  <footer class="text-center text-gray-500 text-sm p-4">
+    &copy; 2025 Kaymar Construction | Powered by Ask Kai
+  </footer>
+
+  <!-- Script -->
   <script>
-    document.getElementById('quoteForm').addEventListener('submit', function (e) {
-      e.preventDefault();
+    async function getQuote() {
+      const input = document.getElementById('projectInput').value.trim();
+      if (!input) return;
 
-      const type = document.getElementById('projectType').value;
-      const length = parseFloat(document.getElementById('length').value);
-      const width = parseFloat(document.getElementById('width').value);
-      const area = length * width;
-      const location = document.getElementById('location').value.trim() || "your region";
+      const quoteResult = document.getElementById('quoteResult');
+      quoteResult.textContent = "Kai is working on your quote...";
 
-      let pricePerSqm = 350;
-      if (type === "Fence") pricePerSqm = 180;
-      if (type === "Pergola") pricePerSqm = 400;
+      try {
+        const response = await fetch('https://askkai-backend-clean.onrender.com/ask', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            messages: [
+              {
+                role: "system",
+                content: `You are Kai Marlow — a seasoned Australian building expert and quoting assistant.
+Always ask clarifying questions before estimating. Use metric units and local building standards. Your goal is to help tradies and DIYers by calculating material quantities, timber sizes, and rough costs using logic and known product specs (e.g. Bunnings AU). Keep responses under 80 words per section.`
+              },
+              {
+                role: "user",
+                content: input
+              }
+            ]
+          })
+        });
 
-      const estimate = area * pricePerSqm;
-      const resultBox = document.getElementById('quoteResult');
-      const quoteOutput = document.getElementById('quoteOutput');
+        const data = await response.json();
+        quoteResult.textContent = data.reply || "No response from Kai. Try again later.";
 
-      quoteOutput.innerHTML = `Based on a <strong>${area.toFixed(1)} m²</strong> ${type.toLowerCase()} in <strong>${location}</strong>, your estimated project cost is <strong>$${estimate.toLocaleString()}</strong>.`;
-      resultBox.classList.remove('hidden');
-    });
+      } catch (err) {
+        console.error(err);
+        quoteResult.textContent = "There was an error generating the quote.";
+      }
+    }
   </script>
 </body>
 </html>
