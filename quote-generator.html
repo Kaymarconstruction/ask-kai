@@ -7,15 +7,41 @@
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
   <style>
     .kaymar-green { color: #7AC142; }
-    .kaymar-black { color: #000000; }
     html, body { height: 100%; margin: 0; padding: 0; display: flex; flex-direction: column; }
-    #quoteOutput { max-height: 60vh; overflow-y: auto; }
+    .blinking-cursor {
+      display: inline-block;
+      width: 10px;
+      height: 1em;
+      background-color: #7AC142;
+      margin-left: 4px;
+      animation: blink 1s steps(2, start) infinite;
+    }
+    @keyframes blink {
+      0%, 100% { opacity: 0; }
+      50% { opacity: 1; }
+    }
+    .quote-container {
+      background-color: #f9f9f9;
+      padding: 20px;
+      margin-top: 20px;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+    }
+    .quote-heading {
+      font-size: 1.25rem;
+      font-weight: 600;
+      margin-bottom: 10px;
+    }
+    .quote-text {
+      font-size: 1.125rem;
+      color: #333;
+    }
   </style>
 </head>
 <body class="bg-white text-gray-800">
 
   <!-- Header -->
-  <header class="bg-black shadow p-4 flex items-center justify-between">
+  <header class="bg-white shadow p-4 flex items-center justify-between">
     <img src="https://i.imgur.com/zcqscCO.png" alt="Kaymar Logo" class="h-12" />
     <div class="flex items-center space-x-4">
       <button onclick="toggleMenu()" class="bg-black text-white p-2 rounded-lg hover:bg-gray-800 transition">
@@ -24,33 +50,37 @@
         </svg>
       </button>
       <div id="menuDropdown" class="hidden absolute mt-2 w-56 bg-white border border-gray-300 shadow-lg rounded-md z-10">
-        <a href="index.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Back to Chat</a>
+        <a href="upgrade.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Upgrade</a>
+        <a href="shop.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Shop</a>
         <a href="quote-generator.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Quote Generator</a>
         <a href="settings.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Settings</a>
+        <a href="apprentice-hub.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Apprentice Hub</a>
+        <div class="border-t my-1"></div>
         <button onclick="logoutUser()" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100">Log Out</button>
       </div>
-      <h1 class="text-xl font-bold kaymar-green">Ask Kai – Quote Generator</h1>
+      <h1 class="text-xl font-bold kaymar-green">Ask Kai</h1>
     </div>
   </header>
 
-  <!-- Quote Generator -->
+  <!-- Main Content -->
   <main class="flex flex-col items-center flex-1 p-4">
-    <div class="w-full max-w-2xl p-4 bg-white shadow-md border-t flex items-center space-x-2">
-      <input id="projectDetails" type="text" placeholder="Describe your project..." class="flex-1 border p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" />
-      <button id="submitBtn" class="bg-black text-white px-6 py-2 rounded-lg hover:bg-gray-900 transition">Generate Quote</button>
+    <h1 class="text-3xl font-bold kaymar-green mb-8">Quote Generator</h1>
+
+    <!-- User Question Input -->
+    <div class="max-w-2xl w-full bg-white rounded-2xl shadow-lg p-6 mb-8">
+      <input id="askInput" type="text" placeholder="Describe your project details..." class="w-full border p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" />
+      <button id="submitBtn" class="bg-black text-white px-6 py-2 rounded-lg hover:bg-gray-900 transition mt-4">Generate Quote</button>
     </div>
 
-    <div id="quoteOutput" class="w-full max-w-2xl mb-4 p-4 bg-white border rounded shadow space-y-4"></div>
-
-    <!-- Materials Section -->
-    <div class="max-w-2xl w-full bg-white rounded-2xl shadow-lg p-6 mt-8">
-      <h2 class="text-2xl font-bold text-center kaymar-green mb-4">Generated Quote</h2>
-      <div id="quoteDetails" class="text-gray-700 text-center mb-4">
-        <!-- Generated quote will appear here -->
-      </div>
-      <p class="text-center text-sm text-gray-500">*Price is for materials only. Double check for accuracy, this is a rough guide.</p>
-      <p class="text-center text-sm text-gray-500">Copy and paste this into your accounting software (Xero, MYOB, QuickBooks) for easy invoicing.</p>
+    <!-- Generated Quote Output -->
+    <div id="generatedQuote" class="quote-container hidden">
+      <h2 class="quote-heading">Your Generated Quote:</h2>
+      <p id="quoteText" class="quote-text"></p>
+      <p class="quote-text mt-4">Note: This quote is for materials only. Please double-check all measurements and quantities for accuracy as this is a rough guide. Copy and paste the generated quote into your accounting software (QuickBooks, Xero, MYOB) to proceed with invoicing.</p>
     </div>
+
+    <!-- Kai's Chat Section -->
+    <div id="kaiReply" class="w-full max-w-2xl mb-4 p-4 bg-white border rounded shadow space-y-4"></div>
   </main>
 
   <footer class="text-center text-gray-500 text-sm p-4">
@@ -58,8 +88,6 @@
     <div class="flex justify-center space-x-6 mt-4">
       <a href="https://www.instagram.com/askkai_official" target="_blank" class="text-blue-600 hover:underline">Instagram</a>
       <a href="https://www.facebook.com/askkai_official" target="_blank" class="text-blue-600 hover:underline">Facebook</a>
-      <a href="https://www.tiktok.com/@askkai_official" target="_blank" class="text-blue-600 hover:underline">TikTok</a>
-      <a href="https://www.youtube.com/@askkai_official" target="_blank" class="text-blue-600 hover:underline">YouTube</a>
     </div>
   </footer>
 
@@ -73,13 +101,14 @@
 
     const messages = [{
       role: "system",
-      content: `You are Kai Marlow — an experienced Aussie tradie. Always ask the user for their location, project details, and required materials. Be practical and give concise answers. Use metric, follow local codes, and provide estimated quantities.`
+      content: `You are Kai Marlow — a highly experienced Aussie chippy. Always ask location, job details, code concerns. Be practical and sharp. Use metric, explain clearly, never say you're AI. Keep answers between 20–80 words.`
     }];
 
     document.getElementById('submitBtn').addEventListener('click', async () => {
-      const projectDetails = document.getElementById('projectDetails').value.trim();
-      const quoteOutput = document.getElementById('quoteOutput');
-      if (!projectDetails) return;
+      const askInput = document.getElementById('askInput');
+      const kaiReply = document.getElementById('kaiReply');
+      const userQuestion = askInput.value.trim();
+      if (!userQuestion) return;
 
       if (!isMark && promptCount >= MAX_FREE_PROMPTS) {
         alert("You’ve hit your 10 free prompts. Time to upgrade.");
@@ -87,14 +116,14 @@
         return;
       }
 
-      messages.push({ role: "user", content: projectDetails });
+      messages.push({ role: "user", content: userQuestion });
 
       const qaContainer = document.createElement('div');
       qaContainer.className = 'mb-6';
 
       const userText = document.createElement('p');
       userText.className = 'text-right text-blue-700 font-semibold mb-2';
-      userText.textContent = `You: ${projectDetails}`;
+      userText.textContent = `You: ${userQuestion}`;
       qaContainer.appendChild(userText);
 
       const kaiText = document.createElement('p');
@@ -105,9 +134,9 @@
       kaiText.appendChild(cursor);
       qaContainer.appendChild(kaiText);
 
-      quoteOutput.appendChild(qaContainer);
-      quoteOutput.scrollTop = quoteOutput.scrollHeight;
-      document.getElementById('projectDetails').value = "";
+      kaiReply.appendChild(qaContainer);
+      kaiReply.scrollTop = kaiReply.scrollHeight;
+      askInput.value = "";
 
       try {
         const response = await fetch('https://askkai-backend-clean.onrender.com/ask', {
@@ -141,8 +170,9 @@
           localStorage.setItem('promptCount', promptCount.toString());
         }
 
-        // Update the quote output below the chat with generated materials
-        document.getElementById('quoteDetails').innerHTML = finalText;
+        // Show the generated quote below the chat
+        document.getElementById('generatedQuote').classList.remove('hidden');
+        document.getElementById('quoteText').textContent = `Materials: [materials required here]`;
 
       } catch (error) {
         console.error(error);
