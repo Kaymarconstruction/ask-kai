@@ -36,11 +36,7 @@
     <!-- Email Export -->
     <div id="emailExport" class="hidden bg-white p-6 rounded-xl shadow">
       <label class="block text-sm font-semibold mb-2">Select a supplier to email this quote:</label>
-      <select id="supplierSelect" class="w-full mb-4 border p-2 rounded">
-        <option value="">-- Choose Supplier Email --</option>
-        <option value="supplier1@example.com">ABC Timber – supplier1@example.com</option>
-        <option value="supplier2@example.com">BuildMate – supplier2@example.com</option>
-      </select>
+      <select id="supplierSelect" class="w-full mb-4 border p-2 rounded"></select>
       <button id="emailSupplierBtn" class="bg-black text-white px-4 py-2 rounded hover:bg-gray-900 transition">Email Supplier</button>
     </div>
 
@@ -65,6 +61,24 @@
   <!-- JS -->
   <script>
     let generatedQuote = '';
+
+    window.addEventListener('DOMContentLoaded', () => {
+      const stored = localStorage.getItem('supplierEmails') || '';
+      const suppliers = stored.split('\n').map(e => e.trim()).filter(Boolean);
+      const select = document.getElementById('supplierSelect');
+
+      const defaultOpt = document.createElement('option');
+      defaultOpt.value = '';
+      defaultOpt.textContent = '-- Choose Supplier Email --';
+      select.appendChild(defaultOpt);
+
+      suppliers.forEach(email => {
+        const opt = document.createElement('option');
+        opt.value = email;
+        opt.textContent = email;
+        select.appendChild(opt);
+      });
+    });
 
     document.getElementById('submitQuote').addEventListener('click', async () => {
       const input = document.getElementById('quoteInput').value.trim();
@@ -94,14 +108,7 @@
       if (!supplierEmail) return alert('Please select a supplier.');
 
       const subject = encodeURIComponent("Material Quote Request");
-      const body = encodeURIComponent(`Hi,
-
-I would like a quote for the following materials to be delivered to this address on this date:
-
-${generatedQuote}
-
-Regards,
-[Your Name]`);
+      const body = encodeURIComponent(`Hi,\n\nI would like a quote for the following materials to be delivered to this address on this date:\n\n${generatedQuote}\n\nRegards,\n[Your Name]`);
 
       const mailto = `mailto:${supplierEmail}?subject=${subject}&body=${body}`;
       window.location.href = mailto;
