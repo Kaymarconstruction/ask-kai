@@ -28,10 +28,8 @@
       <label for="quoteInput" class="block font-semibold mb-2">
         Describe your job in detail. <span class="text-red-600">Be very specific</span> — location, materials, sizes, etc.
       </label>
-      <textarea id="quoteInput" rows="4" class="w-full border rounded-lg p-3" placeholder="e.g. 4x4 deck, 600mm off ground, treated pine stumps, 90x45 joists, in NSW"></textarea>
-      <button id="submitQuote" class="mt-4 w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg">
-        Generate Materials List
-      </button>
+      <textarea id="quoteInput" rows="4" class="w-full border rounded-lg p-3" placeholder="e.g. 7.2x3.6m deck, 600mm high, treated pine stumps, 140x45 double bearers, 90x45 joists, composite decking, VIC"></textarea>
+      <button id="submitQuote" class="mt-4 w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg">Generate Materials List</button>
     </div>
 
     <!-- Quote Output -->
@@ -102,10 +100,16 @@
       });
 
       const data = await response.json();
-      generatedQuote = data.reply || "Kai couldn’t generate a quote. Try again.";
-      quoteBox.textContent = generatedQuote;
+      let reply = data.reply || "Kai couldn’t generate a quote. Try again.";
 
-      if (generatedQuote.includes('✓') || generatedQuote.length > 10) {
+      reply = reply
+        .replace(/^(Absolutely.*?)?(Here's|Here is).*?estimate.*?:\n?/is, '')
+        .replace(/\n?This estimate is for materials only\..*$/is, '')
+        .trim();
+
+      generatedQuote = reply;
+      quoteBox.textContent = reply;
+      if (reply.length > 10) {
         emailExport.classList.remove('hidden');
       }
     });
@@ -116,10 +120,10 @@
 
       const subject = encodeURIComponent("Material Quote Request");
       const body = encodeURIComponent(`Hi,\n\nI would like a quote for the following materials to be delivered to this address on this date:\n\n${generatedQuote}\n\nRegards,\n[Your Name]`);
+
       const mailto = `mailto:${supplierEmail}?subject=${subject}&body=${body}`;
       window.location.href = mailto;
     });
   </script>
-
 </body>
 </html>
