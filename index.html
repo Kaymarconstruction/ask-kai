@@ -24,33 +24,40 @@
   </style>
 </head>
 <body class="bg-white text-gray-800">
+
+  <!-- Banner -->
+  <div class="w-full bg-black">
+    <img src="https://i.imgur.com/nDIhtRr.png" alt="Kaymar Construction Banner" class="w-full max-h-24 object-contain mx-auto" />
+  </div>
+
   <!-- Header -->
   <header class="bg-white shadow p-4 flex items-center justify-between">
-    <img src="https://i.imgur.com/zcqscCO.png" alt="Kaymar Banner" class="h-12" />
-    <div class="relative">
-      <button onclick="toggleMenu()" class="bg-black text-white p-2 rounded-lg hover:bg-gray-800 transition">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-        </svg>
-      </button>
-      <div id="menuDropdown" class="hidden absolute mt-2 w-64 bg-white border border-gray-300 shadow-lg rounded-md z-10">
-        <a href="upgrade.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Upgrade</a>
-        <a href="shop.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Shop</a>
-        <a href="quote-generator.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Quote Generator</a>
-        <a href="settings.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Settings</a>
-        <a href="apprentice-hub.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Apprentice Hub</a>
-        <a href="team.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Meet the Team</a>
-        <div class="border-t my-2"></div>
-        <div class="px-4 py-2 text-sm font-semibold text-gray-700">Calculators</div>
-        <a href="rafter-calc.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Rafter Length</a>
-        <a href="decking-calculator.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Decking Boards</a>
-        <a href="span-tables.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Span Tables</a>
-        <a href="#" class="block px-4 py-2 text-sm text-gray-400 cursor-not-allowed">Stairs (Coming Soon)</a>
-        <a href="#" class="block px-4 py-2 text-sm text-gray-400 cursor-not-allowed">Balustrade (Coming Soon)</a>
-        <a href="#" class="block px-4 py-2 text-sm text-gray-400 cursor-not-allowed">Volume Calculator (Coming Soon)</a>
-        <div class="border-t my-2"></div>
-        <button onclick="logoutUser()" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100">Log Out</button>
+    <div class="flex items-center space-x-4">
+      <div class="relative">
+        <button onclick="toggleMenu()" class="bg-black text-white p-2 rounded-lg hover:bg-gray-800 transition">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+        <div id="menuDropdown" class="hidden absolute mt-2 w-56 bg-white border border-gray-300 shadow-lg rounded-md z-10">
+          <a href="upgrade.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Upgrade</a>
+          <a href="shop.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Shop</a>
+          <a href="quote-generator.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Quote Generator</a>
+          <a href="settings.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Settings</a>
+          <a href="apprentice-hub.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Apprentice Hub</a>
+          <a href="team.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Meet the Team</a>
+          <div class="border-t my-1"></div>
+          <div class="px-4 py-2 text-sm font-semibold text-gray-700">Calculators</div>
+          <a href="rafter-calc.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Rafter Length</a>
+          <a href="decking-calculator.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Decking Boards</a>
+          <a href="#" class="block px-4 py-2 text-sm text-gray-400 cursor-not-allowed">Stairs (Coming Soon)</a>
+          <a href="#" class="block px-4 py-2 text-sm text-gray-400 cursor-not-allowed">Balustrade (Coming Soon)</a>
+          <a href="#" class="block px-4 py-2 text-sm text-gray-400 cursor-not-allowed">Volume & Soil (Coming Soon)</a>
+          <div class="border-t my-1"></div>
+          <button onclick="logoutUser()" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100">Log Out</button>
+        </div>
       </div>
+      <h1 class="text-xl font-bold kaymar-green">Ask Kai</h1>
     </div>
   </header>
 
@@ -67,7 +74,8 @@
       <img src="https://i.imgur.com/uYWtV9r.png" alt="Kai Marlow" class="mx-auto mb-4 w-48 h-72 object-cover bg-white p-2 rounded-2xl shadow" />
       <h2 class="text-2xl font-bold text-center kaymar-green mb-4">Who is Kai?</h2>
       <p class="text-gray-700 text-center">
-        Kai Marlow is your go-to mate on-site. With over 20 years of experience in residential and commercial construction across Australia and beyond, he's quick, sharp, and here to help.
+        With 20+ years across carpentry and building in Australia, Kai gives sharp, clear advice backed by code, tools, and know-how.<br>
+        He’s your mate on-site, online. Ask him anything.
       </p>
     </div>
   </main>
@@ -76,13 +84,14 @@
   <footer class="text-center text-gray-500 text-sm p-4">
     &copy; 2025 Kaymar Construction | Powered by Ask Kai
     <div class="flex justify-center space-x-6 mt-2">
-      <a href="https://instagram.com/askkai_official" class="text-blue-600 hover:underline">Instagram</a>
-      <a href="https://facebook.com/askkai_official" class="text-blue-600 hover:underline">Facebook</a>
+      <a href="https://www.instagram.com/askkai_official" class="text-blue-600 hover:underline">Instagram</a>
+      <a href="https://www.facebook.com/askkai_official" class="text-blue-600 hover:underline">Facebook</a>
+      <a href="https://www.youtube.com/@askkai_official" class="text-blue-600 hover:underline">YouTube</a>
     </div>
     <p class="text-xs text-gray-400 mt-2">Built with coding support from Jack Cooper</p>
   </footer>
 
-  <!-- Script -->
+  <!-- JS -->
   <script>
     const user = sessionStorage.getItem('askkaiUser');
     if (!user) window.location.href = 'signin.html';
@@ -93,7 +102,7 @@
 
     const messages = [{
       role: "system",
-      content: `You are Kai Marlow — expert Aussie builder with 20+ years experience. Use metric units, ask about location, timber specs, and council rules. Always ask follow-up questions to confirm job details.`
+      content: `You are Kai Marlow — a smart, practical Aussie chippy with 20+ years of site experience. Ask the user for their location, building type, timber dimensions, and codes. Provide 20–80 word responses using metric, based on region. Stay code-compliant and fast.`
     }];
 
     document.getElementById('submitBtn').addEventListener('click', async () => {
@@ -138,7 +147,8 @@
         });
 
         const data = await response.json();
-        const finalText = data.reply || "Hmm, couldn't find an answer!";
+        const finalText = data.reply || "Kai’s stumped. Try again shortly.";
+
         kaiText.textContent = "";
         kaiText.appendChild(cursor);
 
@@ -169,14 +179,12 @@
 
     function logoutUser() {
       sessionStorage.removeItem('askkaiUser');
-      localStorage.removeItem('promptCount');
-      localStorage.removeItem('kaiTokens');
+      localStorage.clear();
       window.location.href = 'landing.html';
     }
 
     function toggleMenu() {
-      const menu = document.getElementById('menuDropdown');
-      menu.classList.toggle('hidden');
+      document.getElementById('menuDropdown').classList.toggle('hidden');
     }
   </script>
 </body>
