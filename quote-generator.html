@@ -2,11 +2,13 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Quote Generator – Ask Kai</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
   <style>
     .kaymar-green { color: #7AC142; }
+    html, body { height: 100%; margin: 0; padding: 0; display: flex; flex-direction: column; }
+    #kaiReply { max-height: 60vh; overflow-y: auto; }
     .blinking-cursor {
       display: inline-block;
       width: 10px;
@@ -22,65 +24,94 @@
   </style>
 </head>
 <body class="bg-white text-gray-800">
-
-  <!-- Header -->
-  <header class="bg-black p-4 flex items-center justify-between">
-    <img src="https://i.imgur.com/zcqscCO_d.png" alt="Kaymar Logo" class="h-10" />
-    <h1 class="text-xl font-bold text-white">Ask Kai – Quote Generator</h1>
+  <header class="bg-black text-white p-4 flex justify-between items-center">
+    <img src="https://i.imgur.com/zcqscCO_d.png" alt="Kaymar Logo" class="h-10">
+    <h1 class="text-lg font-bold kaymar-green">Quote Generator – Ask Kai</h1>
   </header>
 
-  <!-- Main -->
-  <main class="flex flex-col items-center p-6">
-    <img src="https://i.imgur.com/uYWtV9r_d.png" alt="Kai" class="w-36 h-56 rounded-xl shadow mb-4" />
-    <p class="text-center max-w-xl text-gray-600 mb-6">
-      Describe your project and Kai will estimate the materials you’ll need.
-    </p>
+  <main class="flex flex-col items-center flex-1 p-4">
+    <div id="kaiReply" class="w-full max-w-2xl mb-4 p-4 bg-white border rounded shadow space-y-4"></div>
 
-    <div class="w-full max-w-2xl p-4 bg-white border rounded shadow space-y-4">
-      <textarea id="quoteInput" placeholder="e.g. I need a 6m x 3m deck using 140mm boards" class="w-full border p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" rows="3"></textarea>
-      <button id="quoteSubmit" class="bg-black text-white px-6 py-2 rounded-lg hover:bg-gray-900 transition">Generate Quote</button>
+    <div class="w-full max-w-2xl p-4 bg-white shadow-md border-t flex items-center space-x-2">
+      <input id="askInput" type="text" placeholder="Describe your project..." class="flex-1 border p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" />
+      <button id="submitBtn" class="bg-black text-white px-6 py-2 rounded-lg hover:bg-gray-900 transition">Submit</button>
+    </div>
 
-      <div id="quoteReply" class="text-left text-gray-800 whitespace-pre-wrap"></div>
-      <p class="text-xs text-gray-500 mt-4 border-t pt-2">
-        This quote is an approximate guide for materials only. Always confirm local specs and supplier availability. Copy and paste this into your accounting software.
-      </p>
+    <div id="quoteSummary" class="max-w-2xl w-full bg-gray-50 border mt-6 p-4 rounded shadow hidden">
+      <h2 class="text-xl font-bold mb-2 text-green-700">Materials Summary (Rough Guide)</h2>
+      <pre id="quoteContent" class="whitespace-pre-wrap text-sm text-gray-700"></pre>
+      <p class="text-xs text-gray-500 mt-2">Note: This is an estimated material list based on limited info. Double check with your local supplier or builder. Prices not included.</p>
     </div>
   </main>
 
-  <!-- Script -->
+  <footer class="text-center text-gray-500 text-sm p-4">
+    &copy; 2025 Kaymar Construction | Powered by Ask Kai
+  </footer>
+
   <script>
-    const quoteSubmit = document.getElementById("quoteSubmit");
-    const quoteInput = document.getElementById("quoteInput");
-    const quoteReply = document.getElementById("quoteReply");
+    const submitBtn = document.getElementById("submitBtn");
+    const askInput = document.getElementById("askInput");
+    const kaiReply = document.getElementById("kaiReply");
+    const quoteSummary = document.getElementById("quoteSummary");
+    const quoteContent = document.getElementById("quoteContent");
 
-    quoteSubmit.addEventListener("click", async () => {
-      const question = quoteInput.value.trim();
-      if (!question) return;
+    const quoteMessages = [{
+      role: "system",
+      content: `You are Kai Marlow — an experienced Aussie carpenter and quote assistant.
+Always ask for:
+- Location (to check building code / footing depth)
+- Board sizes (e.g. 90mm or 140mm, 5.4m composite etc)
+- Ground clearance / height
+- Subfloor materials (timber type, stump spacing)
+- Fixings, hardware, brand preferences
 
-      quoteReply.textContent = "Kai is calculating...";
-      const messages = [
-        {
-          role: "system",
-          content: `You are Kai Marlow, a professional Aussie builder who generates clear, material-only quotes based on user input. Always ask for needed dimensions, product types, or board widths if missing.`
-        },
-        {
-          role: "user",
-          content: question
-        }
-      ];
+Reply in short, clear chunks. Use metric and Australian codes. For any quote, return a material list only when you have enough detail.
+
+ALWAYS provide a short disclaimer about checking local code and verifying quote before ordering.`
+    }];
+
+    submitBtn.addEventListener("click", async () => {
+      const userInput = askInput.value.trim();
+      if (!userInput) return;
+
+      quoteMessages.push({ role: "user", content: userInput });
+
+      const qa = document.createElement("div");
+      qa.className = "mb-6";
+      const userBubble = document.createElement("p");
+      userBubble.className = "text-right text-blue-700 font-semibold mb-2";
+      userBubble.textContent = `You: ${userInput}`;
+      qa.appendChild(userBubble);
+
+      const kaiBubble = document.createElement("p");
+      kaiBubble.className = "text-left text-green-700 font-semibold";
+      kaiBubble.textContent = "Kai is working out the details...";
+      qa.appendChild(kaiBubble);
+
+      kaiReply.appendChild(qa);
+      kaiReply.scrollTop = kaiReply.scrollHeight;
+      askInput.value = "";
 
       try {
         const response = await fetch("https://askkai-backend-clean.onrender.com/quote", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ messages })
+          body: JSON.stringify({ messages: quoteMessages })
         });
 
         const data = await response.json();
-        quoteReply.textContent = data.reply || "No quote returned.";
-      } catch (error) {
-        console.error(error);
-        quoteReply.textContent = "Something went wrong. Try again later.";
+        const reply = data.reply || "Hmm, couldn't generate a quote.";
+
+        kaiBubble.textContent = reply;
+        quoteMessages.push({ role: "assistant", content: reply });
+
+        // Display and update quote summary
+        quoteSummary.classList.remove("hidden");
+        quoteContent.textContent = reply;
+
+      } catch (err) {
+        console.error(err);
+        kaiBubble.textContent = "Something went wrong. Try again later.";
       }
     });
   </script>
