@@ -3,10 +3,12 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Ask Kai – Home</title>
+  <title>Ask Kai – Kaymar Construction</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
   <style>
+    .kaymar-green { color: #7AC142; }
     html, body { height: 100%; margin: 0; padding: 0; display: flex; flex-direction: column; }
+    #kaiReply { max-height: 60vh; overflow-y: auto; }
     .blinking-cursor {
       display: inline-block;
       width: 10px;
@@ -25,7 +27,7 @@
 
   <!-- Banner -->
   <div class="w-full bg-black">
-    <img src="https://i.imgur.com/nDIhtRr.png" alt="Kaymar Banner" class="w-full max-h-24 object-contain mx-auto" />
+    <img src="https://i.imgur.com/nDIhtRr.png" alt="Kaymar Construction Banner" class="w-full max-h-24 object-contain mx-auto" />
   </div>
 
   <!-- Header -->
@@ -57,11 +59,11 @@
           <button onclick="logoutUser()" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100">Log Out</button>
         </div>
       </div>
-      <h1 class="text-xl font-bold text-green-600">Ask Kai</h1>
+      <h1 class="text-xl font-bold kaymar-green">Ask Kai</h1>
     </div>
   </header>
 
-  <!-- Main Chat Section -->
+  <!-- Chat Area -->
   <main class="flex flex-col items-center flex-1 p-4">
     <div id="kaiReply" class="w-full max-w-2xl mb-4 p-4 bg-white border rounded shadow space-y-4"></div>
     <div class="w-full max-w-2xl p-4 bg-white shadow-md border-t flex items-center space-x-2">
@@ -83,7 +85,7 @@
     <p class="text-xs text-gray-400 mt-2">Built with coding support from Jack Cooper</p>
   </footer>
 
-  <!-- Scripts -->
+  <!-- JS -->
   <script>
     function toggleMenu() {
       document.getElementById('menuDropdown').classList.toggle('hidden');
@@ -104,7 +106,7 @@
 
     const messages = [{
       role: "system",
-      content: "You are Kai Marlow — a practical Aussie chippy. Ask for the user's location, materials, and job details. Use metric. Be brief and helpful."
+      content: `You are Kai Marlow — a smart, practical Aussie chippy with 20+ years of site experience. Ask the user for their location, building type, timber dimensions, and codes. Provide 20–80 word responses using metric, based on region. Stay code-compliant and fast.`
     }];
 
     document.getElementById('submitBtn').addEventListener('click', async () => {
@@ -130,7 +132,7 @@
       qaContainer.appendChild(userText);
 
       const kaiText = document.createElement('p');
-      kaiText.className = 'text-left text-green-600 font-semibold whitespace-pre-wrap';
+      kaiText.className = 'text-left text-green-600 font-semibold';
       const cursor = document.createElement('span');
       cursor.className = 'blinking-cursor';
       kaiText.textContent = "Kai is thinking...";
