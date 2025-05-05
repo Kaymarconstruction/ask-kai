@@ -3,11 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Quote Generator – Ask Kai</title>
+  <title>Ask Kai – Quote Generator</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
   <style>
-    .kaymar-green { color: #7AC142; }
-    html, body { margin: 0; padding: 0; }
+    html, body { height: 100%; margin: 0; padding: 0; display: flex; flex-direction: column; }
+    #kaiReply { max-height: 60vh; overflow-y: auto; }
     .blinking-cursor {
       display: inline-block;
       width: 10px;
@@ -23,35 +23,26 @@
   </style>
 </head>
 <body class="bg-white text-gray-800">
-
   <!-- Banner -->
-  <header class="bg-white shadow p-4 flex justify-between items-center">
-    <img src="https://i.imgur.com/nDIhtRr.png" alt="Kaymar Construction Banner" class="h-12" />
-    <a href="index.html" class="text-sm text-blue-600 hover:underline">← Back to Chat</a>
+  <div class="w-full bg-black">
+    <img src="https://i.imgur.com/nDIhtRr.png" alt="Kaymar Banner" class="w-full max-h-24 object-contain mx-auto" />
+  </div>
+
+  <!-- Header -->
+  <header class="bg-white shadow p-4 flex items-center justify-between">
+    <h1 class="text-xl font-bold text-green-600">Ask Kai – Quote Generator</h1>
+    <a href="index.html" class="text-sm text-blue-600 hover:underline">Back to Chat</a>
   </header>
 
-  <!-- Main -->
-  <main class="max-w-3xl mx-auto p-6">
-    <h1 class="text-3xl font-bold kaymar-green text-center mb-2">Ask Kai: Quote Generator</h1>
-    <p class="text-center text-gray-600 mb-4">
-      Describe your project below. <strong>Be very specific</strong> – dimensions, location, materials, purpose, etc.
-    </p>
-
-    <!-- Chat Box -->
-    <div id="quoteChat" class="w-full border p-4 rounded-lg shadow mb-4 min-h-[200px] bg-white space-y-4"></div>
-    <div class="flex flex-col sm:flex-row items-center space-y-2 sm:space-y-0 sm:space-x-4">
-      <input id="quoteInput" type="text" placeholder="Describe your job..." class="flex-1 border p-3 rounded-lg w-full focus:outline-none focus:ring-2 focus:ring-green-500" />
-      <button id="quoteSubmit" class="bg-black text-white px-6 py-2 rounded-lg hover:bg-gray-900 transition w-full sm:w-auto">Submit</button>
+  <!-- Chat Area -->
+  <main class="flex flex-col items-center flex-1 p-4">
+    <div class="mb-4 w-full max-w-2xl text-sm text-gray-500">
+      Please describe your job in detail. <strong>Be very specific</strong> – location, materials, sizes, etc.
     </div>
-
-    <!-- Generated Quote -->
-    <div id="quoteOutput" class="mt-8 bg-gray-50 border border-gray-200 p-4 rounded-lg shadow hidden">
-      <h2 class="text-xl font-bold kaymar-green mb-2">Estimated Materials:</h2>
-      <ul id="quoteList" class="list-disc list-inside text-gray-800"></ul>
-      <p class="mt-4 text-xs text-gray-500">
-        Disclaimer: This estimate is based on your input. Confirm all quantities with your supplier. All costs are for materials only.
-        You can copy and paste this into your accounting software (Xero, MYOB, QuickBooks).
-      </p>
+    <div id="kaiReply" class="w-full max-w-2xl mb-4 p-4 bg-white border rounded shadow space-y-4"></div>
+    <div class="w-full max-w-2xl p-4 bg-white shadow-md border-t flex items-center space-x-2">
+      <input id="askInput" type="text" placeholder="Describe your project..." class="flex-1 border p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" />
+      <button id="submitBtn" class="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-900 transition text-sm">Submit</button>
     </div>
   </main>
 
@@ -59,62 +50,95 @@
   <footer class="text-center text-gray-500 text-sm p-4">
     &copy; 2025 Kaymar Construction | Powered by Ask Kai
     <div class="flex justify-center space-x-6 mt-2">
-      <a href="https://www.instagram.com/askkai_official" target="_blank" class="text-blue-600 hover:underline">@askkai_official – Instagram</a>
-      <a href="https://www.tiktok.com/@askkai_official" target="_blank" class="text-blue-600 hover:underline">TikTok</a>
-      <a href="https://www.threads.net/@askkai_official" target="_blank" class="text-blue-600 hover:underline">Threads</a>
+      <a href="https://www.instagram.com/askkai_official" class="text-blue-600 hover:underline">Instagram</a>
+      <a href="https://www.tiktok.com/@askkai_official" class="text-blue-600 hover:underline">TikTok</a>
+      <a href="https://www.threads.net/@askkai_official" class="text-blue-600 hover:underline">Threads</a>
     </div>
   </footer>
 
-  <!-- Script -->
+  <!-- JS -->
   <script>
-    const quoteInput = document.getElementById('quoteInput');
-    const quoteSubmit = document.getElementById('quoteSubmit');
-    const quoteChat = document.getElementById('quoteChat');
-    const quoteList = document.getElementById('quoteList');
-    const quoteOutput = document.getElementById('quoteOutput');
+    const user = sessionStorage.getItem('askkaiUser');
+    if (!user) window.location.href = 'signin.html';
 
-    let quoteMessages = [{
+    const isMark = user === 'mark@kaymarconstruction.com';
+    let promptCount = parseInt(localStorage.getItem('promptCount') || '0');
+    const MAX_FREE_PROMPTS = 10;
+
+    const messages = [{
       role: "system",
-      content: `You are Kai, a seasoned Aussie builder. Use metric units. Ask for missing info like location, product size, local code. 
-Reply with material estimates only. Use bullet points. Short, clear and realistic. This is for quoting purposes only. Keep responses under 80 words.`
+      content: "You are Kai, a senior estimator and builder. Always ask for detailed project info, estimate all parts of structure: stumps, bearers, joists, decking, fasteners. Output in markdown dot-point format."
     }];
 
-    quoteSubmit.addEventListener('click', async () => {
-      const input = quoteInput.value.trim();
-      if (!input) return;
+    document.getElementById('submitBtn').addEventListener('click', async () => {
+      const askInput = document.getElementById('askInput');
+      const kaiReply = document.getElementById('kaiReply');
+      const userQuestion = askInput.value.trim();
+      if (!userQuestion) return;
 
-      quoteMessages.push({ role: "user", content: input });
+      if (!isMark && promptCount >= MAX_FREE_PROMPTS) {
+        alert("You’ve hit your free limit. Time to upgrade.");
+        window.location.href = 'upgrade.html';
+        return;
+      }
+
+      messages.push({ role: "user", content: userQuestion });
 
       const qaContainer = document.createElement('div');
-      qaContainer.innerHTML = `<p class="text-right text-blue-700 font-semibold">You: ${input}</p>
-                               <p class="text-left text-green-600 font-semibold">Kai is thinking<span class="blinking-cursor"></span></p>`;
-      quoteChat.appendChild(qaContainer);
-      quoteChat.scrollTop = quoteChat.scrollHeight;
-      quoteInput.value = "";
+      qaContainer.className = 'mb-6';
+
+      const userText = document.createElement('p');
+      userText.className = 'text-right text-blue-700 font-semibold mb-2';
+      userText.textContent = `You: ${userQuestion}`;
+      qaContainer.appendChild(userText);
+
+      const kaiText = document.createElement('p');
+      kaiText.className = 'text-left text-green-600 font-semibold whitespace-pre-wrap';
+      const cursor = document.createElement('span');
+      cursor.className = 'blinking-cursor';
+      kaiText.textContent = "Kai is thinking...";
+      kaiText.appendChild(cursor);
+      qaContainer.appendChild(kaiText);
+
+      kaiReply.appendChild(qaContainer);
+      kaiReply.scrollTop = kaiReply.scrollHeight;
+      askInput.value = "";
 
       try {
-        const response = await fetch('https://askkai-backend-clean.onrender.com/ask', {
+        const response = await fetch('https://askkai-backend-clean.onrender.com/quote', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ messages: quoteMessages })
+          body: JSON.stringify({ messages })
         });
 
         const data = await response.json();
-        const reply = data.reply || "Kai couldn't figure that one out. Try again.";
+        const finalText = data.reply || "Kai’s stumped. Try again shortly.";
 
-        // Parse and display quote
-        quoteList.innerHTML = reply.split('\n').map(line => {
-          if (line.trim().startsWith('•') || line.trim().startsWith('-')) {
-            return `<li>${line.replace(/^[-•]\s*/, '')}</li>`;
+        kaiText.textContent = "";
+        kaiText.appendChild(cursor);
+
+        let i = 0;
+        function typeNextChar() {
+          if (i < finalText.length) {
+            cursor.before(document.createTextNode(finalText.charAt(i)));
+            i++;
+            setTimeout(typeNextChar, 20);
+          } else {
+            cursor.remove();
           }
-          return '';
-        }).join('');
-        quoteOutput.classList.remove('hidden');
-        quoteMessages.push({ role: "assistant", content: reply });
+        }
+
+        setTimeout(typeNextChar, 300);
+        messages.push({ role: "assistant", content: finalText });
+
+        if (!isMark) {
+          promptCount++;
+          localStorage.setItem('promptCount', promptCount.toString());
+        }
 
       } catch (error) {
         console.error(error);
-        quoteChat.innerHTML += `<p class="text-red-600">Something went wrong. Try again later.</p>`;
+        kaiText.textContent = "Error reaching Kai. Try again later.";
       }
     });
   </script>
