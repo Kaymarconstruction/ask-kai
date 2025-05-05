@@ -16,7 +16,7 @@ Lead Dev Assistant: Jack Cooper (AI)
 - [x] Landing Page with profile image + sign in/up
 - [x] Session-based auth with email login
 - [x] Logout + session clearing
-- [x] Settings page (prompts used, token count)
+- [x] Settings page (prompts used, token count, subscription tier)
 - [x] Responsive mobile-first design
 
 ### Chat System
@@ -54,17 +54,24 @@ Lead Dev Assistant: Jack Cooper (AI)
 - [x] GPT-powered material list generator
 - [x] `/quote` endpoint with Kai's quoting brain
 - [x] HTML interface completed
-- [ ] Chat history memory across prompts
-- [ ] Append structured quote summary in a live quote panel
-- [ ] Export to copy + disclaimer
+- [x] Chat history memory across prompts (basic memory)
+- [x] Append structured quote summary in a live quote panel
+- [x] Export to copy + disclaimer
+- [ ] Export materials list to email supplier (mailto pre-filled message)
+- [ ] User-select supplier (from saved email list in settings)
 
 ### Calculators
 - [x] Span Tables Page
-- [x] Rafter Length Calculator (bug fix required)
+- [x] Rafter Length Calculator
 - [x] Decking Board Calculator
 - [ ] Volume calculator for soil/concrete/rubbish
 - [ ] Stair and Balustrade (UI present – coming soon)
 - [ ] Restrict access by plan tier (later)
+
+### Apprentice Hub
+- [x] Banner + resource list
+- [x] Live tool links (Rafter, Span Tables, Decking)
+- [ ] Recommended Books section with external Amazon links
 
 ---
 
@@ -77,6 +84,7 @@ Lead Dev Assistant: Jack Cooper (AI)
 - [ ] Admin dashboard to view users/emails
 
 ### Kai Brain Upgrades
+- [x] Quote generator brain now default on homepage
 - [ ] Prompt users for region/code before answering
 - [ ] Use defaults for common timber, spacing, fasteners
 - [ ] Use real brand specs (Ekodeck, Hyne, Bunnings)
@@ -97,11 +105,14 @@ Lead Dev Assistant: Jack Cooper (AI)
 
 ---
 
-## NOTES
-- All content is currently unrestricted while testing.
-- Menu displays all pages; restriction logic comes later.
-- Token counter works on localStorage.
-- Webhook works in Live Stripe mode.
-- Quote Generator is operational but in early alpha – chat state not yet preserved.
+## FEATURE IDEAS (BOOKMARKED)
+- [ ] Facade & Floorplan Designer GPT (Pro Series Exclusive)
+- [ ] Construction Forum for verified users (moderated)
+- [ ] Supplier quote email draft:
+  - Button below materials list: "Email Supplier"
+  - Opens user's email client with prefilled:
+    - Subject: Material Quote Request
+    - Body: "Hi [Supplier Name], I would like a quote for the following materials to be delivered to [address] on [date]:\n\n[List]\n\nRegards, [User]"
+- [ ] Settings: add profile picture upload, display active plan, and allow saved supplier emails
 
 _Last updated: 2025-05-07 by Jack_
