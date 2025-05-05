@@ -2,51 +2,35 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Purchase Complete – Ask Kai</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <style>
     .kaymar-green { color: #7AC142; }
   </style>
 </head>
-<body class="bg-white text-gray-800">
-  <main class="min-h-screen flex flex-col items-center justify-center text-center p-8">
-    <h1 class="text-3xl font-bold kaymar-green mb-4">Thanks for your purchase!</h1>
-    <p class="text-gray-700 mb-6">Your tokens are being added to your account...</p>
-    <p class="text-sm text-gray-500">Redirecting to your <a href="settings.html" class="text-blue-600 underline">Settings</a> page shortly.</p>
-  </main>
+<body class="bg-white text-gray-800 flex flex-col items-center justify-center min-h-screen p-8">
+  <h1 class="text-3xl font-bold text-center kaymar-green mb-4">Thanks, legend!</h1>
+  <p class="text-center text-gray-700 mb-6">Your payment went through and tokens have been added to your account.</p>
+  <a href="index.html" class="bg-black text-white px-6 py-3 rounded-lg hover:bg-gray-900 transition">Back to Ask Kai</a>
 
   <script>
-    const query = new URLSearchParams(window.location.search);
-    const pack = query.get('pack');
+    const params = new URLSearchParams(window.location.search);
+    const pack = params.get("pack"); // e.g. ?pack=mini / pro / standard
 
-    let tokens = parseInt(localStorage.getItem('kaiTokens') || '0');
+    const tokenMap = {
+      mini: 10,
+      standard: 50,
+      pro: 100,
+      plus: 7000,
+      premium: 20000
+    };
 
-    switch (pack) {
-      case 'mini':
-        tokens += 10;
-        break;
-      case 'standard':
-        tokens += 50;
-        break;
-      case 'pro':
-        tokens += 100;
-        break;
-      case 'plus':
-        tokens += 7000;
-        break;
-      case 'premium':
-        tokens += 20000;
-        break;
-      default:
-        console.warn('Unknown pack type:', pack);
+    if (pack && tokenMap[pack]) {
+      let current = parseInt(localStorage.getItem("kaiTokens") || "0");
+      current += tokenMap[pack];
+      localStorage.setItem("kaiTokens", current.toString());
     }
-
-    localStorage.setItem('kaiTokens', tokens.toString());
-
-    setTimeout(() => {
-      window.location.href = 'settings.html';
-    }, 3000);
   </script>
 </body>
 </html>
