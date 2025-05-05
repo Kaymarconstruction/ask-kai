@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Quote Generator – Ask Kai</title>
-  <link href="="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <style>
     #quoteBox { max-height: 50vh; overflow-y: auto; white-space: pre-wrap; }
   </style>
@@ -105,7 +105,7 @@
       let reply = data.reply || "Kai couldn’t generate a quote. Try again.";
 
       reply = reply
-        .replace(/^(Absolutely.*?)?(Here's|Here is).*?estimate.*?:\\n?/is, '')
+        .replace(/^(Absolutely.*?)?(Here's|Here is).*?estimate.*?:\n?/is, '')
         .replace(/\n?This estimate is for materials only\..*$/is, '')
         .trim();
 
