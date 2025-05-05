@@ -1,97 +1,107 @@
-# Ask Kai – Full Project Checklist & Status  
+# Ask Kai – Full Website Status & Development Tracker
+
 Website: https://ask.kaymarconstruction.com  
-Backend: Render | Frontend: Netlify | Stripe: Test Mode  
-Owner: Mark Musolino | Dev Assistant: Jack (AI Partner)
+Backend: Node.js (Render)  
+Frontend: HTML + Tailwind (Netlify)  
+AI Engine: OpenAI GPT-3.5  
+Stripe: Live mode active  
+Owner: Mark Musolino  
+Lead Dev Assistant: Jack Cooper (AI)  
 
 ---
 
-## ✅ LIVE / WORKING FEATURES
+## ✅ LIVE / FUNCTIONAL FEATURES
 
 ### Core Website
-- [x] Landing page with Kai avatar and one-liner
-- [x] Sign Up (email/password)
-- [x] Sign In with `sessionStorage` auth
-- [x] Session redirect to `index.html` if not signed in
-- [x] Logout clears session/token state
+- [x] Landing Page with profile image + sign in/up
+- [x] Session-based auth with email login
+- [x] Logout + session clearing
+- [x] Settings page (prompts used, token count)
+- [x] Responsive mobile-first design
 
 ### Chat System
-- [x] Continuous chat with GPT memory
-- [x] Australian carpenter persona: Kai Marlow
-- [x] Typing animation effect
-- [x] Chat scrolls & saves each prompt visually
+- [x] Kai persona with construction + code knowledge
+- [x] Token-based prompt limit (default 10)
+- [x] Mark's account has unlimited access
+- [x] Full chat interface with typing effect
+- [x] Region-aware language + code guidance
+- [x] Local storage of prompt count
 
-### Token System
-- [x] 25 free prompt cap per user (stored in `localStorage`)
-- [x] Token tracking (kaiTokens) for purchased access
-- [x] Error messages when limit reached
+### Menu Navigation
+- [x] Dropdown menu styled for mobile + desktop
+- [x] Links to Upgrade, Shop, Settings, Apprentice Hub, Quote Generator
+- [x] Logout button
+- [x] Team page with bios and photos
 
-### Menu / Navigation
-- [x] Dropdown menu button styled as black hamburger
-- [x] Links to Upgrade, Shop, Settings, Logout
+### Shop
+- [x] Book listings with real cover art
+- [x] Links to external Amazon/KDP to be updated after approval
 
-### Stripe + Upgrades
-- [x] Stripe test-mode checkout for:
-  - Ask Kai Plus
-  - Ask Kai Premium
-  - Mini (10), Standard (50), Pro (100) token packs
-- [x] `?pack=` values added to redirect URLs
-- [x] `purchase-complete.html` auto-credits tokens via JS
-- [x] Confirmation message based on pack
-
-### Settings Page
-- [x] `settings.html` shows:
-  - User email
-  - Prompts used
-  - Tokens remaining
-  - Upgrade + logout buttons
+### Stripe Integration
+- [x] Live payment links enabled for:
+  - Ask Kai Plus ($14.99/mo)
+  - Ask Kai Premium ($29.99/mo)
+  - Ask Kai Apprentice ($6.99/mo)
+  - Token Packs: Mini, Standard, Pro
+- [x] Webhook handler with Stripe secret key deployed
+- [x] Webhook listens for checkout.session.completed
 
 ---
 
-## ⚠️ IN PROGRESS / HIGH PRIORITY
+## ⚙️ IN PROGRESS / PRIORITY DEVELOPMENT
 
-### Access Lock
-- [ ] Limit login access to `mark@kaymarconstruction.com` only (temp lockdown)
-- [ ] Other users shown: "Access is currently restricted"
+### Quote Generator (NEW)
+- [x] GPT-powered material list generator
+- [x] `/quote` endpoint with Kai's quoting brain
+- [x] HTML interface completed
+- [ ] Chat history memory across prompts
+- [ ] Append structured quote summary in a live quote panel
+- [ ] Export to copy + disclaimer
 
-### Menu Buildout
-- [ ] Build initial `shop.html` layout for digital content
-- [ ] Add placeholders for:
-  - `quote-generator.html`
-  - `span-tables.html`
-  - `apprentice-hub.html`
-
-### Stripe & Token Flow
-- [ ] Stripe webhook support (server-side verification)
-- [ ] Stripe metadata match to determine token amounts
-- [ ] Server-side token sync with `localStorage`
+### Calculators
+- [x] Span Tables Page
+- [x] Rafter Length Calculator (bug fix required)
+- [x] Decking Board Calculator
+- [ ] Volume calculator for soil/concrete/rubbish
+- [ ] Stair and Balustrade (UI present – coming soon)
+- [ ] Restrict access by plan tier (later)
 
 ---
 
 ## ⏳ UPCOMING FEATURES
 
-### Auth & Users
-- [ ] Google sign-in / social login
-- [ ] Save prompts per user
-- [ ] Forgot password / reset flow
-- [ ] Email verification / user roles (free, plus, premium)
+### Auth & Membership
+- [ ] Google Sign-In / OAuth
+- [ ] Reset password via email
+- [ ] Save user chat history
+- [ ] Admin dashboard to view users/emails
 
-### Digital Products
-- [ ] Upload, list, and sell digital carpentry books/tools
-- [ ] Kindle / Amazon listing walkthrough
-- [ ] PDF watermarking with user email
-- [ ] Shop menu integration
+### Kai Brain Upgrades
+- [ ] Prompt users for region/code before answering
+- [ ] Use defaults for common timber, spacing, fasteners
+- [ ] Use real brand specs (Ekodeck, Hyne, Bunnings)
+- [ ] Shorter, clearer answers (20–80 words)
+- [ ] Accurate deck/timber/spacing calculations with location check
+- [ ] Reuse session memory between inputs
 
-### Mobile App Build
-- [ ] Web wrapper app for iOS + Android
-- [ ] Offline mode
-- [ ] Token sync & chat access
+### Mobile App
+- [ ] PWA Web App wrapper
+- [ ] Token sync + offline chat view
+- [ ] Future App Store + Google Play deployment
 
 ### Admin & Support
-- [ ] Admin dashboard: users, purchases, tokens
-- [ ] Support email (support@kaymarconstruction.com)
-- [ ] Web traffic tracking
-- [ ] Team bio page (Kai, Jack, Mark)
+- [ ] Track user emails in secure backend
+- [ ] Support@kaymarconstruction.com setup
+- [ ] Legal disclaimers / terms page
+- [ ] View token balances server-side
 
 ---
 
-_Last updated: 2025-05-03_
+## NOTES
+- All content is currently unrestricted while testing.
+- Menu displays all pages; restriction logic comes later.
+- Token counter works on localStorage.
+- Webhook works in Live Stripe mode.
+- Quote Generator is operational but in early alpha – chat state not yet preserved.
+
+_Last updated: 2025-05-07 by Jack_
