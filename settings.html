@@ -1,151 +1,112 @@
-const express = require('express');
-const cors = require('cors');
-const fs = require('fs');
-const path = require('path');
-const { Configuration, OpenAIApi } = require('openai');
-const { createClient } = require('@supabase/supabase-js');
-const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Settings – Ask Kai</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+</head>
+<body class="bg-gray-50 text-gray-900">
 
-const SUPABASE_URL = process.env.SUPABASE_URL;
-const SUPABASE_KEY = process.env.SUPABASE_KEY;
-console.log("SUPABASE_URL:", SUPABASE_URL);
-console.log("SUPABASE_KEY:", SUPABASE_KEY?.slice(0, 10) + '...');
+  <div class="max-w-xl mx-auto p-6 space-y-6">
+    <h1 class="text-2xl font-bold text-green-600">Your Account</h1>
 
-const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+    <div class="bg-white p-4 shadow rounded space-y-4">
+      <div>
+        <label class="block text-sm font-medium">Email</label>
+        <p id="userEmail" class="text-gray-700">Loading...</p>
+      </div>
 
-const app = express();
-app.use(cors());
-app.use(express.json());
+      <div>
+        <label class="block text-sm font-medium mb-1">Profile Picture</label>
+        <div class="flex items-center space-x-4">
+          <label class="cursor-pointer relative">
+            <img id="profilePreview" src="https://i.imgur.com/vUk9jxA.jpeg" alt="Profile Preview" class="w-24 h-24 rounded-full object-cover border border-gray-300" />
+            <input id="profilePic" type="file" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer" />
+          </label>
+          <span class="text-sm text-gray-500">Tap image to change</span>
+        </div>
+      </div>
 
-const configuration = new Configuration({ apiKey: process.env.OPENAI_API_KEY });
-const openai = new OpenAIApi(configuration);
+      <div>
+        <label class="block text-sm font-medium">Subscription Tier</label>
+        <p id="planTier" class="text-green-700 font-semibold">Loading...</p>
+      </div>
 
-app.get('/health', (req, res) => res.status(200).send('OK'));
+      <div>
+        <label class="block text-sm font-medium mb-1">Saved Supplier Contacts</label>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+          <input id="supplierName" type="text" placeholder="Supplier Name" class="border p-2 rounded" />
+          <input id="supplierCompany" type="text" placeholder="Company Name" class="border p-2 rounded" />
+          <input id="supplierEmail" type="email" placeholder="Email Address" class="border p-2 rounded" />
+          <input id="supplierPhone" type="tel" placeholder="Phone Number" class="border p-2 rounded" />
+        </div>
+        <button id="addSupplier" class="mt-2 bg-black text-white px-4 py-2 rounded hover:bg-gray-800">Save Supplier</button>
+        <ul id="savedSuppliers" class="mt-4 text-sm space-y-1 text-gray-700"></ul>
+      </div>
 
-app.post('/register', async (req, res) => {
-  const { email } = req.body;
-  console.log("REGISTER endpoint hit:", email);
+      <div>
+        <label class="block text-sm font-medium">Token Usage</label>
+        <p id="promptUsage" class="text-gray-700">0 / 10</p>
+      </div>
 
-  if (!email) return res.status(400).json({ success: false });
+      <button id="saveBtn" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Save Settings</button>
+    </div>
 
-  try {
-    const { data, error } = await supabase.from('users').insert([{ email }]);
-    if (error) throw error;
-    res.json({ success: true });
-  } catch (err) {
-    console.error("Supabase insert error:", err.message);
-    res.status(500).json({ success: false });
-  }
-});
+    <a href="index.html" class="text-blue-600 underline text-sm">Back to Chat</a>
+  </div>
 
-app.post('/suppliers', async (req, res) => {
-  const { name, company, email, phone, user_email } = req.body;
+  <script>
+    const user = sessionStorage.getItem('askkaiUser') || 'demo@email.com';
+    const promptCount = localStorage.getItem('promptCount') || '0';
+    const plan = localStorage.getItem('planTier') || 'Free Plan';
+    const savedProfile = localStorage.getItem('profilePreview');
 
-  if (!email || !user_email) return res.status(400).json({ success: false, error: 'Missing fields' });
+    document.getElementById('userEmail').textContent = user;
+    document.getElementById('promptUsage').textContent = `${promptCount} / ${plan === 'Free Plan' ? '10' : '∞'}`;
+    document.getElementById('planTier').textContent = plan;
+    if (savedProfile) document.getElementById('profilePreview').src = savedProfile;
 
-  try {
-    const { data, error } = await supabase.from('suppliers').insert([{ name, company, email, phone, user_email }]);
-    if (error) throw error;
-    res.json({ success: true });
-  } catch (err) {
-    console.error("Supabase insert error (supplier):", err.message);
-    res.status(500).json({ success: false });
-  }
-});
-
-app.get('/suppliers', async (req, res) => {
-  const { user_email } = req.query;
-  if (!user_email) return res.status(400).json({ error: 'Missing user_email' });
-
-  try {
-    const { data, error } = await supabase.from('suppliers').select('*').eq('user_email', user_email);
-    if (error) throw error;
-    res.json({ suppliers: data });
-  } catch (err) {
-    console.error("Fetch suppliers error:", err.message);
-    res.status(500).json({ suppliers: [] });
-  }
-});
-
-const kaiSystemMessage = {
-  role: "system",
-  content: `You are Kai Marlow — a highly experienced Aussie builder with 20+ years of residential and commercial construction experience.
-
-Your responses must:
-- Ask for the user's location, code jurisdiction, and project type if not given
-- Use metric units (mm, m, m², m³)
-- Reference Australian codes (NCC, AS1684, AS1170)
-- Be clear, practical, and 20–80 words long
-- Suggest timber sizes (90x45, 140x45, MGP10, H3, etc.)
-- Understand concrete/boards/timber come in standard sizes (2.4m–6.0m)
-- Ask clarifying questions if the user doesn't provide enough info
-- Never say you're an AI — you are Kai, a site-ready trades assistant.`
-};
-
-app.post('/ask', async (req, res) => {
-  const { messages } = req.body;
-  if (!messages || !Array.isArray(messages)) return res.status(400).json({ reply: "No messages received." });
-
-  const fullMessages = messages.some(msg => msg.role === 'system')
-    ? messages
-    : [kaiSystemMessage, ...messages];
-
-  try {
-    const response = await openai.createChatCompletion({
-      model: "gpt-3.5-turbo",
-      messages: fullMessages,
-      temperature: 0.7,
-      max_tokens: 750
+    document.getElementById('profilePic').addEventListener('change', (e) => {
+      const file = e.target.files[0];
+      if (!file) return;
+      const reader = new FileReader();
+      reader.onload = () => {
+        document.getElementById('profilePreview').src = reader.result;
+        localStorage.setItem('profilePreview', reader.result);
+      };
+      reader.readAsDataURL(file);
     });
 
-    res.json({ reply: response.data.choices[0].message.content.trim() });
-  } catch (error) {
-    console.error("Kai error:", error.response?.data || error.message);
-    res.status(500).json({ reply: "Something went wrong. Try again later." });
-  }
-});
-
-app.post('/quote', async (req, res) => {
-  const { messages } = req.body;
-  if (!messages || !Array.isArray(messages)) return res.status(400).json({ reply: "No input provided." });
-
-  const quotePrompt = {
-    role: "system",
-    content: `You are Kai Marlow, a quoting and estimating expert for Australian building trades.
-
-Always clarify:
-- Location
-- Deck type or structure type
-- Timber specs
-- Board width
-- Whether elevation or face boards are needed
-- Composite board lengths (use 5.4m)
-- Ask if breaker boards are needed for longer decks
-
-Use markdown format:
-• Item: Qty – Description`
-  };
-
-  try {
-    const response = await openai.createChatCompletion({
-      model: "gpt-3.5-turbo",
-      messages: [quotePrompt, ...messages],
-      temperature: 0.6,
-      max_tokens: 750
+    document.getElementById('saveBtn').addEventListener('click', () => {
+      alert('Settings saved!');
     });
 
-    res.json({ reply: response.data.choices[0].message.content.trim() });
-  } catch (error) {
-    console.error("Quote error:", error.response?.data || error.message);
-    res.status(500).json({ reply: "Kai couldn't generate your quote." });
-  }
-});
+    document.getElementById('addSupplier').addEventListener('click', async () => {
+      const name = document.getElementById('supplierName').value.trim();
+      const company = document.getElementById('supplierCompany').value.trim();
+      const email = document.getElementById('supplierEmail').value.trim();
+      const phone = document.getElementById('supplierPhone').value.trim();
 
-app.post('/webhook', express.raw({ type: 'application/json' }), (req, res) => {
-  res.status(200).send('Webhook received');
-});
+      if (!email || !name) return alert('Supplier must have a name and email.');
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, '0.0.0.0', () => {
-  console.log(`Ask Kai backend running on port ${PORT}`);
-});
+      const response = await fetch('https://askkai-backend-clean.onrender.com/suppliers', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ user_email: user, name, company, email, phone })
+      });
+
+      const res = await response.json();
+      if (res.success) {
+        const li = document.createElement('li');
+        li.textContent = `${name} – ${email}`;
+        document.getElementById('savedSuppliers').appendChild(li);
+        alert('Supplier saved');
+      } else {
+        alert('Error saving supplier');
+      }
+    });
+  </script>
+
+</body>
+</html>
