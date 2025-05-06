@@ -9,29 +9,71 @@
     .kaymar-green { color: #7AC142; }
     html, body { height: 100%; margin: 0; padding: 0; display: flex; flex-direction: column; }
     #kaiReply { max-height: 60vh; overflow-y: auto; }
+    .blinking-cursor {
+      display: inline-block;
+      width: 10px;
+      height: 1em;
+      background-color: #7AC142;
+      margin-left: 4px;
+      animation: blink 1s steps(2, start) infinite;
+    }
+    @keyframes blink {
+      0%, 100% { opacity: 0; }
+      50% { opacity: 1; }
+    }
   </style>
 </head>
 <body class="bg-white text-gray-800">
 
   <!-- Banner -->
   <div class="w-full bg-black">
-    <img src="https://i.imgur.com/nDIhtRr.png" alt="Kaymar Banner" class="w-full max-h-24 object-contain mx-auto" />
+    <img src="https://i.imgur.com/nDIhtRr.png" alt="Kaymar Construction Banner" class="w-full max-h-24 object-contain mx-auto" />
   </div>
 
   <!-- Header -->
   <header class="bg-white shadow p-4 flex items-center justify-between">
     <div class="flex items-center space-x-4">
+      <div class="relative">
+        <button onclick="toggleMenu()" class="bg-black text-white p-2 rounded-lg hover:bg-gray-800 transition">
+          <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+          </svg>
+        </button>
+        <div id="menuDropdown" class="hidden absolute mt-2 w-56 bg-white border border-gray-300 shadow-lg rounded-md z-10">
+          <a href="upgrade.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Upgrade</a>
+          <a href="shop.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Shop</a>
+          <a href="quote-generator.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Quote Generator</a>
+          <a href="settings.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Settings</a>
+          <a href="apprentice-hub.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Apprentice Hub</a>
+          <a href="team.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Meet the Team</a>
+          <div class="border-t my-1"></div>
+          <div class="px-4 py-2 text-sm font-semibold text-gray-700">Calculators</div>
+          <a href="rafter-calc.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Rafter Length</a>
+          <a href="decking-calculator.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Decking Boards</a>
+          <div class="border-t my-1"></div>
+          <button onclick="logoutUser()" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100">Log Out</button>
+        </div>
+      </div>
       <h1 class="text-xl font-bold kaymar-green">Ask Kai</h1>
     </div>
-    <a href="upgrade.html" class="text-sm text-blue-600 hover:underline">Upgrade</a>
   </header>
 
-  <!-- Chat Interface -->
+  <!-- Chat Area -->
   <main class="flex flex-col items-center flex-1 p-4">
     <div id="kaiReply" class="w-full max-w-2xl mb-4 p-4 bg-white border rounded shadow space-y-4"></div>
     <div class="w-full max-w-2xl p-4 bg-white shadow-md border-t flex items-center space-x-2">
       <input id="askInput" type="text" placeholder="Type your question..." class="flex-1 border p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" />
       <button id="submitBtn" class="bg-black text-white px-6 py-2 rounded-lg hover:bg-gray-900 transition">Submit</button>
+    </div>
+
+    <!-- Kai Profile -->
+    <div class="max-w-2xl w-full bg-white rounded-2xl shadow-lg p-6 mt-8">
+      <img src="https://i.imgur.com/uYWtV9r.png" alt="Kai Marlow" class="mx-auto mb-4 w-48 h-72 object-cover bg-white p-2 rounded-2xl shadow" />
+      <h2 class="text-2xl font-bold text-center kaymar-green mb-4">Who is Kai?</h2>
+      <p class="text-gray-700 text-center">
+        With 20+ years across carpentry and building in Australia, Kai gives sharp, clear advice backed by code, tools, and know-how.<br>
+        He’s your mate on-site, online. Ask him anything.
+      </p>
     </div>
   </main>
 
@@ -43,6 +85,7 @@
       <a href="https://www.facebook.com/askkai_official" class="text-blue-600 hover:underline">Facebook</a>
       <a href="https://www.youtube.com/@askkai_official" class="text-blue-600 hover:underline">YouTube</a>
     </div>
+    <p class="text-xs text-gray-400 mt-2">Built with coding support from Jack Cooper</p>
   </footer>
 
   <!-- JS -->
@@ -56,7 +99,7 @@
 
     const messages = [{
       role: "system",
-      content: `You are Kai Marlow — a practical Aussie chippy and estimator. Your replies are short (under 100 words), list-based where possible, and never include disclaimers. Use bullet points like \"\u2022 Joists: 90x45mm...\" and skip fluff.`
+      content: `You are Kai Marlow — expert chippy with 20+ years of site experience. Estimate quantities, fasteners, timber, and all materials. Always use metric. Format replies in bullet points only, no introductions or disclaimers.`
     }];
 
     document.getElementById('submitBtn').addEventListener('click', async () => {
@@ -81,9 +124,8 @@
       userText.textContent = `You: ${userQuestion}`;
       qaContainer.appendChild(userText);
 
-      const kaiText = document.createElement('p');
-      kaiText.className = 'text-left text-green-700 font-semibold whitespace-pre-wrap';
-      kaiText.textContent = "Kai is thinking...";
+      const kaiText = document.createElement('ul');
+      kaiText.className = 'text-left text-green-700 font-medium list-disc pl-6';
       qaContainer.appendChild(kaiText);
 
       kaiReply.appendChild(qaContainer);
@@ -98,18 +140,16 @@
         });
 
         const data = await response.json();
-        let finalText = data.reply || "Kai’s stumped. Try again shortly.";
+        const finalText = data.reply || "Kai’s stumped. Try again.";
+        const lines = finalText.split('\n').filter(l => l.trim());
 
-        finalText = finalText
-          .replace(/^(Absolutely.*?)?(Here's|Here is).*?:/is, '')
-          .replace(/(Please note|This estimate).*$/gis, '')
-          .replace(/\u2713/g, '\u2022')
-          .replace(/- /g, '\u2022 ')
-          .trim();
+        lines.forEach(line => {
+          const li = document.createElement('li');
+          li.textContent = line.replace(/^[-\u2713\u2022\*]+\s*/, '');
+          kaiText.appendChild(li);
+        });
 
-        kaiText.textContent = `Kai:\n${finalText}`;
         messages.push({ role: "assistant", content: finalText });
-
         if (!isMark) {
           promptCount++;
           localStorage.setItem('promptCount', promptCount.toString());
@@ -120,6 +160,16 @@
         kaiText.textContent = "Error reaching Kai. Try again later.";
       }
     });
+
+    function logoutUser() {
+      sessionStorage.removeItem('askkaiUser');
+      localStorage.clear();
+      window.location.href = 'landing.html';
+    }
+
+    function toggleMenu() {
+      document.getElementById('menuDropdown').classList.toggle('hidden');
+    }
   </script>
 </body>
 </html>
