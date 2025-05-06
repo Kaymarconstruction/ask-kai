@@ -2,9 +2,9 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Ask Kai – Kaymar Construction</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <style>
     .kaymar-green { color: #7AC142; }
     html, body { height: 100%; margin: 0; padding: 0; display: flex; flex-direction: column; }
@@ -27,7 +27,7 @@
 
   <!-- Banner -->
   <div class="w-full bg-black">
-    <img src="https://i.imgur.com/nDIhtRr.png" alt="Kaymar Construction Banner" class="w-full max-h-24 object-contain mx-auto" />
+    <img src="https://i.imgur.com/nDIhtRr.png" alt="Kaymar Banner" class="w-full max-h-24 object-contain mx-auto">
   </div>
 
   <!-- Header -->
@@ -39,22 +39,19 @@
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
           </svg>
         </button>
-        <div id="menuDropdown" class="hidden absolute mt-2 w-64 bg-white border border-gray-300 shadow-lg rounded-md z-10">
+        <div id="menuDropdown" class="hidden absolute mt-2 w-56 bg-white border border-gray-300 shadow-lg rounded-md z-10">
           <a href="upgrade.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Upgrade</a>
           <a href="shop.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Shop</a>
           <a href="quote-generator.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Quote Generator</a>
+          <a href="settings.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Settings</a>
           <a href="apprentice-hub.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Apprentice Hub</a>
-          <a href="span-tables.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Span Tables</a>
+          <a href="team.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Meet the Team</a>
           <div class="border-t my-1"></div>
           <div class="px-4 py-2 text-sm font-semibold text-gray-700">Calculators</div>
           <a href="rafter-calc.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Rafter Length</a>
-          <a href="decking-calculator.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Decking Boards</a>
+          <a href="#" class="block px-4 py-2 text-sm text-gray-400 cursor-not-allowed">Decking Boards (Coming Soon)</a>
           <a href="#" class="block px-4 py-2 text-sm text-gray-400 cursor-not-allowed">Stairs (Coming Soon)</a>
-          <a href="#" class="block px-4 py-2 text-sm text-gray-400 cursor-not-allowed">Balustrade (Coming Soon)</a>
-          <a href="#" class="block px-4 py-2 text-sm text-gray-400 cursor-not-allowed">Volume & Soil (Coming Soon)</a>
           <div class="border-t my-1"></div>
-          <a href="team.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Meet the Team</a>
-          <a href="settings.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Settings</a>
           <button onclick="logoutUser()" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100">Log Out</button>
         </div>
       </div>
@@ -66,14 +63,14 @@
   <main class="flex flex-col items-center flex-1 p-4">
     <div id="kaiReply" class="w-full max-w-2xl mb-4 p-4 bg-white border rounded shadow space-y-4"></div>
     <div class="w-full max-w-2xl p-4 bg-white shadow-md border-t flex items-center space-x-2">
-      <input id="askInput" type="text" placeholder="Describe your job in detail. Be very specific — location, materials, sizes, etc." class="flex-1 border p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
-      <button id="submitBtn" class="bg-black text-white px-4 py-2 rounded-lg hover:bg-gray-900 transition text-sm">Submit</button>
+      <input id="askInput" type="text" placeholder="Type your question..." class="flex-1 border p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" />
+      <button id="submitBtn" class="bg-black text-white px-6 py-2 rounded-lg hover:bg-gray-900 transition">Submit</button>
     </div>
 
     <!-- Kai Profile -->
     <div class="max-w-2xl w-full bg-white rounded-2xl shadow-lg p-6 mt-8">
       <img src="https://i.imgur.com/uYWtV9r.png" alt="Kai Marlow" class="mx-auto mb-4 w-48 h-72 object-cover bg-white p-2 rounded-2xl shadow" />
-      <h2 class="text-2xl font-bold text-center text-green-600 mb-4">Who is Kai?</h2>
+      <h2 class="text-2xl font-bold text-center kaymar-green mb-4">Who is Kai?</h2>
       <p class="text-gray-700 text-center">
         With 20+ years across carpentry and building in Australia, Kai gives sharp, clear advice backed by code, tools, and know-how.<br>
         He’s your mate on-site, online. Ask him anything.
@@ -86,26 +83,14 @@
     &copy; 2025 Kaymar Construction | Powered by Ask Kai
     <div class="flex justify-center space-x-6 mt-2">
       <a href="https://www.instagram.com/askkai_official" class="text-blue-600 hover:underline">Instagram</a>
-      <a href="https://www.tiktok.com/@askkai_official" class="text-blue-600 hover:underline">TikTok</a>
       <a href="https://www.facebook.com/askkai_official" class="text-blue-600 hover:underline">Facebook</a>
       <a href="https://www.youtube.com/@askkai_official" class="text-blue-600 hover:underline">YouTube</a>
-      <a href="https://www.threads.net/@askkai_official" class="text-blue-600 hover:underline">Threads</a>
     </div>
     <p class="text-xs text-gray-400 mt-2">Built with coding support from Jack Cooper</p>
   </footer>
 
   <!-- JS -->
   <script>
-    function toggleMenu() {
-      document.getElementById('menuDropdown').classList.toggle('hidden');
-    }
-
-    function logoutUser() {
-      sessionStorage.removeItem('askkaiUser');
-      localStorage.clear();
-      window.location.href = 'landing.html';
-    }
-
     const user = sessionStorage.getItem('askkaiUser');
     if (!user) window.location.href = 'signin.html';
 
@@ -115,7 +100,15 @@
 
     const messages = [{
       role: "system",
-      content: `You are Kai Marlow, a quoting and estimating expert for building and trades. Always clarify location, timber sizes, materials. Provide markdown-style material lists. End with: \"This estimate is for materials only. Double-check dimensions and local code for accuracy.\"`
+      content: `You are Kai Marlow — a quoting and estimating expert for Australian building trades. Always clarify:
+- Location
+- Structure type
+- Timber specs
+- Board width
+- If elevated: face boards?
+- If composite over 5.4m: breaker boards?
+Use bullet points:
+• Item: Qty – Description`
     }];
 
     document.getElementById('submitBtn').addEventListener('click', async () => {
@@ -153,14 +146,14 @@
       askInput.value = "";
 
       try {
-        const response = await fetch('https://askkai-backend-clean.onrender.com/quote', {
+        const response = await fetch('https://askkai-backend-clean.onrender.com/ask', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ messages })
         });
 
         const data = await response.json();
-        const finalText = data.reply || "Kai couldn’t generate a quote. Try again.";
+        const finalText = data.reply || "Kai’s stumped. Try again shortly.";
 
         kaiText.textContent = "";
         kaiText.appendChild(cursor);
@@ -189,6 +182,17 @@
         kaiText.textContent = "Error reaching Kai. Try again later.";
       }
     });
+
+    function logoutUser() {
+      sessionStorage.removeItem('askkaiUser');
+      localStorage.clear();
+      window.location.href = 'landing.html';
+    }
+
+    function toggleMenu() {
+      document.getElementById('menuDropdown').classList.toggle('hidden');
+    }
   </script>
+
 </body>
 </html>
