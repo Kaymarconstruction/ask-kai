@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculators – Ask Kai</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+  <!-- Banner -->
+  <div class="w-full bg-black">
+    <img src="https://i.imgur.com/nDIhtRr.png" alt="Kaymar Banner" class="w-full max-h-24 object-contain mx-auto">
+  </div>
+
+  <!-- Header -->
+  <header class="bg-white shadow p-4 flex items-center justify-between relative">
+    <div class="flex items-center space-x-4">
+      <button onclick="toggleMenu()" class="bg-black text-white p-2 rounded">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+      <h1 class="text-xl font-bold text-green-600">Calculator Hub</h1>
+    </div>
+    <div id="menuDropdown" class="hidden absolute mt-16 ml-2 w-60 bg-white border border-gray-300 shadow-lg rounded-md z-50">
+      <a href="index.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Home</a>
+      <a href="quote.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Quote Generator</a>
+      <a href="rafter-calc.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Rafter Calculator</a>
+      <a href="decking-calculator.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Decking Calculator</a>
+      <a href="stringer-calc.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Stair Calculator</a>
+      <a href="area-calc.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Area / m³ Calculator</a>
+      <a href="calculators.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100 font-semibold">Calculator Hub</a>
+      <a href="apprentice-hub.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Apprentice Hub</a>
+      <a href="settings.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Settings</a>
+      <a href="upgrade.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Upgrade</a>
+      <button onclick="logoutUser()" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100">Log Out</button>
+    </div>
+  </header>
+
+  <main class="max-w-4xl mx-auto py-8 px-4">
+    <h2 class="text-2xl font-bold text-green-700 mb-6">Choose a Calculator</h2>
+    <ul class="space-y-3">
+      <li><a href="rafter-calc.html" class="text-blue-600 hover:underline">Rafter Length Calculator</a></li>
+      <li><a href="decking-calculator.html" class="text-blue-600 hover:underline">Decking Board Calculator</a></li>
+      <li><a href="stringer-calc.html" class="text-blue-600 hover:underline">Stair/Stringer Calculator</a></li>
+      <li><a href="area-calc.html" class="text-blue-600 hover:underline">Area / Cubic Volume Calculator</a></li>
+    </ul>
+
+    <a href="index.html" class="inline-block mt-8 text-sm text-blue-600 hover:underline">Back to Chat</a>
+  </main>
+
+  <footer class="text-center text-gray-500 text-sm p-6">
+    &copy; 2025 Kaymar Construction | Powered by Ask Kai
+    <div class="flex justify-center space-x-6 mt-2">
+      <a href="https://www.instagram.com/askkai_official" class="text-blue-600 hover:underline">Instagram</a>
+      <a href="https://www.tiktok.com/@askkai_official" class="text-blue-600 hover:underline">TikTok</a>
+      <a href="https://www.facebook.com/askkai_official" class="text-blue-600 hover:underline">Facebook</a>
+      <a href="https://www.youtube.com/@askkai_official" class="text-blue-600 hover:underline">YouTube</a>
+      <a href="https://www.threads.net/@askkai_official" class="text-blue-600 hover:underline">Threads</a>
+    </div>
+  </footer>
+
+  <script>
+    function toggleMenu() {
+      document.getElementById('menuDropdown').classList.toggle('hidden');
+    }
+    function logoutUser() {
+      sessionStorage.clear();
+      localStorage.removeItem('promptCount');
+      localStorage.removeItem('kaiTokens');
+      window.location.href = 'logout.html';
+    }
+  </script>
+</body>
+</html>
