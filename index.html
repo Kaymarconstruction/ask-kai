@@ -3,24 +3,13 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ask Kai – Site Assistant</title>
+  <title>Ask Kai – Construction Chat</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <style>
-    .chat-bubble {
-      max-width: 80%;
-      padding: 0.75rem 1rem;
-      border-radius: 1rem;
-      margin-bottom: 0.5rem;
-      display: inline-block;
-    }
-    .user-bubble {
-      background-color: #DCFCE7;
-      align-self: flex-end;
-    }
-    .kai-bubble {
-      background-color: #E5E7EB;
-      align-self: flex-start;
-    }
+    .chat-bubble { max-width: 70%; margin-bottom: 12px; padding: 12px; border-radius: 12px; }
+    .kai { background: #ECFDF5; align-self: flex-start; }
+    .user { background: #E0F2FE; align-self: flex-end; text-align: right; }
+    #chatBox { max-height: 60vh; overflow-y: auto; }
   </style>
 </head>
 <body class="bg-gray-100 text-gray-800">
@@ -32,17 +21,30 @@
 
   <!-- Header -->
   <header class="bg-white shadow p-4 flex items-center justify-between">
-    <h1 class="text-xl font-bold text-green-600">Ask Kai – Your Site Assistant</h1>
-    <a href="settings.html" class="text-sm text-blue-600 hover:underline">Settings</a>
+    <div class="flex items-center space-x-4">
+      <img src="https://i.imgur.com/uYWtV9r.png" alt="Kai Marlow" class="w-12 h-12 rounded-full">
+      <h1 class="text-xl font-bold text-green-600">Ask Kai</h1>
+    </div>
+    <div class="relative">
+      <button id="menuButton" class="text-sm text-blue-600 hover:underline">Menu</button>
+      <div id="dropdownMenu" class="hidden absolute right-0 mt-2 bg-white shadow-lg rounded border w-48 z-50">
+        <a href="upgrade.html" class="block px-4 py-2 text-sm hover:bg-gray-100">Upgrade</a>
+        <a href="settings.html" class="block px-4 py-2 text-sm hover:bg-gray-100">Settings</a>
+        <a href="quote-generator.html" class="block px-4 py-2 text-sm hover:bg-gray-100">Quote Generator</a>
+        <a href="apprentice-hub.html" class="block px-4 py-2 text-sm hover:bg-gray-100">Apprentice Hub</a>
+        <a href="team.html" class="block px-4 py-2 text-sm hover:bg-gray-100">Team</a>
+        <a href="signin.html" class="block px-4 py-2 text-sm text-red-600 hover:bg-red-100">Log Out</a>
+      </div>
+    </div>
   </header>
 
-  <!-- Main Chat Window -->
-  <main class="max-w-3xl mx-auto py-6 px-4">
-    <div id="chatBox" class="flex flex-col space-y-2 bg-white p-4 rounded-xl shadow min-h-[40vh] mb-6 overflow-y-auto"></div>
+  <!-- Chat Area -->
+  <main class="max-w-3xl mx-auto py-8 px-4">
+    <div id="chatBox" class="flex flex-col space-y-2 bg-white p-4 rounded-xl shadow mb-4"></div>
 
-    <div class="flex items-center gap-2">
-      <textarea id="userInput" rows="2" class="flex-1 border rounded-lg p-2" placeholder="Ask me anything about your project..."></textarea>
-      <button id="sendBtn" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded">Send</button>
+    <div class="flex items-center space-x-2">
+      <input id="userInput" type="text" class="flex-1 border rounded-lg p-3" placeholder="Type your question...">
+      <button id="sendBtn" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Send</button>
     </div>
   </main>
 
@@ -63,42 +65,45 @@
     const chatBox = document.getElementById('chatBox');
     const sendBtn = document.getElementById('sendBtn');
     const userInput = document.getElementById('userInput');
+    const menuButton = document.getElementById('menuButton');
+    const dropdownMenu = document.getElementById('dropdownMenu');
 
-    function addBubble(content, sender) {
-      const div = document.createElement('div');
-      div.className = `chat-bubble ${sender === 'user' ? 'user-bubble self-end' : 'kai-bubble self-start'}`;
-      div.innerHTML = content;
-      chatBox.appendChild(div);
+    menuButton.onclick = () => dropdownMenu.classList.toggle('hidden');
+
+    const addMessage = (text, type) => {
+      const bubble = document.createElement('div');
+      bubble.className = `chat-bubble ${type}`;
+      bubble.textContent = text;
+      chatBox.appendChild(bubble);
       chatBox.scrollTop = chatBox.scrollHeight;
-    }
+    };
 
-    sendBtn.addEventListener('click', async () => {
-      const input = userInput.value.trim();
-      if (!input) return;
+    sendBtn.onclick = async () => {
+      const content = userInput.value.trim();
+      if (!content) return;
 
-      addBubble(input, 'user');
+      addMessage(content, 'user');
       userInput.value = '';
+      addMessage('Kai is thinking...', 'kai');
 
-      addBubble("<span class='text-green-600 font-medium'>Kai is thinking...</span>", 'kai');
-
-      const response = await fetch("https://askkai-backend-clean.onrender.com/quote", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: [ { role: "user", content: input } ] })
+      const response = await fetch('https://askkai-backend-clean.onrender.com/quote', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ messages: [ { role: 'user', content } ] })
       });
 
       const data = await response.json();
-      chatBox.lastChild.remove(); // Remove "Kai is thinking..."
+      let reply = data.reply || 'Kai couldn\'t respond. Try again.';
 
-      let reply = data.reply || "Kai couldn’t help this time.";
       reply = reply
         .replace(/^(Absolutely.*?)?(Here's|Here is).*?estimate.*?:\n?/is, '')
-        .replace(/✓/g, '•')
         .replace(/\n?This estimate is for materials only\..*$/is, '')
+        .replace(/\n*✓/g, '\n\u2022')
         .trim();
 
-      addBubble(reply.replace(/\n/g, '<br>'), 'kai');
-    });
+      const kaiBubbles = document.querySelectorAll('.kai');
+      kaiBubbles[kaiBubbles.length - 1].textContent = reply;
+    };
   </script>
 </body>
 </html>
