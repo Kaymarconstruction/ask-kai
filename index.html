@@ -3,43 +3,59 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Ask Kai – Site Assistant</title>
+  <title>Ask Kai</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <style>
-    .chat-bubble {
-      padding: 10px 14px;
-      border-radius: 1rem;
-      max-width: 90%;
-      white-space: pre-wrap;
-    }
-    .user { background-color: #d1fae5; text-align: right; margin-left: auto; }
-    .kai { background-color: #f3f4f6; margin-right: auto; }
-    #chatLog { max-height: 60vh; overflow-y: auto; }
+    #chatBox { max-height: 60vh; overflow-y: auto; }
+    .chat-bubble { max-width: 80%; padding: 12px 16px; border-radius: 18px; margin-bottom: 8px; }
+    .user-bubble { background-color: #e5e7eb; align-self: flex-end; }
+    .kai-bubble { background-color: #dcfce7; align-self: flex-start; }
   </style>
 </head>
-<body class="bg-white text-gray-900">
+<body class="bg-gray-100 text-gray-800">
 
   <!-- Banner -->
   <div class="w-full bg-black">
     <img src="https://i.imgur.com/nDIhtRr.png" alt="Kaymar Banner" class="w-full max-h-24 object-contain mx-auto">
   </div>
 
-  <!-- Kai Profile Card -->
-  <section class="flex items-center space-x-4 px-6 py-4 bg-white shadow">
-    <img src="https://i.imgur.com/uYWtV9r.png" class="w-16 h-16 rounded-full shadow" alt="Kai">
-    <div>
-      <h1 class="text-lg font-bold text-green-700">Ask Kai</h1>
-      <p class="text-sm text-gray-600">Your AI-powered mate for quotes, codes, and materials — trained on 20+ years of construction experience.</p>
+  <!-- Header -->
+  <header class="bg-white shadow p-4 flex items-center justify-between">
+    <button onclick="toggleMenu()" class="bg-black p-2 rounded">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+      </svg>
+    </button>
+    <div class="relative">
+      <div id="menuDropdown" class="hidden absolute left-0 mt-2 w-48 bg-white border border-gray-300 shadow-lg rounded-md z-10">
+        <a href="index.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Home</a>
+        <a href="quote-generator.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Quote Generator</a>
+        <a href="rafter-calc.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Rafter Calculator</a>
+        <a href="decking-calculator.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Decking Calculator</a>
+        <a href="#" class="block px-4 py-2 text-sm text-gray-400">Stringers (Coming Soon)</a>
+        <a href="#" class="block px-4 py-2 text-sm text-gray-400">Area m3 Calc (Coming Soon)</a>
+        <a href="settings.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Settings</a>
+        <button onclick="logoutUser()" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100">Log Out</button>
+      </div>
     </div>
+  </header>
+
+  <!-- Profile Section -->
+  <section class="max-w-3xl mx-auto mt-6 p-4 text-center">
+    <img src="https://i.imgur.com/uYWtV9r.png" alt="Kai" class="mx-auto w-28 h-40 rounded-xl shadow" />
+    <h2 class="text-xl font-bold text-green-700 mt-2">Ask Kai</h2>
+    <p class="text-sm text-gray-700 max-w-md mx-auto mt-1">
+      I'm Kai – your AI-powered site assistant with 20+ years of Aussie building knowledge packed into my brain. Ask me anything about tools, codes, timber, or decking.
+    </p>
   </section>
 
-  <!-- Chat Interface -->
+  <!-- Chat Section -->
   <main class="max-w-3xl mx-auto px-4 py-6">
-    <div id="chatLog" class="space-y-4 mb-4"></div>
+    <div id="chatBox" class="bg-white rounded-xl shadow p-4 flex flex-col space-y-2"></div>
 
-    <div class="flex items-center space-x-2">
-      <input id="userInput" class="flex-1 border p-3 rounded shadow" placeholder="Type your question...">
-      <button id="sendBtn" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Send</button>
+    <div class="mt-4 flex items-center space-x-2">
+      <textarea id="userInput" rows="2" class="w-full border rounded p-2" placeholder="Ask Kai something..."></textarea>
+      <button onclick="sendMessage()" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Send</button>
     </div>
   </main>
 
@@ -56,43 +72,54 @@
   </footer>
 
   <script>
-    const chatLog = document.getElementById('chatLog');
-    const input = document.getElementById('userInput');
-    const sendBtn = document.getElementById('sendBtn');
-    const sessionId = sessionStorage.getItem('askkaiUser') || `guest_${Date.now()}`;
-
-    const messages = [];
-
-    function appendBubble(text, isUser = false) {
-      const div = document.createElement('div');
-      div.className = `chat-bubble ${isUser ? 'user' : 'kai'}`;
-      div.textContent = text;
-      chatLog.appendChild(div);
-      chatLog.scrollTop = chatLog.scrollHeight;
+    function toggleMenu() {
+      document.getElementById('menuDropdown').classList.toggle('hidden');
     }
 
-    sendBtn.addEventListener('click', async () => {
-      const content = input.value.trim();
-      if (!content) return;
+    function logoutUser() {
+      sessionStorage.clear();
+      localStorage.removeItem('promptCount');
+      localStorage.removeItem('kaiTokens');
+      window.location.href = 'logout.html';
+    }
 
-      appendBubble(content, true);
-      messages.push({ role: 'user', content });
+    const chatBox = document.getElementById('chatBox');
+    let sessionId = localStorage.getItem('kaiSessionId') || crypto.randomUUID();
+    localStorage.setItem('kaiSessionId', sessionId);
+    const chatHistory = [];
+
+    async function sendMessage() {
+      const input = document.getElementById('userInput');
+      const text = input.value.trim();
+      if (!text) return;
+
+      addBubble(text, 'user');
       input.value = '';
+      chatHistory.push({ role: 'user', content: text });
 
-      appendBubble('Kai is thinking...', false);
-
-      const response = await fetch('https://askkai-backend-clean.onrender.com/ask', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ sessionId, messages })
+      const res = await fetch("https://askkai-backend-clean.onrender.com/ask", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ sessionId, messages: chatHistory })
       });
+      const data = await res.json();
 
-      const data = await response.json();
-      messages.push({ role: 'assistant', content: data.reply });
+      if (data.reply) {
+        addBubble(data.reply, 'kai');
+        chatHistory.push({ role: 'assistant', content: data.reply });
+      } else {
+        addBubble("Sorry mate, something went wrong.", 'kai');
+      }
+    }
 
-      chatLog.lastChild.remove();
-      appendBubble(data.reply, false);
-    });
+    function addBubble(text, sender) {
+      const div = document.createElement('div');
+      div.className = `chat-bubble ${sender === 'user' ? 'user-bubble self-end' : 'kai-bubble self-start'}`;
+      div.textContent = text;
+      chatBox.appendChild(div);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
   </script>
+
 </body>
 </html>
