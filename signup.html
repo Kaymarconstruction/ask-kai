@@ -39,6 +39,8 @@
         return;
       }
 
+      console.log("Sending to /register:", email);
+
       try {
         await fetch("https://askkai-backend-clean.onrender.com/register", {
           method: "POST",
@@ -57,3 +59,4 @@
   </script>
 </body>
 </html>
+
