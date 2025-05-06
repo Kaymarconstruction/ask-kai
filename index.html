@@ -1,14 +1,12 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Ask Kai</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <style>
-    .chat-bubble { white-space: pre-wrap; }
-    .chat-bubble.user { background-color: #e2e8f0; }
-    .chat-bubble.kai { background-color: #fef3c7; }
+    #chatBox { max-height: 60vh; overflow-y: auto; }
   </style>
 </head>
 <body class="bg-gray-100 text-gray-800">
@@ -18,7 +16,7 @@
     <img src="https://i.imgur.com/nDIhtRr.png" alt="Kaymar Banner" class="w-full max-h-24 object-contain mx-auto">
   </div>
 
-  <!-- Header with menu -->
+  <!-- Header -->
   <header class="bg-white shadow p-4 flex items-center justify-between">
     <div class="relative">
       <button onclick="toggleMenu()" class="bg-black text-white p-2 rounded">
@@ -26,52 +24,92 @@
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
         </svg>
       </button>
-      <div id="menuDropdown" class="hidden absolute mt-2 w-56 bg-white border border-gray-300 shadow-lg rounded-md z-10">
-        <a href="index.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Home</a>
-        <a href="quote-generator.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Quote Generator</a>
-        <div class="px-4 py-2 text-sm font-bold text-gray-700">Calculators</div>
-        <a href="rafter-calc.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Rafter Calculator</a>
-        <a href="decking-calculator.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Decking Calculator</a>
-        <a href="#" class="block px-4 py-2 text-sm text-gray-400 cursor-not-allowed">Stair Calculator (Coming Soon)</a>
-        <a href="#" class="block px-4 py-2 text-sm text-gray-400 cursor-not-allowed">Area m³ Calculator (Coming Soon)</a>
-        <a href="settings.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Settings</a>
+      <div id="menuDropdown" class="hidden absolute mt-2 w-48 bg-white border border-gray-300 shadow-lg rounded-md z-10">
+        <a href="quote-generator.html" class="block px-4 py-2 text-sm hover:bg-gray-100">Quote Generator</a>
+        <a href="rafter-calc.html" class="block px-4 py-2 text-sm hover:bg-gray-100">Rafter Calculator</a>
+        <a href="decking-calculator.html" class="block px-4 py-2 text-sm hover:bg-gray-100">Decking Calculator</a>
+        <a href="stair-calc.html" class="block px-4 py-2 text-sm hover:bg-gray-100">Stringers & Stairs</a>
+        <a href="volume-calc.html" class="block px-4 py-2 text-sm hover:bg-gray-100">Area / Volume</a>
+        <a href="settings.html" class="block px-4 py-2 text-sm hover:bg-gray-100">Settings</a>
         <button onclick="logoutUser()" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100">Log Out</button>
       </div>
     </div>
+    <h1 class="text-xl font-bold text-green-600">Ask Kai</h1>
   </header>
 
-  <!-- Kai Profile -->
-  <section class="max-w-xl mx-auto py-6 text-center">
-    <img src="https://i.imgur.com/uYWtV9r.png" alt="Kai Marlow" class="w-40 h-60 object-cover rounded-2xl shadow mx-auto">
-    <h2 class="text-xl font-bold text-green-700 mt-2">Ask Kai</h2>
-    <p class="text-sm text-gray-600 max-w-md mx-auto mt-2">
-      Your AI-powered estimating and construction assistant. Kai helps you quote, calculate, and plan your building jobs using Australian code knowledge and decades of trade experience.
+  <!-- Kai Intro -->
+  <section class="flex flex-col items-center p-6">
+    <img src="https://i.imgur.com/uYWtV9r.png" alt="Kai Marlow" class="w-28 h-36 object-cover rounded-xl shadow mb-2" />
+    <p class="text-sm text-center max-w-md text-gray-700">
+      I'm Kai — your AI-powered construction assistant. I help with quotes, material lists, deck design, codes & compliance. Ask me anything.
     </p>
   </section>
 
   <!-- Chat UI -->
-  <main class="max-w-2xl mx-auto px-4">
-    <div id="chatLog" class="space-y-4"></div>
-    <div class="mt-6 flex gap-2">
-      <input id="userInput" type="text" placeholder="Type your question..." class="w-full border p-3 rounded">
-      <button onclick="submitChat()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded">Submit</button>
+  <main class="max-w-2xl mx-auto px-4 pb-10">
+    <div id="chatBox" class="bg-white p-4 rounded-xl shadow space-y-4 mb-4"></div>
+
+    <div class="flex items-center space-x-2">
+      <input id="userInput" type="text" placeholder="Type your question..." class="flex-1 border p-3 rounded-lg" />
+      <button id="sendBtn" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Send</button>
     </div>
   </main>
 
-  <footer class="text-center text-gray-500 text-sm p-6 mt-8">
+  <!-- Footer -->
+  <footer class="text-center text-gray-500 text-sm p-6">
     &copy; 2025 Kaymar Construction | Powered by Ask Kai
     <div class="flex justify-center space-x-6 mt-2">
       <a href="https://www.instagram.com/askkai_official" class="text-blue-600 hover:underline">Instagram</a>
       <a href="https://www.tiktok.com/@askkai_official" class="text-blue-600 hover:underline">TikTok</a>
       <a href="https://www.facebook.com/askkai_official" class="text-blue-600 hover:underline">Facebook</a>
       <a href="https://www.youtube.com/@askkai_official" class="text-blue-600 hover:underline">YouTube</a>
-      <a href="https://www.threads.net/@askkai_official" class="text-blue-600 hover:underline">Threads</a>
     </div>
   </footer>
 
   <script>
+    const chatBox = document.getElementById("chatBox");
+    const userInput = document.getElementById("userInput");
+    const sendBtn = document.getElementById("sendBtn");
+    let chatHistory = [];
+
+    function addMessage(role, text) {
+      const bubble = document.createElement("div");
+      bubble.className = `p-3 rounded-lg shadow w-fit max-w-[85%] whitespace-pre-line ${role === 'user' ? 'bg-green-100 self-end ml-auto' : 'bg-white border self-start'}`;
+      bubble.textContent = text;
+      chatBox.appendChild(bubble);
+      chatBox.scrollTop = chatBox.scrollHeight;
+    }
+
+    sendBtn.addEventListener("click", async () => {
+      const text = userInput.value.trim();
+      if (!text) return;
+
+      addMessage("user", text);
+      chatHistory.push({ role: "user", content: text });
+      userInput.value = "";
+
+      addMessage("kai", "Thinking...");
+      const bubbles = chatBox.querySelectorAll(".bg-white");
+      const loader = bubbles[bubbles.length - 1];
+
+      try {
+        const res = await fetch("https://askkai-backend-clean.onrender.com/ask", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ messages: chatHistory })
+        });
+
+        const data = await res.json();
+        loader.remove();
+        addMessage("kai", data.reply);
+        chatHistory.push({ role: "assistant", content: data.reply });
+      } catch (err) {
+        loader.textContent = "Kai had trouble answering. Try again.";
+      }
+    });
+
     function toggleMenu() {
-      document.getElementById('menuDropdown').classList.toggle('hidden');
+      document.getElementById("menuDropdown").classList.toggle("hidden");
     }
 
     function logoutUser() {
@@ -79,34 +117,6 @@
       localStorage.removeItem('promptCount');
       localStorage.removeItem('kaiTokens');
       window.location.href = 'logout.html';
-    }
-
-    function appendChat(role, text) {
-      const log = document.getElementById('chatLog');
-      const bubble = document.createElement('div');
-      bubble.className = `p-3 rounded-lg shadow chat-bubble ${role}`;
-      bubble.textContent = text;
-      log.appendChild(bubble);
-      log.scrollTop = log.scrollHeight;
-    }
-
-    async function submitChat() {
-      const input = document.getElementById('userInput');
-      const text = input.value.trim();
-      if (!text) return;
-      appendChat('user', text);
-      input.value = '';
-      appendChat('kai', 'Thinking...');
-
-      const response = await fetch("https://askkai-backend-clean.onrender.com/ask", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: [{ role: 'user', content: text }] })
-      });
-
-      const data = await response.json();
-      const lastBubble = document.querySelector('.chat-bubble.kai:last-of-type');
-      if (lastBubble) lastBubble.textContent = data.reply || "Kai had trouble replying.";
     }
   </script>
 
