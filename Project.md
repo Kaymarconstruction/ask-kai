@@ -46,6 +46,13 @@ Lead Dev Assistant: Jack Cooper (AI)
 - [x] Webhook handler with Stripe secret key deployed
 - [x] Webhook listens for checkout.session.completed
 
+### Supabase Integration
+- [x] Supabase project live (Pro Tier)
+- [x] Users table created with UUID, email, created_at
+- [x] Supabase insert email on /register endpoint
+- [x] RLS enabled and fixed
+- [x] Environment secrets (SUPABASE_URL + KEY) added
+
 ---
 
 ## ⚙️ IN PROGRESS / PRIORITY DEVELOPMENT
@@ -60,13 +67,6 @@ Lead Dev Assistant: Jack Cooper (AI)
 - [x] Export materials list to email supplier (mailto pre-filled message)
 - [x] User-select supplier (from saved email list in settings)
 
-### User Registration
-- [x] Register stores emails to Supabase
-- [x] Supabase setup with users table
-- [x] Connected to backend via supabase-js client
-- [ ] Add `/users` admin-only route to list all stored emails
-- [ ] Optional: Add email confirmation + welcome email
-
 ### Calculators
 - [x] Span Tables Page
 - [x] Rafter Length Calculator
@@ -78,7 +78,65 @@ Lead Dev Assistant: Jack Cooper (AI)
 ### Apprentice Hub
 - [x] Banner + resource list
 - [x] Live tool links (Rafter, Span Tables, Decking)
-- [x] Recommended Books section
+- [x] Recommended Books section with external Amazon links
 
-### Index Page Fix (NEW)
-- [ ] Fix Kai chat logic on `index.html` (
+---
+
+## ⏳ UPCOMING FEATURES
+
+### Auth & Membership
+- [ ] Google Sign-In / OAuth
+- [ ] Reset password via email
+- [ ] Save user chat history
+- [ ] Admin dashboard to view users/emails
+
+### Kai Brain Upgrades
+- [x] Quote generator brain now default on homepage
+- [ ] Prompt users for region/code before answering
+- [ ] Use defaults for common timber, spacing, fasteners
+- [ ] Use real brand specs (Ekodeck, Hyne, Bunnings)
+- [ ] Shorter, clearer answers (20–80 words)
+- [ ] Accurate deck/timber/spacing calculations with location check
+- [ ] Reuse session memory between inputs
+- [ ] Fix Kai response rendering on main index.html (materials not appearing)
+
+### Mobile App
+- [ ] PWA Web App wrapper
+- [ ] Token sync + offline chat view
+- [ ] Future App Store + Google Play deployment
+
+### Admin & Support
+- [ ] Track user emails in secure backend (Supabase ✅)
+- [ ] Support@kaymarconstruction.com setup
+- [ ] Legal disclaimers / terms page
+- [ ] View token balances server-side
+
+---
+
+## FEATURE IDEAS (BOOKMARKED)
+- [ ] Facade & Floorplan Designer GPT (Pro Series Exclusive)
+- [ ] Construction Forum for verified users (moderated)
+- [x] Supplier quote email draft:
+  - Button below materials list: "Email Supplier"
+  - Opens user's email client with prefilled:
+    - Subject: Material Quote Request
+    - Body: "Hi [Supplier Name], I would like a quote for the following materials to be delivered to [address] on [date]:\n\n[List]\n\nRegards, [User]"
+- [x] Settings: add profile picture upload, display active plan, and allow saved supplier emails
+
+_Last updated: 2025-05-09 by Jack_
+
+
+Project board updated with Supabase success, Kai chat fix as next priority, and all latest work.
+
+You're good to go:
+
+Supabase is live
+
+Emails are inserting properly
+
+Kai chat fix is queued next
+
+
+a. Want me to start rewriting the main index.html to match the chat logic from the quote generator now?
+b. Or want to work on admin route to fetch user emails from Supabase?
+
