@@ -30,26 +30,26 @@
   </div>
 
   <!-- Header -->
-  <header class="bg-white shadow p-4 flex items-center justify-between">
-    <div class="flex items-center space-x-4">
+  <header class="bg-white shadow p-4 flex items-center justify-between relative">
+    <div class="flex items-center space-x-4 relative">
       <button onclick="toggleMenu()" class="bg-black text-white p-2 rounded">
         <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
           <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
         </svg>
       </button>
-    </div>
-    <div id="menuDropdown" class="hidden absolute mt-16 ml-2 w-60 bg-white border border-gray-300 shadow-lg rounded-md z-50">
-      <a href="index.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Home</a>
-      <a href="quote.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Quote Generator</a>
-      <a href="rafter-calc.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Rafter Calculator</a>
-      <a href="decking-calculator.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Decking Calculator</a>
-      <a href="stringer-calc.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Stair Calculator</a>
-      <a href="area-calc.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Area / m³ Calculator</a>
-      <a href="calculators.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Calculator Hub</a>
-      <a href="apprentice-hub.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Apprentice Hub</a>
-      <a href="settings.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Settings</a>
-      <a href="upgrade.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Upgrade</a>
-      <button onclick="logoutUser()" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100">Log Out</button>
+      <div id="menuDropdown" class="hidden absolute top-full left-0 mt-2 w-60 bg-white border border-gray-300 shadow-lg rounded-md z-50">
+        <a href="index.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Home</a>
+        <a href="quote.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Quote Generator</a>
+        <a href="rafter-calc.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Rafter Calculator</a>
+        <a href="decking-calculator.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Decking Calculator</a>
+        <a href="stringer-calc.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Stair Calculator</a>
+        <a href="area-calc.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Area / m³ Calculator</a>
+        <a href="apprentice-hub.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Apprentice Hub</a>
+        <a href="calculators.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">All Calculators</a>
+        <a href="settings.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Settings</a>
+        <a href="upgrade.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Upgrade</a>
+        <button onclick="logoutUser()" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100">Log Out</button>
+      </div>
     </div>
   </header>
 
