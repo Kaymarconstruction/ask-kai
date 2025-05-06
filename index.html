@@ -1,76 +1,125 @@
-<script>
-  const user = sessionStorage.getItem('askkaiUser');
-  if (!user) window.location.href = 'signin.html';
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ask Kai – Kaymar Construction</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+  <style>
+    .kaymar-green { color: #7AC142; }
+    html, body { height: 100%; margin: 0; padding: 0; display: flex; flex-direction: column; }
+    #kaiReply { max-height: 60vh; overflow-y: auto; }
+  </style>
+</head>
+<body class="bg-white text-gray-800">
 
-  const isMark = user === 'mark@kaymarconstruction.com';
-  let promptCount = parseInt(localStorage.getItem('promptCount') || '0');
-  const MAX_FREE_PROMPTS = 10;
+  <!-- Banner -->
+  <div class="w-full bg-black">
+    <img src="https://i.imgur.com/nDIhtRr.png" alt="Kaymar Banner" class="w-full max-h-24 object-contain mx-auto" />
+  </div>
 
-  const messages = [{
-    role: "system",
-    content: `You are Kai Marlow — a practical Aussie chippy and estimator. Your replies are short (under 100 words), list-based where possible, and never include disclaimers. Use bullet points like "• Joists: 90x45mm..." and skip fluff.`
-  }];
+  <!-- Header -->
+  <header class="bg-white shadow p-4 flex items-center justify-between">
+    <div class="flex items-center space-x-4">
+      <h1 class="text-xl font-bold kaymar-green">Ask Kai</h1>
+    </div>
+    <a href="upgrade.html" class="text-sm text-blue-600 hover:underline">Upgrade</a>
+  </header>
 
-  document.getElementById('submitBtn').addEventListener('click', async () => {
-    const askInput = document.getElementById('askInput');
-    const kaiReply = document.getElementById('kaiReply');
-    const userQuestion = askInput.value.trim();
-    if (!userQuestion) return;
+  <!-- Chat Interface -->
+  <main class="flex flex-col items-center flex-1 p-4">
+    <div id="kaiReply" class="w-full max-w-2xl mb-4 p-4 bg-white border rounded shadow space-y-4"></div>
+    <div class="w-full max-w-2xl p-4 bg-white shadow-md border-t flex items-center space-x-2">
+      <input id="askInput" type="text" placeholder="Type your question..." class="flex-1 border p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" />
+      <button id="submitBtn" class="bg-black text-white px-6 py-2 rounded-lg hover:bg-gray-900 transition">Submit</button>
+    </div>
+  </main>
 
-    if (!isMark && promptCount >= MAX_FREE_PROMPTS) {
-      alert("You’ve hit your 10 free prompts. Time to upgrade.");
-      window.location.href = 'upgrade.html';
-      return;
-    }
+  <!-- Footer -->
+  <footer class="text-center text-gray-500 text-sm p-4">
+    &copy; 2025 Kaymar Construction | Powered by Ask Kai
+    <div class="flex justify-center space-x-6 mt-2">
+      <a href="https://www.instagram.com/askkai_official" class="text-blue-600 hover:underline">Instagram</a>
+      <a href="https://www.facebook.com/askkai_official" class="text-blue-600 hover:underline">Facebook</a>
+      <a href="https://www.youtube.com/@askkai_official" class="text-blue-600 hover:underline">YouTube</a>
+    </div>
+  </footer>
 
-    messages.push({ role: "user", content: userQuestion });
+  <!-- JS -->
+  <script>
+    const user = sessionStorage.getItem('askkaiUser');
+    if (!user) window.location.href = 'signin.html';
 
-    const qaContainer = document.createElement('div');
-    qaContainer.className = 'mb-6';
+    const isMark = user === 'mark@kaymarconstruction.com';
+    let promptCount = parseInt(localStorage.getItem('promptCount') || '0');
+    const MAX_FREE_PROMPTS = 10;
 
-    const userText = document.createElement('p');
-    userText.className = 'text-right text-blue-700 font-semibold mb-2';
-    userText.textContent = `You: ${userQuestion}`;
-    qaContainer.appendChild(userText);
+    const messages = [{
+      role: "system",
+      content: `You are Kai Marlow — a practical Aussie chippy and estimator. Your replies are short (under 100 words), list-based where possible, and never include disclaimers. Use bullet points like \"\u2022 Joists: 90x45mm...\" and skip fluff.`
+    }];
 
-    const kaiText = document.createElement('p');
-    kaiText.className = 'text-left text-green-700 font-semibold whitespace-pre-wrap';
-    kaiText.textContent = "Kai is thinking...";
-    qaContainer.appendChild(kaiText);
+    document.getElementById('submitBtn').addEventListener('click', async () => {
+      const askInput = document.getElementById('askInput');
+      const kaiReply = document.getElementById('kaiReply');
+      const userQuestion = askInput.value.trim();
+      if (!userQuestion) return;
 
-    kaiReply.appendChild(qaContainer);
-    kaiReply.scrollTop = kaiReply.scrollHeight;
-    askInput.value = "";
-
-    try {
-      const response = await fetch('https://askkai-backend-clean.onrender.com/ask', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages })
-      });
-
-      const data = await response.json();
-      let finalText = data.reply || "Kai’s stumped. Try again shortly.";
-
-      // Trim disclaimer + verbose prefix
-      finalText = finalText
-        .replace(/^(Absolutely.*?)?(Here's|Here is).*?:/is, '')
-        .replace(/(Please note|This estimate).*$/gis, '')
-        .replace(/✓/g, '•') // Convert ticks to bullets
-        .replace(/- /g, '• ') // Convert hyphen bullets
-        .trim();
-
-      kaiText.textContent = `Kai:\n${finalText}`;
-      messages.push({ role: "assistant", content: finalText });
-
-      if (!isMark) {
-        promptCount++;
-        localStorage.setItem('promptCount', promptCount.toString());
+      if (!isMark && promptCount >= MAX_FREE_PROMPTS) {
+        alert("You’ve hit your 10 free prompts. Time to upgrade.");
+        window.location.href = 'upgrade.html';
+        return;
       }
 
-    } catch (error) {
-      console.error(error);
-      kaiText.textContent = "Error reaching Kai. Try again later.";
-    }
-  });
-</script>
+      messages.push({ role: "user", content: userQuestion });
+
+      const qaContainer = document.createElement('div');
+      qaContainer.className = 'mb-6';
+
+      const userText = document.createElement('p');
+      userText.className = 'text-right text-blue-700 font-semibold mb-2';
+      userText.textContent = `You: ${userQuestion}`;
+      qaContainer.appendChild(userText);
+
+      const kaiText = document.createElement('p');
+      kaiText.className = 'text-left text-green-700 font-semibold whitespace-pre-wrap';
+      kaiText.textContent = "Kai is thinking...";
+      qaContainer.appendChild(kaiText);
+
+      kaiReply.appendChild(qaContainer);
+      kaiReply.scrollTop = kaiReply.scrollHeight;
+      askInput.value = "";
+
+      try {
+        const response = await fetch('https://askkai-backend-clean.onrender.com/ask', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ messages })
+        });
+
+        const data = await response.json();
+        let finalText = data.reply || "Kai’s stumped. Try again shortly.";
+
+        finalText = finalText
+          .replace(/^(Absolutely.*?)?(Here's|Here is).*?:/is, '')
+          .replace(/(Please note|This estimate).*$/gis, '')
+          .replace(/\u2713/g, '\u2022')
+          .replace(/- /g, '\u2022 ')
+          .trim();
+
+        kaiText.textContent = `Kai:\n${finalText}`;
+        messages.push({ role: "assistant", content: finalText });
+
+        if (!isMark) {
+          promptCount++;
+          localStorage.setItem('promptCount', promptCount.toString());
+        }
+
+      } catch (error) {
+        console.error(error);
+        kaiText.textContent = "Error reaching Kai. Try again later.";
+      }
+    });
+  </script>
+</body>
+</html>
