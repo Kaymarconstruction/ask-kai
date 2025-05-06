@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Ask Kai – Kaymar Construction</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <style>
     .kaymar-green { color: #7AC142; }
     html, body { height: 100%; margin: 0; padding: 0; display: flex; flex-direction: column; }
@@ -24,10 +24,9 @@
   </style>
 </head>
 <body class="bg-white text-gray-800">
-
   <!-- Banner -->
   <div class="w-full bg-black">
-    <img src="https://i.imgur.com/nDIhtRr.png" alt="Kaymar Construction Banner" class="w-full max-h-24 object-contain mx-auto" />
+    <img src="https://i.imgur.com/nDIhtRr.png" alt="Kaymar Construction Banner" class="w-full max-h-24 object-contain mx-auto">
   </div>
 
   <!-- Header -->
@@ -50,6 +49,9 @@
           <div class="px-4 py-2 text-sm font-semibold text-gray-700">Calculators</div>
           <a href="rafter-calc.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Rafter Length</a>
           <a href="decking-calculator.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Decking Boards</a>
+          <a href="#" class="block px-4 py-2 text-sm text-gray-400 cursor-not-allowed">Stairs (Coming Soon)</a>
+          <a href="#" class="block px-4 py-2 text-sm text-gray-400 cursor-not-allowed">Balustrade (Coming Soon)</a>
+          <a href="#" class="block px-4 py-2 text-sm text-gray-400 cursor-not-allowed">Volume & Soil (Coming Soon)</a>
           <div class="border-t my-1"></div>
           <button onclick="logoutUser()" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100">Log Out</button>
         </div>
@@ -62,7 +64,7 @@
   <main class="flex flex-col items-center flex-1 p-4">
     <div id="kaiReply" class="w-full max-w-2xl mb-4 p-4 bg-white border rounded shadow space-y-4"></div>
     <div class="w-full max-w-2xl p-4 bg-white shadow-md border-t flex items-center space-x-2">
-      <input id="askInput" type="text" placeholder="Type your question..." class="flex-1 border p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" />
+      <input id="askInput" type="text" placeholder="Type your question..." class="flex-1 border p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500">
       <button id="submitBtn" class="bg-black text-white px-6 py-2 rounded-lg hover:bg-gray-900 transition">Submit</button>
     </div>
 
@@ -96,10 +98,9 @@
     const isMark = user === 'mark@kaymarconstruction.com';
     let promptCount = parseInt(localStorage.getItem('promptCount') || '0');
     const MAX_FREE_PROMPTS = 10;
-
     const messages = [{
       role: "system",
-      content: `You are Kai Marlow — expert chippy with 20+ years of site experience. Estimate quantities, fasteners, timber, and all materials. Always use metric. Format replies in bullet points only, no introductions or disclaimers.`
+      content: `You are Kai Marlow, a quoting and estimating expert for Australian building trades. Ask at least one clarifying question before quoting. Provide brief build advice based on NCC or AS codes (30–50 words). Use bullet points for any material lists. Avoid disclaimers in chat UI.`
     }];
 
     document.getElementById('submitBtn').addEventListener('click', async () => {
@@ -118,14 +119,17 @@
 
       const qaContainer = document.createElement('div');
       qaContainer.className = 'mb-6';
-
       const userText = document.createElement('p');
       userText.className = 'text-right text-blue-700 font-semibold mb-2';
       userText.textContent = `You: ${userQuestion}`;
       qaContainer.appendChild(userText);
 
-      const kaiText = document.createElement('ul');
-      kaiText.className = 'text-left text-green-700 font-medium list-disc pl-6';
+      const kaiText = document.createElement('p');
+      kaiText.className = 'text-left text-green-600 font-semibold';
+      const cursor = document.createElement('span');
+      cursor.className = 'blinking-cursor';
+      kaiText.textContent = "Kai is thinking...";
+      kaiText.appendChild(cursor);
       qaContainer.appendChild(kaiText);
 
       kaiReply.appendChild(qaContainer);
@@ -140,21 +144,28 @@
         });
 
         const data = await response.json();
-        const finalText = data.reply || "Kai’s stumped. Try again.";
-        const lines = finalText.split('\n').filter(l => l.trim());
+        const finalText = (data.reply || "Kai’s stumped. Try again shortly.").trim();
 
-        lines.forEach(line => {
-          const li = document.createElement('li');
-          li.textContent = line.replace(/^[-\u2713\u2022\*]+\s*/, '');
-          kaiText.appendChild(li);
-        });
+        kaiText.textContent = "";
+        kaiText.appendChild(cursor);
+        let i = 0;
+        function typeNextChar() {
+          if (i < finalText.length) {
+            cursor.before(document.createTextNode(finalText.charAt(i)));
+            i++;
+            setTimeout(typeNextChar, 20);
+          } else {
+            cursor.remove();
+          }
+        }
+        setTimeout(typeNextChar, 300);
 
         messages.push({ role: "assistant", content: finalText });
+
         if (!isMark) {
           promptCount++;
           localStorage.setItem('promptCount', promptCount.toString());
         }
-
       } catch (error) {
         console.error(error);
         kaiText.textContent = "Error reaching Kai. Try again later.";
@@ -166,10 +177,10 @@
       localStorage.clear();
       window.location.href = 'landing.html';
     }
-
     function toggleMenu() {
       document.getElementById('menuDropdown').classList.toggle('hidden');
     }
   </script>
 </body>
 </html>
+
