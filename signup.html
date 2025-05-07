@@ -18,80 +18,41 @@
       <input id="email" type="email" placeholder="Email address" class="w-full border p-3 rounded-lg mb-4" />
       <input id="password" type="password" placeholder="Password" class="w-full border p-3 rounded-lg mb-6" />
       <button onclick="signUp()" class="w-full bg-black text-white py-2 rounded hover:bg-gray-900">Sign Up</button>
-      <button onclick="googleLogin()" class="w-full mt-4 border border-black text-black py-2 rounded hover:bg-gray-100">Sign up with Google</button>
       <p class="text-sm text-gray-500 mt-4">
         Already have an account? <a href="signin.html" class="text-blue-600 hover:underline">Sign in here</a>
       </p>
     </div>
   </main>
 
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
   <script>
-    const supabase = supabase.createClient("https://your-project-id.supabase.co", "your-anon-key");
-
     async function signUp() {
-      const email = document.getElementById('email').value.trim();
+      const email = document.getElementById('email').value.trim().toLowerCase();
       const password = document.getElementById('password').value.trim();
-      if (!email || !password) return alert("Both fields are required");
 
-      const { error } = await supabase.auth.signUp({ email, password });
-      if (error) return alert(error.message);
-      alert("Check your inbox to confirm your account.");
-    }
+      if (!email || !password) {
+        alert("Please fill in both fields.");
+        return;
+      }
 
-    async function googleLogin() {
-      const { error } = await supabase.auth.signInWithOAuth({ provider: 'google' });
-      if (error) alert(error.message);
-    }
-  </script>
-</body>
-</html>
+      if (email !== 'mark@kaymarconstruction.com') {
+        alert("Access is currently restricted during development.");
+        return;
+      }
 
-<!-- signin.html -->
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sign In – Ask Kai</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-</head>
-<body class="bg-white text-gray-800">
-  <main class="min-h-screen flex flex-col items-center justify-center p-8 text-center">
-    <img src="https://i.imgur.com/uYWtV9r.png" alt="Kai Marlow" class="w-40 h-60 object-cover rounded-2xl shadow mb-4" />
-    <h1 class="text-2xl font-bold text-green-600 mb-2">Ask Kai</h1>
-    <p class="text-gray-600 mb-6 max-w-md">Smart, fast, and built by tradies — Ask Kai is your AI mate on the job. Built for tradies and DIYers alike.</p>
-
-    <div class="w-full max-w-sm">
-      <input id="email" type="email" placeholder="Email address" class="w-full border p-3 rounded-lg mb-4" />
-      <input id="password" type="password" placeholder="Password" class="w-full border p-3 rounded-lg mb-6" />
-      <button onclick="signIn()" class="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700">Sign In</button>
-      <button onclick="googleLogin()" class="w-full mt-4 border border-black text-black py-2 rounded hover:bg-gray-100">Sign in with Google</button>
-      <p class="text-sm text-gray-500 mt-4">
-        Don't have an account? <a href="signup.html" class="text-blue-600 hover:underline">Sign up here</a>
-      </p>
-    </div>
-  </main>
-
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
-  <script>
-    const supabase = supabase.createClient("https://your-project-id.supabase.co", "your-anon-key");
-
-    async function signIn() {
-      const email = document.getElementById('email').value.trim();
-      const password = document.getElementById('password').value.trim();
-      if (!email || !password) return alert("Both fields are required");
-
-      const { error, data } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) return alert(error.message);
+      try {
+        await fetch("https://askkai-backend-clean.onrender.com/register", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email })
+        });
+      } catch (err) {
+        console.error("Error registering email:", err);
+      }
 
       sessionStorage.setItem('askkaiUser', email);
+      localStorage.setItem('promptCount', '0');
+      localStorage.setItem('planTier', 'Free Plan');
       window.location.href = 'index.html';
-    }
-
-    async function googleLogin() {
-      const { error } = await supabase.auth.signInWithOAuth({ provider: 'google' });
-      if (error) alert(error.message);
     }
   </script>
 </body>
