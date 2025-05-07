@@ -16,7 +16,11 @@
       background-size: cover;
       background-position: center;
     }
-    #kaiReply { max-height: 60vh; overflow-y: auto; white-space: pre-wrap; }
+    #kaiReply {
+      max-height: 60vh;
+      overflow-y: auto;
+      white-space: pre-wrap;
+    }
     .blinking-cursor {
       display: inline-block;
       width: 10px;
@@ -29,42 +33,50 @@
       0%, 100% { opacity: 0; }
       50% { opacity: 1; }
     }
+    .overlay {
+      background-color: rgba(255, 255, 255, 0.9);
+      backdrop-filter: blur(4px);
+    }
   </style>
 </head>
 <body class="text-gray-800">
 
-  <!-- Banner + Menu -->
-  <div class="w-full bg-black flex justify-between items-center px-4 py-2 relative">
-    <img src="https://i.imgur.com/nDIhtRr.png" alt="Kaymar Banner" class="max-h-24 object-contain">
-    <button onclick="toggleMenu()" class="bg-white text-black p-2 rounded z-50">
+  <!-- Banner -->
+  <div class="w-full bg-black flex items-center justify-between p-2">
+    <img src="https://i.imgur.com/nDIhtRr.png" alt="Kaymar Banner" class="max-h-20 object-contain">
+    <button onclick="toggleMenu()" class="bg-white text-black p-2 rounded">
       <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
       </svg>
     </button>
-    <div id="menuDropdown" class="hidden absolute top-full right-4 mt-2 w-64 bg-white border border-gray-300 shadow-lg rounded-md z-40">
-      <a href="index.html" class="block px-4 py-2 text-sm hover:bg-gray-100">Home</a>
-      <a href="shop.html" class="block px-4 py-2 text-sm hover:bg-gray-100">Shop</a>
-      <a href="quote.html" class="block px-4 py-2 text-sm hover:bg-gray-100">Quote Generator (PRO)</a>
-      <a href="#" class="block px-4 py-2 text-sm text-gray-500 cursor-not-allowed">Floorplan & Facade Generator (Coming soon)</a>
-      <a href="calculators.html" class="block px-4 py-2 text-sm hover:bg-gray-100">Calculators</a>
-      <a href="apprentice-hub.html" class="block px-4 py-2 text-sm hover:bg-gray-100">Apprentice Hub</a>
-      <a href="upgrade.html" class="block px-4 py-2 text-sm hover:bg-gray-100">Upgrade</a>
-      <a href="team.html" class="block px-4 py-2 text-sm hover:bg-gray-100">Meet the Team</a>
-      <a href="settings.html" class="block px-4 py-2 text-sm hover:bg-gray-100">Settings</a>
+    <div id="menuDropdown" class="hidden absolute mt-2 right-2 w-60 bg-white border border-gray-300 shadow-lg rounded-md z-50">
+      <a href="index.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Home</a>
+      <a href="shop.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Shop</a>
+      <a href="quote.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Quote Generator (PRO)</a>
+      <a href="#" class="block px-4 py-2 text-sm text-gray-400">Floorplan and Facade Generator (Coming Soon)</a>
+      <a href="calculators.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Calculators</a>
+      <a href="apprentice-hub.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Apprentice Hub</a>
+      <a href="upgrade.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Upgrade</a>
+      <a href="team.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Meet the Team</a>
+      <a href="settings.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Settings</a>
       <button onclick="logoutUser()" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100">Log Out</button>
     </div>
   </div>
 
-  <!-- Chat + Profile Section -->
-  <main class="max-w-3xl mx-auto p-4 w-full">
-    <label for="askInput" class="block font-semibold mb-2">
+  <!-- Main Chat UI -->
+  <main class="overlay max-w-3xl mx-auto p-4 w-full flex flex-col flex-grow">
+    <div id="kaiReply" class="bg-white p-4 rounded-xl shadow mt-2 mb-4 text-sm text-gray-800 flex-grow overflow-y-auto"></div>
+
+    <label for="askInput" class="block font-semibold mb-1 text-sm text-gray-800 text-center">
       Please describe your job in detail. <span class="text-red-600">Be very specific</span> – location, materials, sizes, etc.
     </label>
-    <textarea id="askInput" rows="3" class="w-full border rounded-lg p-3 mb-4" placeholder="e.g. 6x4m deck, 250mm off ground, H3 pine joists, 140mm merbau decking, VIC"></textarea>
-    <button id="submitBtn" class="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded">Submit</button>
 
-    <div id="kaiReply" class="bg-white p-4 rounded-xl shadow mt-6 space-y-4 text-sm text-gray-800"></div>
+    <div class="flex items-center space-x-2 mt-2">
+      <textarea id="askInput" rows="2" class="w-full border rounded-lg p-3" placeholder="e.g. 6x4m deck, 250mm off ground, H3 pine joists, 140mm merbau decking, VIC"></textarea>
+      <button id="submitBtn" class="bg-green-600 hover:bg-green-700 text-white py-2 px-4 rounded">Submit</button>
+    </div>
 
+    <!-- Kai Profile -->
     <div class="max-w-2xl w-full bg-white rounded-2xl shadow-lg p-6 mt-8">
       <img src="https://i.imgur.com/uYWtV9r.png" alt="Kai Marlow" class="mx-auto mb-4 w-48 h-72 object-cover bg-white p-2 rounded-2xl shadow" />
       <h2 class="text-2xl font-bold text-center text-green-600 mb-4">Who is Kai?</h2>
@@ -76,16 +88,16 @@
   </main>
 
   <!-- Footer -->
-  <footer class="text-center text-gray-500 text-sm p-6">
+  <footer class="text-center text-white text-sm p-6 bg-black">
     &copy; 2025 Kaymar Construction | Powered by Ask Kai
     <div class="flex justify-center space-x-6 mt-2">
-      <a href="https://www.instagram.com/askkai_official" class="text-blue-600 hover:underline">Instagram</a>
-      <a href="https://www.tiktok.com/@askkai_official" class="text-blue-600 hover:underline">TikTok</a>
-      <a href="https://www.facebook.com/askkai_official" class="text-blue-600 hover:underline">Facebook</a>
-      <a href="https://www.youtube.com/@askkai_official" class="text-blue-600 hover:underline">YouTube</a>
-      <a href="https://www.threads.net/@askkai_official" class="text-blue-600 hover:underline">Threads</a>
+      <a href="https://www.instagram.com/askkai_official" class="text-blue-300 hover:underline">Instagram</a>
+      <a href="https://www.tiktok.com/@askkai_official" class="text-blue-300 hover:underline">TikTok</a>
+      <a href="https://www.facebook.com/askkai_official" class="text-blue-300 hover:underline">Facebook</a>
+      <a href="https://www.youtube.com/@askkai_official" class="text-blue-300 hover:underline">YouTube</a>
+      <a href="https://www.threads.net/@askkai_official" class="text-blue-300 hover:underline">Threads</a>
     </div>
-    <p class="text-xs text-gray-400 mt-2">Built with coding support from Jack Cooper</p>
+    <p class="text-xs text-gray-300 mt-2">Built with coding support from Jack Cooper</p>
   </footer>
 
   <script>
