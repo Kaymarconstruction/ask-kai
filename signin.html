@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sign In – Ask Kai</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 </head>
 <body class="bg-white text-gray-800">
   <main class="min-h-screen flex flex-col items-center justify-center p-8 text-center">
@@ -16,12 +15,7 @@
     <div class="w-full max-w-sm">
       <input id="email" type="email" placeholder="Email address" class="w-full border p-3 rounded-lg mb-4" />
       <input id="password" type="password" placeholder="Password" class="w-full border p-3 rounded-lg mb-6" />
-      <button onclick="signInEmail()" class="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700">Sign In</button>
-
-      <div class="my-4 text-gray-500 text-sm">OR</div>
-
-      <button onclick="signInWithGoogle()" class="w-full bg-black text-white py-2 rounded hover:bg-gray-800">Continue with Google</button>
-
+      <button onclick="signIn()" class="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700">Sign In</button>
       <p class="text-sm text-gray-500 mt-4">
         Don't have an account? <a href="signup.html" class="text-blue-600 hover:underline">Sign up here</a>
       </p>
@@ -29,26 +23,24 @@
   </main>
 
   <script>
-    const supabase = supabase.createClient(
-      'https://YOUR_SUPABASE_URL.supabase.co',
-      'YOUR_SUPABASE_PUBLIC_ANON_KEY'
-    );
-
-    async function signInEmail() {
-      const email = document.getElementById('email').value.trim();
+    function signIn() {
+      const email = document.getElementById('email').value.trim().toLowerCase();
       const password = document.getElementById('password').value.trim();
-      if (!email || !password) return alert('Enter both fields');
 
-      const { error, user } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) return alert(error.message);
+      if (!email || !password) {
+        alert("Please enter both email and password.");
+        return;
+      }
+
+      if (email !== "mark@kaymarconstruction.com") {
+        alert("Access restricted. Soft-launch only.");
+        return;
+      }
 
       sessionStorage.setItem('askkaiUser', email);
+      localStorage.setItem('promptCount', '0');
+      localStorage.setItem('planTier', 'Free Plan');
       window.location.href = 'index.html';
-    }
-
-    async function signInWithGoogle() {
-      const { error } = await supabase.auth.signInWithOAuth({ provider: 'google' });
-      if (error) console.error('OAuth error:', error.message);
     }
   </script>
 </body>
