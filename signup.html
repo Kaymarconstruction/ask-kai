@@ -32,7 +32,8 @@
         <button onclick="signUp()" class="w-full bg-black text-white py-2 rounded hover:bg-gray-900">Sign Up</button>
       </div>
 
-      <div class="my-4 border-t pt-4 space-y-4">
+      <div class="my-4 border-t pt-4 space-y-3">
+        <!-- Google Login -->
         <div id="g_id_onload"
           data-client_id="713262892255-cnmp61htnsg5lfenuurj2a8g3ha0jafg.apps.googleusercontent.com"
           data-context="signup"
@@ -40,6 +41,7 @@
           data-callback="handleGoogleLogin"
           data-auto_prompt="false">
         </div>
+
         <div class="g_id_signin"
           data-type="standard"
           data-shape="pill"
@@ -49,7 +51,10 @@
           data-logo_alignment="left">
         </div>
 
-        <div id="fb-login-button" class="w-full"></div>
+        <!-- Facebook Login -->
+        <div class="flex justify-center">
+          <button onclick="loginWithFacebook()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Continue with Facebook</button>
+        </div>
       </div>
 
       <p class="text-sm text-gray-600">Already have an account? <a href="signin.html" class="text-blue-600 hover:underline">Sign in here</a></p>
@@ -107,17 +112,19 @@
       return JSON.parse(jsonPayload);
     }
 
-    window.fbAsyncInit = function() {
+    window.fbAsyncInit = function () {
       FB.init({
         appId: 'YOUR_FACEBOOK_APP_ID',
         cookie: true,
         xfbml: true,
-        version: 'v18.0'
+        version: 'v19.0'
       });
+    };
 
-      FB.Event.subscribe('auth.statusChange', function(response) {
-        if (response.status === 'connected') {
-          FB.api('/me?fields=email', function(profile) {
+    function loginWithFacebook() {
+      FB.login(function (response) {
+        if (response.authResponse) {
+          FB.api('/me', { fields: 'name,email' }, function (profile) {
             const email = profile.email.toLowerCase();
             if (email !== 'mark@kaymarconstruction.com') {
               alert("Access restricted during development.");
@@ -129,8 +136,8 @@
             window.location.href = 'index.html';
           });
         }
-      });
-    };
+      }, { scope: 'public_profile,email' });
+    }
   </script>
 </body>
 </html>
