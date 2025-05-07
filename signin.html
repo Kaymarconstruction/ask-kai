@@ -6,6 +6,7 @@
   <title>Sign In – Ask Kai</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js"></script>
   <style>
     body {
       background-image: url('https://i.imgur.com/jhqlVA5.png');
@@ -31,14 +32,14 @@
         <button onclick="signIn()" class="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700">Sign In</button>
       </div>
 
-      <div class="my-4 border-t pt-4">
+      <div class="my-4 border-t pt-4 space-y-2">
+        <!-- Google Sign-In -->
         <div id="g_id_onload"
           data-client_id="713262892255-cnmp61htnsg5lfenuurj2a8g3ha0jafg.apps.googleusercontent.com"
           data-context="signin"
           data-ux_mode="popup"
           data-callback="handleGoogleLogin"
-          data-auto_prompt="false">
-        </div>
+          data-auto_prompt="false"></div>
 
         <div class="g_id_signin"
           data-type="standard"
@@ -46,7 +47,12 @@
           data-theme="outline"
           data-text="continue_with"
           data-size="large"
-          data-logo_alignment="left">
+          data-logo_alignment="left"></div>
+
+        <!-- Facebook Sign-In -->
+        <div id="fb-root"></div>
+        <div class="flex justify-center">
+          <button onclick="handleFacebookLogin()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 w-full">Continue with Facebook</button>
         </div>
       </div>
 
@@ -97,6 +103,35 @@
         '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
       ).join(''));
       return JSON.parse(jsonPayload);
+    }
+
+    window.fbAsyncInit = function() {
+      FB.init({
+        appId      : '2841591242694736', // your Facebook App ID
+        cookie     : true,
+        xfbml      : true,
+        version    : 'v18.0'
+      });
+    };
+
+    function handleFacebookLogin() {
+      FB.login(function(response) {
+        if (response.authResponse) {
+          FB.api('/me', {fields: 'name,email'}, function(userInfo) {
+            const email = userInfo.email?.toLowerCase();
+            if (email !== 'mark@kaymarconstruction.com') {
+              alert("Access restricted during development.");
+              return;
+            }
+            sessionStorage.setItem('askkaiUser', email);
+            localStorage.setItem('promptCount', '0');
+            localStorage.setItem('planTier', 'Free Plan');
+            window.location.href = 'index.html';
+          });
+        } else {
+          alert("Facebook login failed or cancelled.");
+        }
+      }, {scope: 'email'});
     }
   </script>
 </body>
