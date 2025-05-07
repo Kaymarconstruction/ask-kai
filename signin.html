@@ -1,17 +1,29 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sign In – Ask Kai</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <script src="https://accounts.google.com/gsi/client" async defer></script>
+  <style>
+    body {
+      background: url('https://i.imgur.com/jhqlVA5.png') no-repeat center center fixed;
+      background-size: cover;
+    }
+  </style>
 </head>
-<body class="bg-white text-gray-800">
+<body class="bg-white bg-opacity-90 text-gray-800">
   <main class="min-h-screen flex flex-col items-center justify-center p-8 text-center">
     <img src="https://i.imgur.com/uYWtV9r.png" alt="Kai Marlow" class="w-40 h-60 object-cover rounded-2xl shadow mb-4" />
     <h1 class="text-2xl font-bold text-green-600 mb-2">Sign In to Ask Kai</h1>
-    <p class="text-gray-600 mb-6 max-w-md">Smart, fast, and built by tradies — Ask Kai is your AI mate on the job. First 10 prompts are free!</p>
+    <p class="text-gray-700 mb-6 max-w-md">Built by tradies, for tradies. Ask Kai gives you site-smart answers — fast.</p>
+
+    <div class="w-full max-w-sm">
+      <input id="email" type="email" placeholder="Email address" class="w-full border p-3 rounded-lg mb-4" />
+      <input id="password" type="password" placeholder="Password" class="w-full border p-3 rounded-lg mb-4" />
+      <button onclick="signIn()" class="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700">Sign In</button>
+    </div>
 
     <div id="g_id_onload"
       data-client_id="713262892255-cnmp61htnsg5lfenuurj2a8g3ha0jafg.apps.googleusercontent.com"
@@ -21,7 +33,7 @@
       data-auto_prompt="false">
     </div>
 
-    <div class="g_id_signin"
+    <div class="g_id_signin mt-6"
       data-type="standard"
       data-shape="pill"
       data-theme="outline"
@@ -36,6 +48,26 @@
   </main>
 
   <script>
+    function signIn() {
+      const email = document.getElementById('email').value.trim().toLowerCase();
+      const password = document.getElementById('password').value.trim();
+
+      if (!email || !password) {
+        alert("Please enter both email and password.");
+        return;
+      }
+
+      if (email !== "mark@kaymarconstruction.com") {
+        alert("Access restricted during development.");
+        return;
+      }
+
+      sessionStorage.setItem('askkaiUser', email);
+      localStorage.setItem('promptCount', '0');
+      localStorage.setItem('planTier', 'Free Plan');
+      window.location.href = 'index.html';
+    }
+
     function handleGoogleLogin(response) {
       const userPayload = decodeJwt(response.credential);
       const email = userPayload?.email?.toLowerCase();
