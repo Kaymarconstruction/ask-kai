@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sign In – Ask Kai</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 </head>
 <body class="bg-white text-gray-800">
   <main class="min-h-screen flex flex-col items-center justify-center p-8 text-center">
@@ -15,7 +16,12 @@
     <div class="w-full max-w-sm">
       <input id="email" type="email" placeholder="Email address" class="w-full border p-3 rounded-lg mb-4" />
       <input id="password" type="password" placeholder="Password" class="w-full border p-3 rounded-lg mb-6" />
-      <button onclick="signIn()" class="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700">Sign In</button>
+      <button onclick="signInEmail()" class="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700">Sign In</button>
+
+      <div class="my-4 text-gray-500 text-sm">OR</div>
+
+      <button onclick="signInWithGoogle()" class="w-full bg-black text-white py-2 rounded hover:bg-gray-800">Continue with Google</button>
+
       <p class="text-sm text-gray-500 mt-4">
         Don't have an account? <a href="signup.html" class="text-blue-600 hover:underline">Sign up here</a>
       </p>
@@ -23,26 +29,26 @@
   </main>
 
   <script>
-    function signIn() {
-      const email = document.getElementById('email').value.trim().toLowerCase();
+    const supabase = supabase.createClient(
+      'https://YOUR_SUPABASE_URL.supabase.co',
+      'YOUR_SUPABASE_PUBLIC_ANON_KEY'
+    );
+
+    async function signInEmail() {
+      const email = document.getElementById('email').value.trim();
       const password = document.getElementById('password').value.trim();
+      if (!email || !password) return alert('Enter both fields');
 
-      if (!email || !password) {
-        alert("Please enter both email and password.");
-        return;
-      }
+      const { error, user } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) return alert(error.message);
 
-      // Lock access to Mark only
-      const allowedEmail = "mark@kaymarconstruction.com";
-      if (email !== allowedEmail) {
-        alert("Access is currently restricted. Please check back soon.");
-        return;
-      }
-
-      // Login flow
       sessionStorage.setItem('askkaiUser', email);
-      localStorage.setItem('promptCount', '0');
       window.location.href = 'index.html';
+    }
+
+    async function signInWithGoogle() {
+      const { error } = await supabase.auth.signInWithOAuth({ provider: 'google' });
+      if (error) console.error('OAuth error:', error.message);
     }
   </script>
 </body>
