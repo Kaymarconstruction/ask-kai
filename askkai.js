@@ -1,149 +1,171 @@
 const express = require('express');
 const cors = require('cors');
+const fs = require('fs');
+const path = require('path');
 const { Configuration, OpenAIApi } = require('openai');
+const { createClient } = require('@supabase/supabase-js');
 const stripe = require('stripe')(process.env.STRIPE_SECRET_KEY);
-const bodyParser = require('body-parser');
+const { scrapeBunningsTimber } = require('./bunningsScraper');
+const { scrapeBowensTimber } = require('./bowensScraper');
+
+const SUPABASE_URL = process.env.SUPABASE_URL;
+const SUPABASE_KEY = process.env.SUPABASE_KEY;
+const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
 
 const app = express();
 app.use(cors());
 app.use(express.json());
-app.use(bodyParser.raw({ type: 'application/json' }));
 
 // OpenAI Setup
-const configuration = new Configuration({
-  apiKey: process.env.OPENAI_API_KEY,
-});
+const configuration = new Configuration({ apiKey: process.env.OPENAI_API_KEY });
 const openai = new OpenAIApi(configuration);
 
 // Health Check
-app.get('/health', (req, res) => {
-  res.status(200).send('OK');
+app.get('/health', (req, res) => res.status(200).send('OK'));
+
+// Register Route (store emails in Supabase)
+app.post('/register', async (req, res) => {
+  const { email } = req.body;
+  console.log("REGISTER endpoint hit:", email);
+
+  if (!email) return res.status(400).json({ success: false });
+
+  try {
+    const { error } = await supabase.from('users').insert([{ email }]);
+    if (error) throw error;
+    res.json({ success: true });
+  } catch (err) {
+    console.error("Supabase insert error:", err.message);
+    res.status(500).json({ success: false });
+  }
 });
 
-// ASK KAI ENDPOINT
+// Shared Kai Persona
+const kaiSystemMessage = {
+  role: "system",
+  content: `You are Kai Marlow — a highly experienced Aussie builder and AI-powered trade assistant with 20+ years of residential and commercial construction experience.
+
+Your responses must:
+- Ask for the user's location, code jurisdiction, and project type if not given
+- Use metric units (mm, m, m², m³)
+- Reference Australian codes (NCC, AS1684, AS1170)
+- Provide 30–50 word guidance on build codes or council advice
+- Be clear, practical, and 20–80 words long
+- Suggest timber sizes (90x45, 140x45, MGP10, H3, etc.)
+- Understand concrete/boards/timber come in standard sizes (2.4m–6.0m)
+- Ask follow-up questions to get missing info
+- Always respond in helpful tone
+- Never say you're an AI — you are Kai.`
+};
+
+// POST: /ask
 app.post('/ask', async (req, res) => {
   const { messages } = req.body;
+  if (!messages || !Array.isArray(messages)) return res.status(400).json({ reply: "Missing session or message." });
 
-  if (!messages || !Array.isArray(messages)) {
-    return res.status(400).json({ reply: "No messages received." });
-  }
-
-  const systemPrompt = {
-    role: "system",
-    content: `You are Kai Marlow — a highly experienced Aussie tradie and building consultant with 20+ years across carpentry, decking, roofing, framing, and quoting.
-
-You respond in 20 to 80 words, using metric measurements and referencing Australian building codes where relevant (NCC, AS1684, AS1720). Never say you’re an AI — you're Kai.
-
-Always ask these follow-up questions first:
-1. What's your project location or country?
-2. Are there council rules or code requirements to consider?
-3. What specific dimensions or materials are being used?
-
-Automatically consider:
-- Timber comes in 1.8m–6m lengths in 0.6m increments.
-- Composite decking boards are typically 5.4m.
-- Cement sheets come in 450/600/1200 widths x 2400mm.
-- Round up to nearest size for framing or cutting.
-
-Examples of tasks:
-- Estimate number of stumps and concrete bags for subfloors
-- Suggest framing timber sizes, grades, and spacing
-- Identify decking material quantities with wastage
-- Request board widths, lengths, and spacing
-- Explain cost breakdowns and drafting quotes
-- Answer clearly and practically like a real tradie
-
-Be helpful, fast, and accurate like a trusted onsite mate.`
-  };
-
-  const fullMessages = messages.some(m => m.role === 'system')
-    ? messages
-    : [systemPrompt, ...messages];
+  const fullMessages = messages.some(msg => msg.role === 'system') ? messages : [kaiSystemMessage, ...messages];
 
   try {
     const response = await openai.createChatCompletion({
       model: "gpt-3.5-turbo",
       messages: fullMessages,
-      temperature: 0.6,
-      max_tokens: 700,
-    });
-
-    const kaiReply = response.data.choices[0].message.content.trim();
-    res.json({ reply: kaiReply });
-
-  } catch (error) {
-    console.error("OpenAI Error:", error.response?.data || error.message);
-    res.status(500).json({ reply: "Something went wrong. Try again shortly." });
-  }
-});
-
-// QUOTE GENERATOR ENDPOINT
-app.post('/quote', async (req, res) => {
-  const { messages } = req.body;
-
-  const systemPrompt = {
-    role: "system",
-    content: `You are Kai Marlow — a quoting assistant and experienced tradie. You specialise in calculating timber quantities, framing, decking, and concrete requirements.
-
-Rules:
-- Use metric (mm, m, m², m³)
-- Ask for location, code requirements, spacing, board sizes
-- Use local building logic (Australia, UK, US as needed)
-- Assume timber comes in 0.6m intervals (1.8 to 6.0m)
-- Composite decking is typically 5.4m
-- Output a clean material list based on the user’s needs
-- Include estimated quantities with sensible rounding and clear logic
-- Do not give labor costs or install times
-
-You are assisting with:
-- Takeoffs
-- Estimating materials
-- Helping the user build a material list
-`
-  };
-
-  try {
-    const response = await openai.createChatCompletion({
-      model: 'gpt-3.5-turbo',
-      messages: [systemPrompt, ...messages],
-      temperature: 0.5,
-      max_tokens: 800,
+      temperature: 0.7,
+      max_tokens: 750
     });
 
     const reply = response.data.choices[0].message.content.trim();
     res.json({ reply });
-
-  } catch (err) {
-    console.error("Quote Error:", err.response?.data || err.message);
+  } catch (error) {
+    console.error("Kai error:", error.response?.data || error.message);
     res.status(500).json({ reply: "Something went wrong. Try again later." });
   }
 });
 
-// STRIPE WEBHOOK
-app.post('/webhook', (req, res) => {
-  const sig = req.headers['stripe-signature'];
-  let event;
+// POST: /quote
+app.post('/quote', async (req, res) => {
+  const { messages } = req.body;
+  if (!messages || !Array.isArray(messages)) return res.status(400).json({ reply: "No input provided." });
+
+  const quotePrompt = {
+    role: "system",
+    content: `You are Kai Marlow, a quoting and estimating expert for Australian building trades.
+
+Always clarify:
+- Location
+- Deck type or structure type
+- Timber specs
+- Board width
+- Whether elevation or face boards are needed
+- Composite board lengths (use 5.4m)
+- Ask if breaker boards are needed for longer decks
+
+Use bullet list:
+• Item: Qty – Description`
+  };
 
   try {
-    event = stripe.webhooks.constructEvent(req.body, sig, process.env.STRIPE_WEBHOOK_SECRET);
-  } catch (err) {
-    console.error("Webhook Error:", err.message);
-    return res.status(400).send(`Webhook Error: ${err.message}`);
+    const response = await openai.createChatCompletion({
+      model: "gpt-3.5-turbo",
+      messages: [quotePrompt, ...messages],
+      temperature: 0.6,
+      max_tokens: 750
+    });
+
+    res.json({ reply: response.data.choices[0].message.content.trim() });
+  } catch (error) {
+    console.error("Quote error:", error.response?.data || error.message);
+    res.status(500).json({ reply: "Kai couldn't generate your quote." });
   }
-
-  if (event.type === 'checkout.session.completed') {
-    const metadata = event.data.object.metadata || {};
-    const email = event.data.object.customer_email;
-    const pack = metadata.pack || "unknown";
-
-    console.log(`✅ Payment received from ${email} for: ${pack}`);
-    // Add logic to persist this if needed
-  }
-
-  res.status(200).send('Received');
 });
 
-// Server Start
+// GET: /materials
+app.get('/materials', async (req, res) => {
+  try {
+    const { data, error } = await supabase.from('materials').select('*').limit(100);
+    if (error) throw error;
+    res.json({ success: true, materials: data });
+  } catch (err) {
+    console.error("Fetch materials error:", err.message);
+    res.status(500).json({ success: false, message: 'Failed to fetch materials.' });
+  }
+});
+
+// POST: /scrape/bunnings (admin-only)
+app.post('/scrape/bunnings', async (req, res) => {
+  const { email } = req.body;
+  if (email !== 'mark@kaymarconstruction.com') {
+    return res.status(403).json({ success: false, message: 'Unauthorized' });
+  }
+
+  try {
+    await scrapeBunningsTimber();
+    res.json({ success: true, message: 'Bunnings scrape complete.' });
+  } catch (err) {
+    res.status(500).json({ success: false, message: 'Scrape failed.', error: err.message });
+  }
+});
+
+// POST: /scrape/bowens (admin-only)
+app.post('/scrape/bowens', async (req, res) => {
+  const { email } = req.body;
+  if (email !== 'mark@kaymarconstruction.com') {
+    return res.status(403).json({ success: false, message: 'Unauthorized' });
+  }
+
+  try {
+    await scrapeBowensTimber();
+    res.json({ success: true, message: 'Bowens scrape complete.' });
+  } catch (err) {
+    res.status(500).json({ success: false, message: 'Scrape failed.', error: err.message });
+  }
+});
+
+// Stripe webhook placeholder
+app.post('/webhook', express.raw({ type: 'application/json' }), (req, res) => {
+  res.status(200).send('Webhook received');
+});
+
+// Start Server
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`Ask Kai backend running on port ${PORT}`);
