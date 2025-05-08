@@ -8,11 +8,11 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 </head>
 <body class="bg-gray-100 text-gray-800">
-  <main class="max-w-5xl mx-auto p-6">
+  <main class="max-w-6xl mx-auto p-6">
     <h1 class="text-3xl font-bold text-green-600 mb-4">Materials Price List</h1>
     <div class="overflow-x-auto">
       <table class="min-w-full bg-white shadow-md rounded-xl overflow-hidden">
-        <thead class="bg-gray-200">
+        <thead class="bg-gray-200 text-sm">
           <tr>
             <th class="text-left px-4 py-2">Name</th>
             <th class="text-left px-4 py-2">Category</th>
@@ -27,13 +27,14 @@
 
   <script>
     const supabase = supabase.createClient(
-      'https://YOUR_PROJECT_REF.supabase.co',
+      'https://askkai-db.supabase.co',
       'YOUR_PUBLIC_ANON_KEY'
     );
 
     async function loadMaterials() {
-      const { data, error } = await supabase.from('materials').select('*');
+      const { data, error } = await supabase.from('materials').select('*').limit(250);
       const table = document.getElementById('materialsTable');
+
       if (error) {
         table.innerHTML = `<tr><td colspan="4" class="p-4 text-red-600">Error loading data.</td></tr>`;
         return;
@@ -57,4 +58,4 @@
     loadMaterials();
   </script>
 </body>
-</html> 
+</html>
