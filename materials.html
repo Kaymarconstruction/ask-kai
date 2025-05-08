@@ -1,93 +1,111 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Materials Database – Ask Kai</title>
+  <title>Materials Catalogue – Ask Kai</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <style>
     body {
-      background-image: url('https://i.imgur.com/jhqlVA5.png');
+      margin: 0;
+      font-family: sans-serif;
+      background-image: url('https://i.imgur.com/qzRmu0O.jpeg');
       background-size: cover;
       background-position: center;
     }
     .overlay {
-      background-color: rgba(255, 255, 255, 0.95);
+      background-color: rgba(255, 255, 255, 0.96);
       backdrop-filter: blur(4px);
     }
   </style>
 </head>
 <body class="text-gray-800">
-  <div class="w-full bg-black relative">
+  <!-- Header + Dropdown -->
+  <div class="w-full bg-black py-2 relative">
+    <div class="absolute left-2 top-2 z-50">
+      <button onclick="toggleMenu()" class="bg-white text-black p-2 rounded shadow">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+      <div id="menuDropdown" class="hidden absolute left-0 mt-2 w-64 bg-white border border-gray-300 shadow-lg rounded-md z-50">
+        <a href="index.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Home</a>
+        <a href="shop.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Shop</a>
+        <a href="quote.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Quote Generator</a>
+        <a href="calculators.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Calculators</a>
+        <a href="apprentice-hub.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Apprentice Hub</a>
+        <a href="materials.html" class="block px-4 py-2 text-sm text-green-600 font-bold bg-gray-100">Materials</a>
+        <a href="settings.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Settings</a>
+      </div>
+    </div>
     <img src="https://i.imgur.com/nDIhtRr.png" alt="Kaymar Banner" class="w-full max-h-24 object-contain mx-auto">
   </div>
 
+  <!-- Main -->
   <main class="max-w-5xl mx-auto p-4">
-    <div class="overlay p-6 rounded-xl">
-      <h1 class="text-2xl font-bold mb-4 text-green-700">Materials Catalogue</h1>
-
-      <div class="flex flex-wrap gap-4 mb-6">
-        <input id="searchInput" type="text" placeholder="Search by name..." class="border p-2 rounded w-full md:w-1/3">
-
-        <select id="supplierFilter" class="border p-2 rounded w-full md:w-1/3">
+    <div class="overlay p-6 rounded-xl shadow">
+      <h1 class="text-2xl font-bold text-green-700 mb-4">Materials Catalogue</h1>
+      <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-4">
+        <input id="searchInput" type="text" placeholder="Search by name..." class="col-span-1 md:col-span-2 p-2 border rounded">
+        <select id="supplierFilter" class="p-2 border rounded">
           <option value="">All Suppliers</option>
           <option value="Bunnings">Bunnings</option>
           <option value="Bowens">Bowens</option>
         </select>
-
-        <select id="categoryFilter" class="border p-2 rounded w-full md:w-1/3">
+        <select id="categoryFilter" class="p-2 border rounded">
           <option value="">All Categories</option>
           <option value="timber">Timber</option>
-          <option value="cladding">Cladding</option>
-          <option value="flooring">Flooring</option>
+          <option value="decking">Decking</option>
+          <option value="paint">Paint</option>
+          <option value="plumbing">Plumbing</option>
+          <!-- Add more categories as needed -->
         </select>
-
-        <button onclick="filterMaterials()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded">Search</button>
       </div>
+      <button onclick="fetchMaterials()" class="bg-green-600 text-white py-2 px-4 rounded hover:bg-green-700">Search</button>
 
-      <div id="materialsList" class="space-y-4"></div>
+      <div id="materialsContainer" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mt-6"></div>
     </div>
   </main>
 
   <script>
-    const SUPABASE_URL = 'https://YOUR_SUPABASE_PROJECT.supabase.co';
-    const SUPABASE_ANON_KEY = 'YOUR_SUPABASE_ANON_KEY';
-
-    async function fetchMaterials() {
-      const query = new URLSearchParams();
-      const supplier = document.getElementById('supplierFilter').value;
-      const category = document.getElementById('categoryFilter').value;
-      const search = document.getElementById('searchInput').value;
-
-      if (supplier) query.append('supplier', supplier);
-      if (category) query.append('category', category);
-      if (search) query.append('q', search);
-
-      const res = await fetch(`https://askkai-backend-clean.onrender.com/materials?${query.toString()}`);
-      const data = await res.json();
-
-      const list = document.getElementById('materialsList');
-      list.innerHTML = '';
-      if (!Array.isArray(data) || data.length === 0) {
-        list.innerHTML = '<p class="text-gray-600">No materials found.</p>';
-        return;
-      }
-
-      data.forEach(item => {
-        const card = document.createElement('div');
-        card.className = 'bg-white rounded-lg shadow p-4';
-        card.innerHTML = `
-          <h3 class="font-semibold text-lg">${item.name}</h3>
-          <p class="text-sm text-gray-600">Supplier: ${item.supplier}</p>
-          <p class="text-sm text-gray-600">Category: ${item.category}</p>
-          <p class="text-sm text-green-700 font-bold">$${item.price_per_unit.toFixed(2)}</p>
-        `;
-        list.appendChild(card);
-      });
+    function toggleMenu() {
+      document.getElementById('menuDropdown').classList.toggle('hidden');
     }
 
-    function filterMaterials() {
-      fetchMaterials();
+    async function fetchMaterials() {
+      const name = document.getElementById('searchInput').value.trim();
+      const supplier = document.getElementById('supplierFilter').value;
+      const category = document.getElementById('categoryFilter').value;
+
+      let query = 'https://askkai-backend-clean.onrender.com/materials?';
+      if (name) query += `name=${encodeURIComponent(name)}&`;
+      if (supplier) query += `supplier=${encodeURIComponent(supplier)}&`;
+      if (category) query += `category=${encodeURIComponent(category)}&`;
+
+      try {
+        const res = await fetch(query);
+        const data = await res.json();
+        renderMaterials(data);
+      } catch (err) {
+        console.error('Error loading materials:', err);
+        document.getElementById('materialsContainer').innerHTML = '<p class="text-red-500">Failed to load materials.</p>';
+      }
+    }
+
+    function renderMaterials(data) {
+      const container = document.getElementById('materialsContainer');
+      if (!data || data.length === 0) {
+        container.innerHTML = '<p>No materials found.</p>';
+        return;
+      }
+      container.innerHTML = data.map(mat => `
+        <div class="bg-white rounded-xl p-4 shadow">
+          <h2 class="text-lg font-semibold text-green-700 mb-1">${mat.name}</h2>
+          <p class="text-sm text-gray-600">${mat.category} – ${mat.supplier}</p>
+          <p class="text-sm text-gray-800 mt-1">$${mat.price_per_unit?.toFixed(2)} / ${mat.unit || 'unit'}</p>
+          <a href="${mat.url}" class="text-blue-600 text-sm hover:underline" target="_blank">View</a>
+        </div>
+      `).join('');
     }
 
     window.onload = fetchMaterials;
