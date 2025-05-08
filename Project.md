@@ -92,6 +92,9 @@
 - [ ] Paint: Paint Spot, Inspirations Dulux
 - [ ] Concrete: average plain + exposed rates (by suburb/region)
 - [ ] Rubbish: Skip bin & rubbish removal cost providers
+- [ ] Build GET /materials?category= API for frontend material list view
+- [ ] Add search endpoint /materials/search?q=
+- [ ] Add scrape source logging to each material for audit/debug
 
 ---
 
@@ -151,20 +154,20 @@ Project board has been updated with:
 - Price scraping provider targets
 - Google/Facebook OAuth confirmed signed off
 - Next: begin scraping pipeline script setup
+- Added search and logging endpoints for material API
 
 
-Project updated.
+Project board updated with:
 
-Next Steps:
+New /materials API endpoints (GET, search, log source)
 
-1. Begin implementing the scraper for Bunnings materials into the new Supabase materials table.
+Price scraping sources confirmed and expanded
 
-
-2. Define common categories and tag strategy (e.g., framing, decking, paint, soil, plumbing, etc.)
-
-
-3. Schedule cron job for periodic updates from suppliers’ public pricing pages (where possible).
+Pre-production tasks finalized
 
 
+Next step: Build category + tag system for materials or deploy Bowens scraper.
 
-a. Want to begin building the Bunnings scraper script using Puppeteer or Cheerio? b. Or define the category + tag taxonomy structure for your Supabase materials table first?
+a. Ready to add Bowens timber scraping support?
+b. Want to define tag + category strategy in Supabase for smarter filtering first?
+
