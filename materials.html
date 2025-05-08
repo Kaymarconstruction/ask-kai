@@ -5,93 +5,90 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Materials List – Ask Kai</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-image: url('https://i.imgur.com/jhqlVA5.png');
+      background-size: cover;
+      background-position: center;
+    }
+    .overlay {
+      background-color: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(6px);
+    }
+  </style>
 </head>
-<body class="bg-gray-100 text-gray-800">
+<body class="text-gray-800">
   <div class="max-w-5xl mx-auto p-6">
-    <h1 class="text-3xl font-bold mb-6 text-center text-green-700">Materials Database</h1>
+    <div class="overlay p-6 rounded-xl shadow-xl">
+      <h1 class="text-3xl font-bold text-center text-green-700 mb-6">Materials Catalog</h1>
 
-    <!-- Filters -->
-    <div class="flex flex-wrap gap-4 p-4 bg-white shadow rounded mb-6">
-      <div>
-        <label class="block text-sm font-medium text-gray-700">Supplier</label>
-        <select id="supplierFilter" class="mt-1 block w-48 border border-gray-300 rounded p-2">
-          <option value="">All</option>
-          <option value="Bunnings">Bunnings</option>
-          <option value="Bowens">Bowens</option>
-        </select>
+      <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
+        <input id="supplierFilter" class="border p-2 rounded" placeholder="Filter by Supplier (e.g. Bunnings)" />
+        <input id="categoryFilter" class="border p-2 rounded" placeholder="Filter by Category (e.g. timber)" />
+        <button onclick="applyFilters()" class="bg-green-600 text-white rounded p-2 hover:bg-green-700">Search</button>
       </div>
-      <div>
-        <label class="block text-sm font-medium text-gray-700">Category</label>
-        <select id="categoryFilter" class="mt-1 block w-48 border border-gray-300 rounded p-2">
-          <option value="">All</option>
-          <option value="timber">Timber</option>
-          <option value="fixings">Fixings</option>
-          <option value="cladding">Cladding</option>
-        </select>
-      </div>
-    </div>
 
-    <!-- Materials Table -->
-    <div class="bg-white shadow rounded overflow-x-auto">
-      <table class="min-w-full text-sm">
-        <thead class="bg-gray-200 text-gray-700">
-          <tr>
-            <th class="px-4 py-2 text-left">Name</th>
-            <th class="px-4 py-2 text-left">Category</th>
-            <th class="px-4 py-2 text-left">Supplier</th>
-            <th class="px-4 py-2 text-left">Unit Price</th>
-            <th class="px-4 py-2 text-left">Date Scraped</th>
-            <th class="px-4 py-2 text-left">Link</th>
+      <table class="w-full table-auto border text-sm">
+        <thead>
+          <tr class="bg-gray-200 text-left">
+            <th class="p-2">Name</th>
+            <th class="p-2">Supplier</th>
+            <th class="p-2">Category</th>
+            <th class="p-2">Price</th>
+            <th class="p-2">Scraped At</th>
           </tr>
         </thead>
-        <tbody id="materialsTable" class="divide-y divide-gray-200"></tbody>
+        <tbody id="materialsTable" class="bg-white"></tbody>
       </table>
     </div>
   </div>
 
   <script>
-    document.getElementById('supplierFilter').addEventListener('change', fetchFilteredMaterials);
-    document.getElementById('categoryFilter').addEventListener('change', fetchFilteredMaterials);
+    const API_BASE = 'https://askkai-backend-clean.onrender.com';
 
-    async function fetchFilteredMaterials() {
-      const supplier = document.getElementById('supplierFilter').value;
-      const category = document.getElementById('categoryFilter').value;
-
-      let url = 'https://askkai-backend-clean.onrender.com/materials';
+    async function fetchMaterials(supplier = '', category = '') {
+      let url = `${API_BASE}/materials`;
       const params = new URLSearchParams();
       if (supplier) params.append('supplier', supplier);
       if (category) params.append('category', category);
-      if ([...params].length > 0) url += `?${params.toString()}`;
+      if ([...params].length) url += `?${params.toString()}`;
 
       try {
         const res = await fetch(url);
-        const json = await res.json();
-        renderMaterials(json.materials || []);
+        const data = await res.json();
+        renderMaterials(data);
       } catch (err) {
-        console.error('Error loading materials:', err);
+        console.error('Failed to fetch materials:', err);
       }
     }
 
-    function renderMaterials(materials) {
+    function applyFilters() {
+      const supplier = document.getElementById('supplierFilter').value.trim();
+      const category = document.getElementById('categoryFilter').value.trim();
+      fetchMaterials(supplier, category);
+    }
+
+    function renderMaterials(items) {
       const table = document.getElementById('materialsTable');
       table.innerHTML = '';
-      materials.forEach(m => {
-        const row = document.createElement('tr');
-        row.innerHTML = `
-          <td class="px-4 py-2">${m.name}</td>
-          <td class="px-4 py-2">${m.category}</td>
-          <td class="px-4 py-2">${m.supplier}</td>
-          <td class="px-4 py-2">$${m.unit_price.toFixed(2)}</td>
-          <td class="px-4 py-2">${new Date(m.scraped_at).toLocaleDateString()}</td>
-          <td class="px-4 py-2">
-            <a href="${m.url}" target="_blank" class="text-blue-600 hover:underline">View</a>
-          </td>
-        `;
-        table.appendChild(row);
+      if (!items.length) {
+        table.innerHTML = '<tr><td colspan="5" class="p-4 text-center text-gray-500">No materials found.</td></tr>';
+        return;
+      }
+      items.forEach(item => {
+        const row = `<tr>
+          <td class="p-2 border">${item.name}</td>
+          <td class="p-2 border">${item.supplier}</td>
+          <td class="p-2 border">${item.category}</td>
+          <td class="p-2 border">$${item.price_per_unit.toFixed(2)}</td>
+          <td class="p-2 border text-xs text-gray-500">${new Date(item.scraped_at).toLocaleString()}</td>
+        </tr>`;
+        table.innerHTML += row;
       });
     }
 
-    window.addEventListener('DOMContentLoaded', fetchFilteredMaterials);
+    // Initial load
+    fetchMaterials();
   </script>
 </body>
 </html>
