@@ -1,10 +1,11 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Materials Database – Ask Kai</title>
+  <title>Materials – Ask Kai</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
   <style>
     body {
       background-image: url('https://i.imgur.com/jhqlVA5.png');
@@ -12,80 +13,97 @@
       background-position: center;
     }
     .overlay {
-      background-color: rgba(255, 255, 255, 0.96);
+      background-color: rgba(255, 255, 255, 0.95);
       backdrop-filter: blur(4px);
     }
   </style>
 </head>
 <body class="text-gray-800">
-  <main class="min-h-screen flex flex-col items-center p-4">
-    <div class="overlay w-full max-w-4xl p-6 rounded-xl shadow-xl">
-      <h1 class="text-2xl sm:text-3xl font-bold text-green-600 text-center mb-6">Live Material Pricing</h1>
+  <main class="max-w-5xl mx-auto p-4">
+    <div class="overlay p-6 rounded-xl shadow-lg">
+      <h1 class="text-3xl font-bold text-green-600 mb-4 text-center">Material Pricing Database</h1>
 
-      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
-        <input id="searchInput" type="text" placeholder="Search materials..." class="border p-2 rounded w-full" />
-
-        <select id="categoryFilter" class="border p-2 rounded">
+      <div class="flex flex-wrap gap-4 mb-6">
+        <select id="categoryFilter" class="border rounded p-2">
           <option value="">All Categories</option>
-          <option value="timber">Timber</option>
-          <option value="screws">Screws</option>
-          <option value="fixings">Fixings</option>
-          <option value="cement">Cement</option>
-          <option value="cladding">Cladding</option>
         </select>
+        <select id="supplierFilter" class="border rounded p-2">
+          <option value="">All Suppliers</option>
+        </select>
+        <label class="inline-flex items-center space-x-2">
+          <input type="checkbox" id="tradeOnly" class="form-checkbox">
+          <span>Trade Only</span>
+        </label>
       </div>
 
-      <div id="materialsList" class="space-y-3 text-sm"></div>
+      <div id="materialsList" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4"></div>
     </div>
   </main>
 
-  <script type="module">
-    import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm'
-
-    const supabaseUrl = 'https://askkai-db.supabase.co';
-    const supabaseKey = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5kdm14cGtveW9pbWlibnRldGVmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY1MDgxODksImV4cCI6MjA2MjA4NDE4OX0.-U4Jfb33aFfoAec-fhhFqjHExezWcKoEYwkSVgibjE4';
-    const supabase = createClient(supabaseUrl, supabaseKey);
+  <script>
+    const SUPABASE_URL = 'https://YOUR_PROJECT_ID.supabase.co';
+    const SUPABASE_ANON_KEY = 'YOUR_PUBLIC_ANON_KEY';
+    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
     const materialsList = document.getElementById('materialsList');
-    const searchInput = document.getElementById('searchInput');
     const categoryFilter = document.getElementById('categoryFilter');
+    const supplierFilter = document.getElementById('supplierFilter');
+    const tradeOnlyCheckbox = document.getElementById('tradeOnly');
 
     async function loadMaterials() {
-      const search = searchInput.value.toLowerCase();
-      const category = categoryFilter.value;
+      const filters = {};
+      if (categoryFilter.value) filters.category = categoryFilter.value;
+      if (supplierFilter.value) filters.supplier = supplierFilter.value;
+      if (tradeOnlyCheckbox.checked) filters.is_trade = true;
 
       let query = supabase.from('materials').select('*').order('name');
-
-      if (category) query = query.eq('category', category);
+      if (filters.category) query = query.eq('category', filters.category);
+      if (filters.supplier) query = query.eq('supplier', filters.supplier);
+      if (filters.is_trade) query = query.eq('is_trade', true);
 
       const { data, error } = await query;
-      if (error) {
-        materialsList.innerHTML = '<p class="text-red-600">Failed to load materials.</p>';
-        return;
-      }
+      if (error) return console.error(error);
 
-      const filtered = data.filter(m =>
-        m.name.toLowerCase().includes(search)
-      );
-
-      if (filtered.length === 0) {
-        materialsList.innerHTML = '<p class="text-gray-500">No materials found.</p>';
-        return;
-      }
-
-      materialsList.innerHTML = filtered.map(mat => `
-        <div class="bg-white p-3 rounded shadow border">
-          <strong>${mat.name}</strong><br/>
-          <span class="text-green-700 font-semibold">$${mat.price_per_unit.toFixed(2)}</span> / unit<br/>
-          <span class="text-sm text-gray-600">${mat.category} • ${mat.supplier}</span>
-        </div>
-      `).join('');
+      materialsList.innerHTML = '';
+      data.forEach(item => {
+        const div = document.createElement('div');
+        div.className = 'bg-white border rounded-lg p-4 shadow';
+        div.innerHTML = `
+          <h2 class="font-bold text-green-600 text-lg mb-1">${item.name}</h2>
+          <p class="text-sm text-gray-700 mb-1">Price: $${item.price_per_unit?.toFixed(2)}</p>
+          <p class="text-xs text-gray-500">Category: ${item.category} | ${item.supplier}</p>
+        `;
+        materialsList.appendChild(div);
+      });
     }
 
-    searchInput.addEventListener('input', loadMaterials);
-    categoryFilter.addEventListener('change', loadMaterials);
+    async function loadFilters() {
+      const { data: categories } = await supabase.from('materials').select('category').neq('category', null);
+      const { data: suppliers } = await supabase.from('materials').select('supplier').neq('supplier', null);
 
-    loadMaterials();
+      const uniqueCategories = [...new Set(categories.map(i => i.category))];
+      const uniqueSuppliers = [...new Set(suppliers.map(i => i.supplier))];
+
+      uniqueCategories.forEach(cat => {
+        const opt = document.createElement('option');
+        opt.value = cat;
+        opt.textContent = cat;
+        categoryFilter.appendChild(opt);
+      });
+
+      uniqueSuppliers.forEach(sup => {
+        const opt = document.createElement('option');
+        opt.value = sup;
+        opt.textContent = sup;
+        supplierFilter.appendChild(opt);
+      });
+    }
+
+    categoryFilter.addEventListener('change', loadMaterials);
+    supplierFilter.addEventListener('change', loadMaterials);
+    tradeOnlyCheckbox.addEventListener('change', loadMaterials);
+
+    loadFilters().then(loadMaterials);
   </script>
 </body>
 </html>
