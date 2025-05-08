@@ -95,6 +95,7 @@
 - [ ] Build GET /materials?category= API for frontend material list view
 - [ ] Add search endpoint /materials/search?q=
 - [ ] Add scrape source logging to each material for audit/debug
+- [x] Weekly scraper schedule for Bunnings + Bowens
 
 ---
 
@@ -150,34 +151,22 @@ _Last updated: 2025-05-10 by Jack_
 
 Project board has been updated with:
 
-- Materials table schema creation
-- Price scraping provider targets
-- Google/Facebook OAuth confirmed signed off
-- Next: begin scraping pipeline script setup
-- Added search and logging endpoints for material API
+- Bunnings and Bowens scrapers complete for soft launch
+- Weekly data refresh pipeline defined
+- Remaining scraping providers deferred to full launch
+- New API endpoints /materials and /materials/search
+- Next task: Tagging system and filtered view UI
+
 
 Project board updated with:
 
-- New /materials API endpoints (GET, search, log source)
-- Price scraping sources confirmed and expanded
-- Pre-production tasks finalized
+Bowens + Bunnings scraper rollout marked complete
 
-Next step: Build category + tag system for materials or deploy Bowens scraper.
+Weekly material price update schedule confirmed
 
-a. Ready to add Bowens timber scraping support?  
-b. Want to define tag + category strategy in Supabase for smarter filtering first?
+Supabase materials API setup confirmed
 
 
-project.md has been updated with:
-
-Bunnings and Bowens marked as complete for soft launch
-
-Remaining suppliers shifted to full production
-
-New /materials API endpoint tasks
-
-Schedule for weekly update integration
-
-
-Ready to proceed with tagging strategy or enable frontend materials view?
+a. Ready to define the tag + category schema in Supabase?
+b. Or move on to frontend filtering UI with material categories?
 
