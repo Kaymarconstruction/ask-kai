@@ -92,9 +92,9 @@
 - [ ] Paint: Paint Spot, Inspirations Dulux
 - [ ] Concrete: average plain + exposed rates (by suburb/region)
 - [ ] Rubbish: Skip bin & rubbish removal cost providers
-- [ ] Build GET /materials?category= API for frontend material list view
-- [ ] Add search endpoint /materials/search?q=
-- [ ] Add scrape source logging to each material for audit/debug
+- [x] Build GET /materials?category= API for frontend material list view
+- [x] Add search endpoint /materials/search?q=
+- [x] Add scrape source logging to each material for audit/debug
 - [x] Weekly scraper schedule for Bunnings + Bowens
 
 ---
@@ -157,16 +157,29 @@ Project board has been updated with:
 - New API endpoints /materials and /materials/search
 - Next task: Tagging system and filtered view UI
 
-
 Project board updated with:
 
-Bowens + Bunnings scraper rollout marked complete
+- Bowens + Bunnings scraper rollout marked complete
+- Weekly material price update schedule confirmed
+- Supabase materials API setup confirmed
 
-Weekly material price update schedule confirmed
+Next step: 
 
-Supabase materials API setup confirmed
-
-
-a. Ready to define the tag + category schema in Supabase?
+a. Ready to define the tag + category schema in Supabase?  
 b. Or move on to frontend filtering UI with material categories?
+
+
+Project tracker has been updated with:
+
+Bunnings + Bowens scraper completion
+
+Weekly refresh schedule
+
+API endpoints finalized (/materials, /materials/search)
+
+Next step prompt for tagging schema or frontend UI
+
+
+a. Want to start the tagging + filtering schema?
+b. Or implement a “grouped by category” materials view first?
 
