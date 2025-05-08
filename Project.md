@@ -147,39 +147,29 @@
     - Body: "Hi [Supplier Name], I would like a quote for the following materials to be delivered to [address] on [date]:\n\n[List]\n\nRegards, [User]"
 - [x] Settings: add profile picture upload, display active plan, and allow saved supplier emails
 
+---
+
+## PRE-PRODUCTION LAUNCH CHECKLIST
+
+- [ ] `dotenv` module install confirmed in deployment (Render)
+- [ ] SUPABASE_URL and SUPABASE_KEY confirmed on Render secrets
+- [ ] Live `/materials` API response tested from frontend
+- [ ] materials.html tested for UI rendering and backend connection
+- [ ] Error UI confirmed (e.g. no results found, fetch fail)
+- [ ] Schedule weekly refresh of Bunnings + Bowens confirmed
+- [ ] Confirm `.env` file created and working locally
+- [ ] Confirm askkai.js running clean in terminal with Supabase
+- [ ] Stripe webhook test mode reviewed
+- [ ] Menu dropdown and nav links working clean on all pages
+- [ ] Mobile rendering double checked for layout break
+- [ ] Add instructions to README for local test + deploy
+
+---
+
 _Last updated: 2025-05-10 by Jack_
 
-Project board has been updated with:
+Pre-production launch checklist has been added under a new section to ensure readiness for soft launch.
 
-- Bunnings and Bowens scrapers complete for soft launch
-- Weekly data refresh pipeline defined
-- Remaining scraping providers deferred to full launch
-- New API endpoints /materials and /materials/search
-- Next task: Tagging system and filtered view UI
-
-Project board updated with:
-
-- Bowens + Bunnings scraper rollout marked complete
-- Weekly material price update schedule confirmed
-- Supabase materials API setup confirmed
-
-Next step: 
-
-a. Ready to define the tag + category schema in Supabase?  
-b. Or move on to frontend filtering UI with material categories?
-
-
-Project tracker has been updated with:
-
-Bunnings + Bowens scraper completion
-
-Weekly refresh schedule
-
-API endpoints finalized (/materials, /materials/search)
-
-Next step prompt for tagging schema or frontend UI
-
-
-a. Want to start the tagging + filtering schema?
-b. Or implement a “grouped by category” materials view first?
+a. Want help writing a local deployment guide for README?
+b. Should I add a table to track per-supplier scraper status?
 
