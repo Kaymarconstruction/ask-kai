@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Materials Database – Ask Kai</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+</head>
+<body class="bg-gray-100 text-gray-800">
+  <main class="max-w-5xl mx-auto p-6">
+    <h1 class="text-3xl font-bold text-green-600 mb-4">Materials Price List</h1>
+    <div class="overflow-x-auto">
+      <table class="min-w-full bg-white shadow-md rounded-xl overflow-hidden">
+        <thead class="bg-gray-200">
+          <tr>
+            <th class="text-left px-4 py-2">Name</th>
+            <th class="text-left px-4 py-2">Category</th>
+            <th class="text-left px-4 py-2">Supplier</th>
+            <th class="text-left px-4 py-2">Price (AUD)</th>
+          </tr>
+        </thead>
+        <tbody id="materialsTable" class="text-sm"></tbody>
+      </table>
+    </div>
+  </main>
+
+  <script>
+    const supabase = supabase.createClient(
+      'https://YOUR_PROJECT_REF.supabase.co',
+      'YOUR_PUBLIC_ANON_KEY'
+    );
+
+    async function loadMaterials() {
+      const { data, error } = await supabase.from('materials').select('*');
+      const table = document.getElementById('materialsTable');
+      if (error) {
+        table.innerHTML = `<tr><td colspan="4" class="p-4 text-red-600">Error loading data.</td></tr>`;
+        return;
+      }
+
+      if (!data || data.length === 0) {
+        table.innerHTML = `<tr><td colspan="4" class="p-4">No materials found.</td></tr>`;
+        return;
+      }
+
+      table.innerHTML = data.map(row => `
+        <tr class="border-t">
+          <td class="px-4 py-2">${row.name}</td>
+          <td class="px-4 py-2">${row.category}</td>
+          <td class="px-4 py-2">${row.supplier}</td>
+          <td class="px-4 py-2">$${row.price_per_unit.toFixed(2)}</td>
+        </tr>
+      `).join('');
+    }
+
+    loadMaterials();
+  </script>
+</body>
+</html> 
