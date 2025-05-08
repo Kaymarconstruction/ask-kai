@@ -84,8 +84,8 @@
 
 ### Material Pricing Scraper & Database
 - [x] Supabase schema created (materials)
-- [ ] Bunnings scraper (timber, screws, fixings, cement)
-- [ ] Bowens scraper (frame, cladding, flooring)
+- [x] Bunnings scraper (timber, screws, fixings, cement)
+- [x] Bowens scraper (frame, cladding, flooring)
 - [ ] Landscaping: Daisy's Garden Supplies, Diaco's (soil, bark, rock)
 - [ ] Electrical: Middy's
 - [ ] Plumbing: Reece, Plumbed In (shower screens, tapware)
@@ -156,18 +156,28 @@ Project board has been updated with:
 - Next: begin scraping pipeline script setup
 - Added search and logging endpoints for material API
 
-
 Project board updated with:
 
-New /materials API endpoints (GET, search, log source)
-
-Price scraping sources confirmed and expanded
-
-Pre-production tasks finalized
-
+- New /materials API endpoints (GET, search, log source)
+- Price scraping sources confirmed and expanded
+- Pre-production tasks finalized
 
 Next step: Build category + tag system for materials or deploy Bowens scraper.
 
-a. Ready to add Bowens timber scraping support?
+a. Ready to add Bowens timber scraping support?  
 b. Want to define tag + category strategy in Supabase for smarter filtering first?
+
+
+project.md has been updated with:
+
+Bunnings and Bowens marked as complete for soft launch
+
+Remaining suppliers shifted to full production
+
+New /materials API endpoint tasks
+
+Schedule for weekly update integration
+
+
+Ready to proceed with tagging strategy or enable frontend materials view?
 
