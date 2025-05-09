@@ -73,99 +73,70 @@
         <button id="submitBtn" class="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded">Submit</button>
         <p class="text-xs text-gray-600 text-center mt-2">Please describe your job in detail. <span class="text-red-600 font-semibold">Be very specific</span> – location, materials, sizes, etc.</p>
       </div>
-
-      <!-- Kai Profile -->
-      <div class="bg-white rounded-2xl shadow-lg p-6 mt-8">
-        <img src="https://i.imgur.com/uYWtV9r.png" alt="Kai Marlow" class="mx-auto mb-4 w-48 h-72 object-cover bg-white p-2 rounded-2xl shadow" />
-        <h2 class="text-2xl font-bold text-center text-green-600 mb-4">Who is Kai?</h2>
-        <p class="text-gray-700 text-center mb-6">
-          With 20+ years across carpentry and building in Australia, Kai gives sharp, clear advice backed by code, tools, and know-how.<br>
-          He’s your mate on-site, online. Ask him anything.
-        </p>
-        <!-- Moved Footer Here -->
-        <footer class="text-center text-gray-500 text-sm">
-          &copy; 2025 Kaymar Construction | Powered by Ask Kai
-          <div class="flex justify-center space-x-6 mt-2">
-            <a href="https://www.instagram.com/askkai_official" class="text-blue-600 hover:underline">Instagram</a>
-            <a href="https://www.tiktok.com/@askkai_official" class="text-blue-600 hover:underline">TikTok</a>
-            <a href="https://www.facebook.com/askkai_official" class="text-blue-600 hover:underline">Facebook</a>
-            <a href="https://www.youtube.com/@askkai_official" class="text-blue-600 hover:underline">YouTube</a>
-            <a href="https://www.threads.net/@askkai_official" class="text-blue-600 hover:underline">Threads</a>
-          </div>
-          <p class="text-xs text-gray-400 mt-2">Built with coding support from Jack Cooper</p>
-        </footer>
-      </div>
     </div>
   </main>
 
-  <script>
-    const user = sessionStorage.getItem('askkaiUser');
-    if (!user) window.location.href = 'signin.html';
-    const isMark = user === 'mark@kaymarconstruction.com';
-    let promptCount = parseInt(localStorage.getItem('promptCount') || '0');
-    const MAX_FREE_PROMPTS = 10;
-    const messages = [{
-      role: "system",
-      content: "You are Kai, a senior estimator and builder. Always ask for detailed project info, estimate all parts of structure: stumps, bearers, joists, decking, fasteners. Output in markdown dot-point format."
-    }];
+<script>
+const user = sessionStorage.getItem('askkaiUser');
+if (!user) window.location.href = 'signin.html';
+const isMark = user === 'mark@kaymarconstruction.com';
+let promptCount = parseInt(localStorage.getItem('promptCount') || '0');
+const MAX_FREE_PROMPTS = 10;
 
-    function toggleMenu() {
-      document.getElementById('menuDropdown').classList.toggle('hidden');
-    }
+function toggleMenu() {
+  document.getElementById('menuDropdown').classList.toggle('hidden');
+}
 
-    function logoutUser() {
-      sessionStorage.clear();
-      localStorage.removeItem('promptCount');
-      localStorage.removeItem('kaiTokens');
-      window.location.href = 'logout.html';
-    }
+function logoutUser() {
+  sessionStorage.clear();
+  localStorage.removeItem('promptCount');
+  localStorage.removeItem('kaiTokens');
+  window.location.href = 'logout.html';
+}
 
-    document.getElementById('submitBtn').addEventListener('click', async () => {
-      const askInput = document.getElementById('askInput');
-      const kaiReply = document.getElementById('kaiReply');
-      const userQuestion = askInput.value.trim();
-      if (!userQuestion) return;
+document.getElementById('submitBtn').addEventListener('click', async () => {
+  const askInput = document.getElementById('askInput');
+  const kaiReply = document.getElementById('kaiReply');
+  const userQuestion = askInput.value.trim();
+  if (!userQuestion) return;
 
-      if (!isMark && promptCount >= MAX_FREE_PROMPTS) {
-        alert("You’ve hit your free limit. Time to upgrade.");
-        window.location.href = 'upgrade.html';
-        return;
-      }
+  if (!isMark && promptCount >= MAX_FREE_PROMPTS) {
+    alert("You’ve hit your free limit. Time to upgrade.");
+    window.location.href = 'upgrade.html';
+    return;
+  }
 
-      messages.push({ role: "user", content: userQuestion });
-      const qaContainer = document.createElement('div');
-      qaContainer.className = 'mb-6';
+  const qaContainer = document.createElement('div');
+  qaContainer.className = 'mb-6';
 
-      const userText = document.createElement('p');
-      userText.className = 'text-right text-blue-700 font-semibold mb-2';
-      userText.textContent = `You: ${userQuestion}`;
-      qaContainer.appendChild(userText);
+  const userText = document.createElement('p');
+  userText.className = 'text-right text-blue-700 font-semibold mb-2';
+  userText.textContent = `You: ${userQuestion}`;
+  qaContainer.appendChild(userText);
 
-      const kaiText = document.createElement('p');
-      kaiText.className = 'text-left text-green-600 font-semibold whitespace-pre-wrap';
-      const cursor = document.createElement('span');
-      cursor.className = 'blinking-cursor';
-      kaiText.textContent = "Kai is thinking...";
-      kaiText.appendChild(cursor);
-      qaContainer.appendChild(kaiText);
+  const kaiText = document.createElement('p');
+  kaiText.className = 'text-left text-green-600 font-semibold whitespace-pre-wrap';
+  kaiText.textContent = 'Kai is thinking...';
+  qaContainer.appendChild(kaiText);
 
-      kaiReply.appendChild(qaContainer);
-      kaiReply.scrollTop = kaiReply.scrollHeight;
-      askInput.value = "";
+  kaiReply.appendChild(qaContainer);
+  kaiReply.scrollTop = kaiReply.scrollHeight;
+  askInput.value = "";
 
-      try {
-        const response = await fetch('https://askkai-backend-clean.onrender.com/quote', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ messages })
-        });
-        const data = await response.json();
-        const finalText = data.reply || "Kai’s stumped. Try again shortly.";
-        kaiText.textContent = finalText;
-      } catch (error) {
-        kaiText.textContent = "Kai had an error. Please try again.";
-      }
+  try {
+    const response = await fetch('https://askkai-backend-clean.onrender.com/chat', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ messages: [{ role: "user", content: userQuestion }] })
     });
-  </script>
+    const data = await response.json();
+    const finalText = data.reply || "Kai’s stumped. Try again shortly.";
+    kaiText.textContent = finalText;
+  } catch (error) {
+    kaiText.textContent = "Kai had an error. Please try again.";
+  }
+});
+</script>
+
 </body>
 </html>
