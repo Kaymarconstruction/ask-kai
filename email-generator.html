@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Email Generator – Ask Kai</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <style>
+    #emailBox { max-height: 50vh; overflow-y: auto; white-space: pre-wrap; }
+  </style>
+</head>
+<body class="bg-gray-100 text-gray-800">
+
+  <!-- Banner -->
+  <div class="w-full bg-black">
+    <img src="https://i.imgur.com/nDIhtRr.png" alt="Kaymar Banner" class="w-full max-h-24 object-contain mx-auto">
+  </div>
+
+  <!-- Header -->
+  <header class="bg-white shadow p-4 flex items-center justify-between">
+    <h1 class="text-xl font-bold text-green-600">Email Generator</h1>
+    <a href="index.html" class="text-sm text-blue-600 hover:underline">Back to Chat</a>
+  </header>
+
+  <!-- Prompt Input -->
+  <main class="max-w-3xl mx-auto py-8 px-4 space-y-6">
+    <div class="bg-white p-6 rounded-xl shadow">
+      <label for="emailInput" class="block font-semibold mb-2">
+        Enter the details of the intended email or paste an existing email for refinement.
+      </label>
+      <textarea id="emailInput" rows="4" class="w-full border rounded-lg p-3"
+        placeholder="e.g. Draft a follow-up email to a client regarding a recent quote..."></textarea>
+      <button id="submitEmail" class="mt-4 w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg">
+        Generate Email
+      </button>
+    </div>
+
+    <!-- Email Output -->
+    <div id="emailBox" class="bg-white p-6 rounded-xl shadow text-sm text-gray-800"></div>
+
+    <!-- Export Disclaimer -->
+    <div class="bg-yellow-50 border-l-4 border-yellow-500 text-yellow-700 p-4 rounded shadow">
+      <p>This generated email is a draft. Always review before sending to clients or suppliers.</p>
+    </div>
+  </main>
+
+  <!-- Footer -->
+  <footer class="text-center text-gray-500 text-sm p-6">
+    &copy; 2025 Kaymar Construction | Powered by Ask Kai
+    <div class="flex justify-center space-x-6 mt-2">
+      <a href="https://www.instagram.com/askkai_official" class="text-blue-600 hover:underline">Instagram</a>
+      <a href="https://www.tiktok.com/@askkai_official" class="text-blue-600 hover:underline">TikTok</a>
+      <a href="https://www.facebook.com/askkai_official" class="text-blue-600 hover:underline">Facebook</a>
+      <a href="https://www.youtube.com/@askkai_official" class="text-blue-600 hover:underline">YouTube</a>
+      <a href="https://www.threads.net/@askkai_official" class="text-blue-600 hover:underline">Threads</a>
+    </div>
+  </footer>
+
+  <!-- JS -->
+  <script>
+    document.getElementById('submitEmail').addEventListener('click', async () => {
+      const input = document.getElementById('emailInput').value.trim();
+      const emailBox = document.getElementById('emailBox');
+      if (!input) return;
+
+      emailBox.innerHTML = "<span class='text-green-600 font-medium'>Kai is crafting your email...</span>";
+
+      const response = await fetch("https://askkai-backend-clean.onrender.com/email", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ messages: [ { role: "user", content: input } ] })
+      });
+
+      const data = await response.json();
+      const reply = data.reply || "Kai couldn’t generate an email. Try again.";
+
+      emailBox.textContent = reply;
+    });
+  </script>
+
+</body>
+</html>
+
