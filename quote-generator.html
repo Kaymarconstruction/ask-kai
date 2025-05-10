@@ -11,15 +11,18 @@
 </head>
 <body class="bg-gray-100 text-gray-800">
 
+  <!-- Banner -->
   <div class="w-full bg-black">
     <img src="https://i.imgur.com/nDIhtRr.png" alt="Kaymar Banner" class="w-full max-h-24 object-contain mx-auto">
   </div>
 
+  <!-- Header -->
   <header class="bg-white shadow p-4 flex items-center justify-between">
     <h1 class="text-xl font-bold text-green-600">Quote Generator</h1>
     <a href="index.html" class="text-sm text-blue-600 hover:underline">Back to Chat</a>
   </header>
 
+  <!-- Prompt Input -->
   <main class="max-w-3xl mx-auto py-8 px-4 space-y-6">
     <div class="bg-white p-6 rounded-xl shadow">
       <label for="quoteInput" class="block font-semibold mb-2">
@@ -31,19 +34,24 @@
       </button>
     </div>
 
+    <!-- Quote Output -->
     <div id="quoteBox" class="bg-white p-6 rounded-xl shadow text-sm text-gray-800"></div>
 
+    <!-- Email Export -->
     <div id="emailExport" class="hidden bg-white p-6 rounded-xl shadow">
       <label class="block text-sm font-semibold mb-2">Select a supplier to email this quote:</label>
       <select id="supplierSelect" class="w-full mb-4 border p-2 rounded"></select>
       <button id="emailSupplierBtn" class="bg-black text-white px-4 py-2 rounded hover:bg-gray-900 transition">Email Supplier</button>
+      <button id="emailClientBtn" class="mt-2 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 transition">Email Quote to Client</button>
     </div>
 
+    <!-- Export Disclaimer -->
     <div class="bg-yellow-50 border-l-4 border-yellow-500 text-yellow-700 p-4 rounded shadow">
       <p>This estimate is for materials only. Always confirm with your supplier or engineer before purchasing.</p>
     </div>
   </main>
 
+  <!-- Footer -->
   <footer class="text-center text-gray-500 text-sm p-6">
     &copy; 2025 Kaymar Construction | Powered by Ask Kai
     <div class="flex justify-center space-x-6 mt-2">
@@ -55,6 +63,7 @@
     </div>
   </footer>
 
+  <!-- JS -->
   <script>
     let generatedQuote = '';
 
@@ -80,7 +89,6 @@
       const input = document.getElementById('quoteInput').value.trim();
       const quoteBox = document.getElementById('quoteBox');
       const emailExport = document.getElementById('emailExport');
-
       if (!input) return;
 
       quoteBox.innerHTML = "<span class='text-green-600 font-medium'>Kai is generating your materials list...</span>";
@@ -96,7 +104,7 @@
       let reply = data.reply || "Kai couldn’t generate a quote. Try again.";
 
       reply = reply
-        .replace(/^(Absolutely.*?)?(Here's|Here is).*?estimate.*?:\n?/is, '')
+        .replace(/^Absolutely.*?(Here's|Here is).*?estimate.*?:\n?/is, '')
         .replace(/\n?This estimate is for materials only\..*$/is, '')
         .trim();
 
@@ -112,10 +120,19 @@
       if (!supplierEmail) return alert('Please select a supplier.');
 
       const subject = encodeURIComponent("Material Quote Request");
-      const body = encodeURIComponent(`Hi [Rep's Name or Supplier Name],\n\nHope you're well.\n\nI’m putting together a quote for a client and need pricing on the following materials:\n\nJob Location: [Suburb or address if relevant]\nRequired Materials:\n\n${generatedQuote}\n\nIf you could send through availability and pricing (inc. GST and delivery if possible), that’d be appreciated. Keen to lock this one in ASAP.\n\nLet me know if you need any more info.\n\nCheers,\n[Your Name]`);
+      const body = encodeURIComponent(`Hi [Supplier Name],\n\nPlease provide availability and pricing for the following materials:\n\n${generatedQuote}\n\nRegards,\n[Your Name]`);
 
-      const mailto = `mailto:${supplierEmail}?subject=${subject}&body=${body}`;
-      window.location.href = mailto;
+      window.location.href = `mailto:${supplierEmail}?subject=${subject}&body=${body}`;
+    });
+
+    document.getElementById('emailClientBtn').addEventListener('click', async () => {
+      const clientEmail = prompt("Enter Client's Email Address:");
+      if (!clientEmail) return;
+
+      const subject = encodeURIComponent("Quote for Your Project");
+      const body = encodeURIComponent(`Hi [Client Name],\n\nHere is the material estimate for your project:\n\n${generatedQuote}\n\nLet me know if you have any questions.\n\nRegards,\n[Your Name]`);
+
+      window.location.href = `mailto:${clientEmail}?subject=${subject}&body=${body}`;
     });
   </script>
 
