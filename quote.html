@@ -22,34 +22,19 @@
   <a href="index.html" class="text-sm text-blue-600 hover:underline">Back to Chat</a>
 </header>
 
+<!-- Main Section -->
 <main class="max-w-3xl mx-auto py-8 px-4 space-y-6">
+
   <!-- Free Text Input -->
   <div class="bg-white p-6 rounded-xl shadow">
     <label for="quoteInput" class="block font-semibold mb-2">
       Describe your job in detail. <span class="text-red-600">Be specific</span> — location, materials, sizes, etc.
     </label>
-    <textarea id="quoteInput" rows="4" class="w-full border rounded-lg p-3"
+    <textarea id="quoteInput" rows="4" class="w-full border rounded-lg p-3" 
       placeholder="e.g. 7.2x3.6m deck, 600mm high, treated pine stumps, 140x45 double bearers, 90x45 joists, composite decking, VIC"></textarea>
     <button id="submitQuote" class="mt-4 w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg">
       Generate Materials List
     </button>
-  </div>
-
-  <!-- Structured Input Form -->
-  <div class="bg-white p-6 rounded-xl shadow">
-    <h2 class="text-lg font-semibold mb-4">Or Enter Job Details Below</h2>
-    <form id="materialForm" class="space-y-4">
-      <input type="text" name="projectType" class="w-full border p-2 rounded" placeholder="Project Type (e.g., Pergola, Deck)" required />
-      <input type="text" name="dimensions" class="w-full border p-2 rounded" placeholder="Dimensions (e.g., 5x3m)" pattern="^\d+(\.\d+)?x\d+(\.\d+)?m$" />
-      <input type="text" name="postDetails" class="w-full border p-2 rounded" placeholder="Posts (e.g., 90x90 H4)" />
-      <input type="text" name="beamDetails" class="w-full border p-2 rounded" placeholder="Beams (e.g., 190x45 MGP10)" />
-      <input type="text" name="rafterSpacing" class="w-full border p-2 rounded" placeholder="Rafter Spacing (e.g., 600mm centers)" />
-      <input type="text" name="roofType" class="w-full border p-2 rounded" placeholder="Roof Type (e.g., Colorbond)" />
-      <input type="text" name="region" class="w-full border p-2 rounded" placeholder="Region (Default: VIC)" />
-      <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg">
-        Generate from Form
-      </button>
-    </form>
   </div>
 
   <!-- Quote Output -->
@@ -57,10 +42,15 @@
 
   <!-- Email Supplier Section -->
   <div id="emailSection" class="hidden bg-white p-6 rounded-xl shadow space-y-4">
-    <label class="block text-sm font-medium">Supplier Email</label>
-    <input id="supplierEmail" type="email" class="w-full border p-2 rounded" placeholder="supplier@example.com" />
+    <label class="block text-sm font-medium">Choose Supplier</label>
+    <select id="supplierDropdown" class="w-full border p-2 rounded">
+      <option value="">Select a Supplier</option>
+      <option value="bunnings@example.com">Bunnings</option>
+      <option value="bowens@example.com">Bowens</option>
+      <option value="mitre10@example.com">Mitre 10</option>
+    </select>
     <button id="emailSupplierBtn" class="mt-2 w-full bg-black hover:bg-gray-900 text-white py-2 rounded-lg">
-      Email Supplier
+      Send to Supplier
     </button>
   </div>
 
@@ -68,6 +58,7 @@
   <div class="bg-yellow-50 border-l-4 border-yellow-500 text-yellow-700 p-4 rounded shadow">
     <p>This estimate is for materials only. Always confirm with your supplier or engineer before purchasing.</p>
   </div>
+
 </main>
 
 <!-- Footer -->
@@ -82,26 +73,22 @@
   </div>
 </footer>
 
+<!-- JS Section -->
 <script>
-  const user = sessionStorage.getItem('askkaiUser') || 'guest@kaymarconstruction.com';
   let generatedQuote = '';
 
   document.getElementById('submitQuote').addEventListener('click', async () => {
     const input = document.getElementById('quoteInput').value.trim();
-    if (!input) return alert('Please enter some details before submitting.');
-    generateQuote([{ role: "user", content: input }]);
-  });
+    if (!input) return;
 
-  document.getElementById('materialForm').addEventListener('submit', (e) => {
-    e.preventDefault();
-    const formData = new FormData(e.target);
-    const fields = [...formData.entries()].map(([key, value]) => `${key}: ${value}`).join(', ');
-    generateQuote([{ role: "user", content: `Project Details - ${fields}` }]);
+    document.getElementById('quoteInput').value = ''; // Auto-clear input
+    await generateQuote([{ role: "user", content: input }]);
   });
 
   async function generateQuote(messages) {
     const quoteBox = document.getElementById('quoteBox');
     const emailSection = document.getElementById('emailSection');
+
     quoteBox.innerHTML = "<span class='text-green-600 font-medium'>Kai is generating your materials list...</span>";
     emailSection.classList.add('hidden');
 
@@ -109,27 +96,24 @@
       const response = await fetch("https://askkai-backend-clean.onrender.com/chat", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages, userEmail: user })
+        body: JSON.stringify({ messages })
       });
 
       const data = await response.json();
+      const reply = data.reply || "Kai couldn’t generate a quote. Try again.";
+      generatedQuote = reply;
 
-      if (!data.reply) throw new Error("No response from Kai.");
-      generatedQuote = data.reply;
-      quoteBox.textContent = data.reply;
-
-      if (data.reply.length > 10) {
-        emailSection.classList.remove('hidden');
-      }
+      // Clean output to only show material dot-points, no extra text
+      quoteBox.textContent = generatedQuote;
+      if (reply.length > 10) emailSection.classList.remove('hidden');
     } catch (error) {
-      console.error('Quote Generation Error:', error);
-      quoteBox.innerHTML = `<span class="text-red-600">Error: ${error.message || "Kai had a technical issue. Try again later."}</span>`;
+      quoteBox.textContent = "Kai ran into an error. Please try again.";
     }
   }
 
   document.getElementById('emailSupplierBtn').addEventListener('click', () => {
-    const supplierEmail = document.getElementById('supplierEmail').value.trim();
-    if (!supplierEmail) return alert('Please enter a supplier email.');
+    const supplierEmail = document.getElementById('supplierDropdown').value.trim();
+    if (!supplierEmail) return alert('Please select a supplier.');
 
     const subject = encodeURIComponent("Material Quote Request");
     const body = encodeURIComponent(`Hi there,
