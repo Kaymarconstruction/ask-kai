@@ -243,10 +243,12 @@ Button below materials list: "Email Supplier"
 
 Opens user's email client with prefilled:
 
-Subject: Material Quote Request
+Subject: Material Quote Request  
+Body: Hi [Supplier Name], I would like a quote for the following materials to be delivered to [address] on [date]:  
 
-Body: "Hi [Supplier Name], I would like a quote for the following materials to be delivered to [address] on [date]:\n\n[List]\n\nRegards, [User]"
+[List]  
 
+Regards, [User]
 
 
 [x] Settings: add profile picture upload, display active plan, and allow saved supplier emails
@@ -281,10 +283,4 @@ PRE-PRODUCTION LAUNCH CHECKLIST
 
 [ ] Add instructions to README for local test + deploy
 
-
-
----
-
-Last updated: 2025-05-10 by Jack
-
-Pre-production launch checklist updated. Moving to Puppeteer for Bowens before expanding scrapers.
+[ ] Add preset quick-fill options in Quote Generator for common deck sizes (e.g., 3x3m, 4x4m)
