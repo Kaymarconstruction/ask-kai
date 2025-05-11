@@ -1,77 +1,46 @@
-const express = require('express');
-const cors = require('cors');
-const { Configuration, OpenAIApi } = require('openai');
-require('dotenv').config();
+const express = require('express'); const cors = require('cors'); const { Configuration, OpenAIApi } = require('openai'); require('dotenv').config();
 
-const app = express();
-const PORT = process.env.PORT || 10000;
+const app = express(); const PORT = process.env.PORT || 10000;
 
-const openai = new OpenAIApi(new Configuration({
-  apiKey: process.env.OPENAI_API_KEY
-}));
+const openai = new OpenAIApi(new Configuration({ apiKey: process.env.OPENAI_API_KEY }));
 
-app.use(cors());
-app.use(express.json());
+app.use(cors()); app.use(express.json());
 
-// Chat Endpoint – Simple, Direct, Tradie Vibes
-app.post('/chat', async (req, res) => {
-  const { messages } = req.body;
+// Chat Endpoint with Quote Logic + Aussie Tradie Vibes app.post('/chat', async (req, res) => { const { messages } = req.body;
 
-  if (!messages || !Array.isArray(messages)) {
-    return res.status(400).json({ error: 'Invalid message format.' });
-  }
+if (!messages || !Array.isArray(messages)) { return res.status(400).json({ error: 'Invalid message format.' }); }
 
-  const systemPrompt = {
-    role: 'system',
-    content: `
-You are Kai, an Aussie builder and estimator with 20+ years in the trade. 
-Speak like a cheeky but professional mate on site.
+const systemPrompt = { role: 'system', content: ` You are Kai, a seasoned Aussie tradie with 20+ years experience in carpentry, decking, framing, roofing, and quoting. Keep it sharp, practical, and a little cheeky but never over the top.
 
-If a materials list is requested, always:
-1. Start with a quick 10–30 word Aussie-style tip or advice.
-2. Follow with a clear, clean dot-point material list.
+When replying:
 
-Advice Example:
-"Don’t forget to double-check your spans, mate — saves a headache later!"
+If the user hasn't provided location or critical details, prompt politely to clarify before giving advice.
 
-Material List Format Example:
-- H4 Pine Stumps (90x90mm): 6 x 2.4m lengths
-- Concrete Bags: 8 x 20kg bags
+Start each reply with 10-30 words of practical Aussie tradie advice before listing materials.
 
-Rules:
-- Keep advice short and useful.
-- Use metric units only.
-- Assume timber in 0.6m increments (1.8m to 6m).
-- Add 10% waste where it makes sense.
-- Do NOT explain codes unless asked directly.
-- If not asking for materials, just answer their question directly.
-- Keep it friendly, helpful, and practical.
+Use clean dot-point materials lists if asked for a materials quote.
 
-NEVER say you’re an AI. You’re just "Kai".
-`
-  };
+Stick strictly to what’s asked—don’t make assumptions.
 
-  const fullMessages = messages.some(m => m.role === 'system')
-    ? messages
-    : [systemPrompt, ...messages];
+Keep responses between 80-120 words unless the user asks for more detail.
 
-  try {
-    const aiResponse = await openai.createChatCompletion({
-      model: 'gpt-3.5-turbo',
-      messages: fullMessages,
-      max_tokens: 1000,
-      temperature: 0.6
-    });
+Use metric measurements and round materials to standard sizes where applicable.
 
-    const reply = aiResponse.data.choices[0].message.content.trim();
-    res.json({ reply });
+NO region, soil class, or regulatory disclaimers unless the user asks directly.
 
-  } catch (error) {
-    console.error('Chat Error:', error);
-    res.status(500).json({ reply: 'Kai’s having a smoko. Try again in a bit, mate.' });
-  }
-});
+Never say "Assuming..." — Ask the user for the info instead.
 
-app.listen(PORT, () => {
-  console.log(`Ask Kai backend running on port ${PORT}`);
-});
+
+Stay relatable, keep it professional but relaxed—like you're having a yarn on-site. ` };
+
+const fullMessages = messages.some(m => m.role === 'system') ? messages : [systemPrompt, ...messages];
+
+try { const aiResponse = await openai.createChatCompletion({ model: 'gpt-3.5-turbo', messages: fullMessages, max_tokens: 1000, temperature: 0.6 });
+
+const reply = aiResponse.data.choices[0].message.content.trim();
+res.json({ reply });
+
+} catch (error) { console.error('Chat Error:', error); res.status(500).json({ reply: 'Kai had a slip with the nail gun. Try again in a sec!' }); } });
+
+app.listen(PORT, () => { console.log(Ask Kai backend running on port ${PORT}); });
+
