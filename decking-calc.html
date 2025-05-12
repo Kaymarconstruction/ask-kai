@@ -1,4 +1,389 @@
-<!DOCTYPE html> <html lang="en"> <head> <meta charset="UTF-8" /> <meta name="viewport" content="width=device-width, initial-scale=1.0" /> <title>Decking Calculator – Ask Kai</title> <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" /> <style> body { font-family: sans-serif; background-image: url('https://i.imgur.com/jhqlVA5.png'); background-size: cover; background-position: center; background-repeat: no-repeat; } @media (max-width: 768px) { body { background-image: url('https://i.imgur.com/qzRmu0O.jpeg'); } } .overlay { background-color: rgba(255, 255, 255, 0.92); backdrop-filter: blur(5px); } .result-card { background: white; padding: 1rem; border-radius: 0.5rem; box-shadow: 0 4px 6px rgba(0,0,0,0.1); } </style> </head> <body class="text-gray-800"> <main class="max-w-3xl mx-auto p-6 space-y-6 overlay mt-10"> <h1 class="text-3xl font-bold text-green-600 text-center">Decking Calculator</h1> <!-- INPUT FORM --> <div class="bg-white p-6 rounded-lg shadow space-y-4"> <label class="block font-bold">Deck Type</label> <select id="deckType" class="w-full p-2 border rounded"> <option value="">Select Deck Type</option> <option value="ground">Ground-Level (&lt;600mm)</option> <option value="low">Low-Rise (600mm–1200mm)</option> <option value="high">High-Rise (1200mm+)</option> </select> <div class="grid grid-cols-2 gap-4"> <input type="number" id="deckWidth" placeholder="Deck Width (m) - Board Length" class="p-2 border rounded" /> <input type="number" id="deckLength" placeholder="Deck Length (m)" class="p-2 border rounded" /> <input type="number" id="deckHeight" placeholder="Deck Height Off Ground (m)" class="p-2 border rounded" /> <input type="number" id="boardWidth" placeholder="Board Width (mm)" class="p-2 border rounded" /> <input type="number" id="boardGap" placeholder="Board Gap (mm)" value="3" class="p-2 border rounded" /> <input type="number" id="boardLength" placeholder="Board Length (m)" class="p-2 border rounded" readonly /> </div> <label class="block font-bold mt-4">Material Selections</label> <select id="deckingMaterial" class="w-full p-2 border rounded"> <option value="">Decking Material</option> <option>Merbau</option> <option>Spotted Gum</option> <option>Treated Pine</option> <option>Composite</option> </select> <select id="framingMaterial" class="w-full p-2 border rounded"> <option value="">Framing Material</option> <option>Treated Pine</option> <option>LVL</option> <option>Hardwood</option> </select> <select id="joistSpacing" class="w-full p-2 border rounded"> <option value="">Joist Spacing</option> <option value="450">450mm</option> <option value="600">600mm</option> </select> <button onclick="calculateDeck()" class="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700">Calculate</button> </div> <!-- RESULTS --> <div id="results" class="space-y-4"></div> <!-- Email Supplier Section --> <div id="emailSection" class="hidden bg-white p-6 rounded-lg shadow space-y-4"> <label class="block text-sm font-medium">Select Supplier</label> <select id="supplierDropdown" class="w-full border p-2 rounded"> <option value="">Select Supplier</option> <option value="supplier1@example.com">Supplier 1</option> <option value="supplier2@example.com">Supplier 2</option> <option value="supplier3@example.com">Supplier 3</option> </select> <button id="emailSupplierBtn" class="w-full bg-black text-white py-2 rounded hover:bg-gray-900">Email Supplier</button> </div> </main> <script> document.getElementById('deckWidth').addEventListener('input', function() { const width = parseFloat(this.value); if (!isNaN(width)) { const roundedLength = Math.ceil(width / 0.6) * 0.6; document.getElementById('boardLength').value = roundedLength.toFixed(1); } }); function calculateDeck() { const width = parseFloat(document.getElementById('deckWidth').value); const length = parseFloat(document.getElementById('deckLength').value); const height = parseFloat(document.getElementById('deckHeight').value); const boardWidth = parseFloat(document.getElementById('boardWidth').value); const boardGap = parseFloat(document.getElementById('boardGap').value || 3); const boardLength = parseFloat(document.getElementById('boardLength').value); const spacing = parseFloat(document.getElementById('joistSpacing').value); const deckType = document.getElementById('deckType').value; if (!width || !length || !height || !boardWidth || !boardLength || !spacing) { alert("Please complete all fields."); return; } const joistCount = Math.ceil((width * 1000) / spacing) + 1; const bearerCount = Math.ceil(length / 1.8) + 1; const boardCount = Math.ceil((width * 1000) / (boardWidth + boardGap)) * (length / boardLength); const totalBoards = Math.ceil(boardCount * 1.05); const postSpacing = 1.8; const totalPosts = Math.ceil((length / postSpacing) * bearerCount); let embedDepth = 0.45; if (deckType === 'low') embedDepth = 0.6; else if (deckType === 'high') embedDepth = 0.9; const postDepth = height + embedDepth; const stumpSize = height < 1.2 ? '100x100' : '125x125'; const holeVolume = Math.PI * Math.pow(0.15, 2) * postDepth; const totalConcrete = (holeVolume * totalPosts).toFixed(2); const bagsRequired = Math.ceil(totalConcrete / 0.01); // Assuming each 20kg bag = 0.01 m³ const results = ` <div class="result-card"> <h2 class="text-xl font-bold text-green-600 mb-2">Material List</h2> <ul class="list-disc list-inside space-y-1 text-sm"> <li><strong>Deck Area:</strong> ${width}m × ${length}m</li> <li><strong>Total Joists:</strong> ${joistCount}</li> <li><strong>Total Bearers:</strong> ${bearerCount}</li> <li><strong>Stumps / Posts:</strong> ${totalPosts} (${stumpSize}), Depth: ${postDepth.toFixed(2)}m</li> <li><strong>Decking Boards:</strong> ${totalBoards} boards of ${boardLength}m</li> <li><strong>Concrete Volume:</strong> ${totalConcrete} m³ (~${bagsRequired} x 20kg bags)</li> <li><strong>Joist Spacing:</strong> ${spacing}mm</li> </ul> </div> `; document.getElementById('results').innerHTML = results; document.getElementById('emailSection').classList.remove('hidden'); } document.getElementById('emailSupplierBtn').addEventListener('click', () => { const supplierEmail = document.getElementById('supplierDropdown').value; if (!supplierEmail) return alert('Please select a supplier.'); const materials = document.getElementById('results').innerText; const subject = encodeURIComponent("Decking Material Quote Request"); const body = encodeURIComponent(`Hi Supplier,\n\nPlease provide a quote for the following materials:\n\n${materials}\n\nThanks,\n[Your Name]`); window.location.href = `mailto:${supplierEmail}?subject=${subject}&body=${body}`;
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Decking Calculator – Ask Kai</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+  <style>
+    body {
+      font-family: sans-serif;
+      background-image: url('https://i.imgur.com/jhqlVA5.png');
+      background-size: cover;
+      background-position: center;
+    }
+    @media (max-width: 768px) {
+      body {
+        background-image: url('https://i.imgur.com/qzRmu0O.jpeg');
+      }
+    }
+    .overlay {
+      background-color: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(5px);
+    }
+    .result-card {
+      background: white;
+      padding: 1rem;
+      border-radius: 0.5rem;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+<body class="text-gray-800">
+
+  <!-- Menu Button -->
+  <header class="w-full bg-black p-4 flex items-center justify-between relative">
+    <button onclick="toggleMenu()" class="bg-white text-black p-2 rounded shadow">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+      </svg>
+    </button>
+    <h1 class="text-2xl font-bold text-green-600">Decking Calculator</h1>
+    <div id="menuDropdown" class="hidden absolute left-4 mt-16 w-48 bg-white border border-gray-300 shadow-lg rounded-md z-50">
+      <a href="index.html" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Home</a>
+      <a href="settings.html" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Settings</a>
+      <button onclick="logoutUser()" class="w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100">Log Out</button>
+    </div>
+  </header>
+
+  <main class="max-w-3xl mx-auto p-6 space-y-6 overlay mt-10">
+    <!-- Input Form -->
+    <div class="bg-white p-6 rounded-lg shadow space-y-4">
+      <label class="block font-bold">Deck Type</label>
+      <select id="deckType" class="w-full p-2 border rounded">
+        <option value="">Select Deck Type</option>
+        <option value="ground">Ground-Level (&lt;600mm)</option>
+        <option value="low">Low-Rise (600mm–1200mm)</option>
+        <option value="high">High-Rise (1200mm+)</option>
+      </select>
+
+      <div class="grid grid-cols-2 gap-4">
+        <input type="number" id="deckWidth" placeholder="Deck Width (m) - Board Length" class="p-2 border rounded" />
+        <input type="number" id="deckLength" placeholder="Deck Length (m)" class="p-2 border rounded" />
+        <input type="number" id="deckHeight" placeholder="Deck Height Off Ground (m)" class="p-2 border rounded" />
+        <select id="boardWidth" class="p-2 border rounded">
+          <option value="">Board Width (mm)</option>
+          <option value="90">90</option>
+          <option value="140">140</option>
+          <option value="150">150</option>
+        </select>
+        <input type="number" id="boardGap" placeholder="Board Gap (mm)" value="3" class="p-2 border rounded" />
+        <input type="number" id="boardLength" placeholder="Board Length (m)" class="p-2 border rounded" readonly />
+      </div>
+
+      <label class="block font-bold mt-4">Material Selections</label>
+      <select id="deckingMaterial" class="w-full p-2 border rounded">
+        <option value="">Decking Material</option>
+        <option>Merbau</option>
+        <option>Spotted Gum</option>
+        <option>Treated Pine</option>
+        <option>Composite</option>
+      </select>
+
+      <select id="framingMaterial" class="w-full p-2 border rounded">
+        <option value="">Framing Material</option>
+        <option>Treated Pine</option>
+        <option>LVL</option>
+        <option>Hardwood</option>
+      </select>
+
+      <select id="joistSpacing" class="w-full p-2 border rounded">
+        <option value="">Joist Spacing</option>
+        <option value="450">450mm</option>
+        <option value="600">600mm</option>
+      </select>
+
+      <button onclick="calculateDeck()" class="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700">Calculate</button>
+    </div>
+
+    <!-- Results Section -->
+    <div id="results" class="space-y-4"></div>
+
+    <!-- Email Supplier Section -->
+    <div id="emailSection" class="hidden bg-white p-6 rounded-lg shadow space-y-4">
+      <label class="block text-sm font-medium">Select Supplier</label>
+      <select id="supplierDropdown" class="w-full border p-2 rounded">
+        <option value="">Select Supplier</option>
+        <option value="supplier1@example.com">Supplier 1</option>
+        <option value="supplier2@example.com">Supplier 2</option>
+      </select>
+      <button id="emailSupplierBtn" class="w-full bg-black text-white py-2 rounded hover:bg-gray-900">Email Supplier</button>
+    </div>
+  </main>
+
+  <script>
+    function toggleMenu() {
+      document.getElementById('menuDropdown').classList.toggle('hidden');
+    }
+
+    function logoutUser() {
+      sessionStorage.clear();
+      window.location.href = 'logout.html';
+    }
+
+    document.getElementById('deckWidth').addEventListener('input', function() {
+      const width = parseFloat(this.value);
+      if (!isNaN(width)) {
+        const roundedLength = Math.ceil(width / 0.6) * 0.6;
+        document.getElementById('boardLength').value = roundedLength.toFixed(1);
+      }
+    });
+
+    function calculateDeck() {
+      const width = parseFloat(document.getElementById('deckWidth').value);
+      const length = parseFloat(document.getElementById('deckLength').value);
+      const height = parseFloat(document.getElementById('deckHeight').value);
+      const boardWidth = parseFloat(document.getElementById('boardWidth').value);
+      const boardGap = parseFloat(document.getElementById('boardGap').value) || 3;
+      const boardLength = parseFloat(document.getElementById('boardLength').value);
+      const spacing = parseFloat(document.getElementById('joistSpacing').value);
+      const deckType = document.getElementById('deckType').value;
+
+      if (!width || !length || !height || !boardWidth || !boardLength || !spacing) {
+        alert("Please complete all fields.");
+        return;
+      }
+
+      const joistCount = Math.ceil((width * 1000) / spacing) + 1;
+      const bearerCount = Math.ceil(length / 1.8) + 1;
+      const boardCount = Math.ceil((width * 1000) / (boardWidth + boardGap)) * (length / boardLength);
+      const totalBoards = Math.ceil(boardCount * 1.05);
+
+      const postSpacing = 1.8;
+      const totalPosts = Math.ceil((length / postSpacing) * bearerCount);
+
+      let embedDepth = 0.45;
+      if (deckType === 'low') embedDepth = 0.6;
+      else if (deckType === 'high') embedDepth = 0.9;
+
+      const postDepth = height + embedDepth;
+      const stumpSize = height < 1.2 ? '100x100' : '125x125';
+
+      const holeVolume = Math.PI * Math.pow(0.15, 2) * postDepth;
+      const totalConcrete = (holeVolume * totalPosts).toFixed(2);
+      const bagsRequired = Math.ceil(totalConcrete / 0.01); 
+
+      const results = `
+        <div class="result-card">
+          <h2 class="text-xl font-bold text-green-600 mb-2">Material List</h2>
+          <ul class="list-disc list-inside space-y-1 text-sm">
+            <li><strong>Deck Area:</strong> ${width}m × ${length}m</li>
+            <li><strong>Total Joists:</strong> ${joistCount}</li>
+            <li><strong>Total Bearers:</strong> ${bearerCount}</li>
+            <li><strong>Stumps / Posts:</strong> ${totalPosts} (${stumpSize}), Depth: ${postDepth.toFixed(2)}m</li>
+            <li><strong>Decking Boards:</strong> ${totalBoards} boards of ${boardLength}m</li>
+            <li><strong>Concrete Volume:</strong> ${totalConcrete} m³ (~${bagsRequired} x 20kg bags)</li>
+            <li><strong>Joist Spacing:</strong> ${spacing}mm</li>
+          </ul>
+        </div>
+      `;
+
+      document.getElementById('results').innerHTML = results;
+      document.getElementById('emailSection').classList.remove('hidden');
+    }
+
+    document.getElementById('emailSupplierBtn').addEventListener('click', () => {
+      const supplierEmail = document.getElementById('supplierDropdown').value;
+      if (!supplierEmail) return alert('Please select a supplier.');
+      const materials = document.getElementById('results').innerText;
+      const subject = encodeURIComponent("Decking Material Quote Request");
+      const body = encodeURIComponent(`Hi Supplier,\n\nPlease provide a quote for the following materials:\n\n${materials}\n\nThanks,\n[Your Name]`);
+      window.location.href = `mailto:${supplierEmail}?subject=${subject}&body=${body}`;
+    });
+  </script>
+</body>
+</html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Decking Calculator – Ask Kai</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+  <style>
+    body {
+      font-family: sans-serif;
+      background-image: url('https://i.imgur.com/jhqlVA5.png');
+      background-size: cover;
+      background-position: center;
+    }
+    @media (max-width: 768px) {
+      body {
+        background-image: url('https://i.imgur.com/qzRmu0O.jpeg');
+      }
+    }
+    .overlay {
+      background-color: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(5px);
+    }
+    .result-card {
+      background: white;
+      padding: 1rem;
+      border-radius: 0.5rem;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+<body class="text-gray-800">
+
+  <!-- Menu Button -->
+  <header class="w-full bg-black p-4 flex items-center justify-between relative">
+    <button onclick="toggleMenu()" class="bg-white text-black p-2 rounded shadow">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+      </svg>
+    </button>
+    <h1 class="text-2xl font-bold text-green-600">Decking Calculator</h1>
+    <div id="menuDropdown" class="hidden absolute left-4 mt-16 w-48 bg-white border border-gray-300 shadow-lg rounded-md z-50">
+      <a href="index.html" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Home</a>
+      <a href="settings.html" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Settings</a>
+      <button onclick="logoutUser()" class="w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100">Log Out</button>
+    </div>
+  </header>
+
+  <main class="max-w-3xl mx-auto p-6 space-y-6 overlay mt-10">
+    <!-- Input Form -->
+    <div class="bg-white p-6 rounded-lg shadow space-y-4">
+      <label class="block font-bold">Deck Type</label>
+      <select id="deckType" class="w-full p-2 border rounded">
+        <option value="">Select Deck Type</option>
+        <option value="ground">Ground-Level (&lt;600mm)</option>
+        <option value="low">Low-Rise (600mm–1200mm)</option>
+        <option value="high">High-Rise (1200mm+)</option>
+      </select>
+
+      <div class="grid grid-cols-2 gap-4">
+        <input type="number" id="deckWidth" placeholder="Deck Width (m) - Board Length" class="p-2 border rounded" />
+        <input type="number" id="deckLength" placeholder="Deck Length (m)" class="p-2 border rounded" />
+        <input type="number" id="deckHeight" placeholder="Deck Height Off Ground (m)" class="p-2 border rounded" />
+        <select id="boardWidth" class="p-2 border rounded">
+          <option value="">Board Width (mm)</option>
+          <option value="90">90</option>
+          <option value="140">140</option>
+          <option value="150">150</option>
+        </select>
+        <input type="number" id="boardGap" placeholder="Board Gap (mm)" value="3" class="p-2 border rounded" />
+        <input type="number" id="boardLength" placeholder="Board Length (m)" class="p-2 border rounded" readonly />
+      </div>
+
+      <label class="block font-bold mt-4">Material Selections</label>
+      <select id="deckingMaterial" class="w-full p-2 border rounded">
+        <option value="">Decking Material</option>
+        <option>Merbau</option>
+        <option>Spotted Gum</option>
+        <option>Treated Pine</option>
+        <option>Composite</option>
+      </select>
+
+      <select id="framingMaterial" class="w-full p-2 border rounded">
+        <option value="">Framing Material</option>
+        <option>Treated Pine</option>
+        <option>LVL</option>
+        <option>Hardwood</option>
+      </select>
+
+      <select id="joistSpacing" class="w-full p-2 border rounded">
+        <option value="">Joist Spacing</option>
+        <option value="450">450mm</option>
+        <option value="600">600mm</option>
+      </select>
+
+      <button onclick="calculateDeck()" class="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700">Calculate</button>
+    </div>
+
+    <!-- Results Section -->
+    <div id="results" class="space-y-4"></div>
+
+    <!-- Email Supplier Section -->
+    <div id="emailSection" class="hidden bg-white p-6 rounded-lg shadow space-y-4">
+      <label class="block text-sm font-medium">Select Supplier</label>
+      <select id="supplierDropdown" class="w-full border p-2 rounded">
+        <option value="">Select Supplier</option>
+        <option value="supplier1@example.com">Supplier 1</option>
+        <option value="supplier2@example.com">Supplier 2</option>
+      </select>
+      <button id="emailSupplierBtn" class="w-full bg-black text-white py-2 rounded hover:bg-gray-900">Email Supplier</button>
+    </div>
+  </main>
+
+  <script>
+    function toggleMenu() {
+      document.getElementById('menuDropdown').classList.toggle('hidden');
+    }
+
+    function logoutUser() {
+      sessionStorage.clear();
+      window.location.href = 'logout.html';
+    }
+
+    document.getElementById('deckWidth').addEventListener('input', function() {
+      const width = parseFloat(this.value);
+      if (!isNaN(width)) {
+        const roundedLength = Math.ceil(width / 0.6) * 0.6;
+        document.getElementById('boardLength').value = roundedLength.toFixed(1);
+      }
+    });
+
+    function calculateDeck() {
+      const width = parseFloat(document.getElementById('deckWidth').value);
+      const length = parseFloat(document.getElementById('deckLength').value);
+      const height = parseFloat(document.getElementById('deckHeight').value);
+      const boardWidth = parseFloat(document.getElementById('boardWidth').value);
+      const boardGap = parseFloat(document.getElementById('boardGap').value) || 3;
+      const boardLength = parseFloat(document.getElementById('boardLength').value);
+      const spacing = parseFloat(document.getElementById('joistSpacing').value);
+      const deckType = document.getElementById('deckType').value;
+
+      if (!width || !length || !height || !boardWidth || !boardLength || !spacing) {
+        alert("Please complete all fields.");
+        return;
+      }
+
+      const joistCount = Math.ceil((width * 1000) / spacing) + 1;
+      const bearerCount = Math.ceil(length / 1.8) + 1;
+      const boardCount = Math.ceil((width * 1000) / (boardWidth + boardGap)) * (length / boardLength);
+      const totalBoards = Math.ceil(boardCount * 1.05);
+
+      const postSpacing = 1.8;
+      const totalPosts = Math.ceil((length / postSpacing) * bearerCount);
+
+      let embedDepth = 0.45;
+      if (deckType === 'low') embedDepth = 0.6;
+      else if (deckType === 'high') embedDepth = 0.9;
+
+      const postDepth = height + embedDepth;
+      const stumpSize = height < 1.2 ? '100x100' : '125x125';
+
+      const holeVolume = Math.PI * Math.pow(0.15, 2) * postDepth;
+      const totalConcrete = (holeVolume * totalPosts).toFixed(2);
+      const bagsRequired = Math.ceil(totalConcrete / 0.01); 
+
+      const results = `
+        <div class="result-card">
+          <h2 class="text-xl font-bold text-green-600 mb-2">Material List</h2>
+          <ul class="list-disc list-inside space-y-1 text-sm">
+            <li><strong>Deck Area:</strong> ${width}m × ${length}m</li>
+            <li><strong>Total Joists:</strong> ${joistCount}</li>
+            <li><strong>Total Bearers:</strong> ${bearerCount}</li>
+            <li><strong>Stumps / Posts:</strong> ${totalPosts} (${stumpSize}), Depth: ${postDepth.toFixed(2)}m</li>
+            <li><strong>Decking Boards:</strong> ${totalBoards} boards of ${boardLength}m</li>
+            <li><strong>Concrete Volume:</strong> ${totalConcrete} m³ (~${bagsRequired} x 20kg bags)</li>
+            <li><strong>Joist Spacing:</strong> ${spacing}mm</li>
+          </ul>
+        </div>
+      `;
+
+      document.getElementById('results').innerHTML = results;
+      document.getElementById('emailSection').classList.remove('hidden');
+    }
+
+    document.getElementById('emailSupplierBtn').addEventListener('click', () => {
+      const supplierEmail = document.getElementById('supplierDropdown').value;
+      if (!supplierEmail) return alert('Please select a supplier.');
+      const materials = document.getElementById('results').innerText;
+      const subject = encodeURIComponent("Decking Material Quote Request");
+      const body = encodeURIComponent(`Hi Supplier,\n\nPlease provide a quote for the following materials:\n\n${materials}\n\nThanks,\n[Your Name]`);
+      window.location.href = `mailto:${supplierEmail}?subject=${subject}&body=${body}`;
     });
   </script>
 </body>
