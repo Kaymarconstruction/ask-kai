@@ -1,15 +1,7 @@
-Supabase Tables Specification – Ask Kai
-
-
----
-
 1. Users Table
 
-Purpose
-
+Purpose:
 Store user profiles, preferences, saved data, and usage tracking.
-
-Columns
 
 Column Name	Type	Notes
 
@@ -25,7 +17,7 @@ saved_quotes	JSONB	Array of saved material lists
 saved_emails	JSONB	Array of saved email drafts
 
 
-SQL
+SQL:
 
 CREATE TABLE IF NOT EXISTS users (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -45,24 +37,21 @@ CREATE TABLE IF NOT EXISTS users (
 
 2. Suppliers Table
 
-Purpose
-
+Purpose:
 Store suppliers, either globally for Kai’s knowledge or linked to user accounts.
-
-Columns
 
 Column Name	Type	Notes
 
 id	UUID	Primary Key
 user_id	UUID	FK to Users (nullable for global)
-supplier_name	TEXT	Supplier’s name
+supplier_name	TEXT	Supplier’s name (Required)
 email	TEXT	Contact email
 phone	TEXT	Contact phone
-notes	TEXT	Optional notes field
+notes	TEXT	Optional notes
 created_at	TIMESTAMP	Auto-generated
 
 
-SQL
+SQL:
 
 CREATE TABLE IF NOT EXISTS suppliers (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -79,11 +68,8 @@ CREATE TABLE IF NOT EXISTS suppliers (
 
 3. Materials Table
 
-Purpose
-
-Store master material list with sizes, prices, and stock.
-
-Columns
+Purpose:
+Store master material list with sizes, prices, and supplier data.
 
 Column Name	Type	Notes
 
@@ -91,21 +77,19 @@ id	UUID	Primary Key
 category	TEXT	e.g., 'Decking', 'Pergola'
 material_name	TEXT	e.g., 'Merbau Timber'
 size	TEXT	e.g., '90x45', '140x19'
-unit_price	NUMERIC	Stored per unit (e.g., per meter)
-stock_quantity	INT	Current stock quantity
+unit_price	NUMERIC	Price per unit, Default 0.00
 supplier	TEXT	Supplier name (optional)
 created_at	TIMESTAMP	Auto-generated
 
 
-SQL
+SQL:
 
 CREATE TABLE IF NOT EXISTS materials (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     category TEXT NOT NULL,
     material_name TEXT NOT NULL,
     size TEXT,
-    unit_price NUMERIC,
-    stock_quantity INT,
+    unit_price NUMERIC(10, 2) DEFAULT 0.00 NOT NULL CHECK (unit_price >= 0),
     supplier TEXT,
     created_at TIMESTAMP DEFAULT NOW()
 );
@@ -115,11 +99,8 @@ CREATE TABLE IF NOT EXISTS materials (
 
 4. Calculations Table
 
-Purpose
-
+Purpose:
 Store logic for material calculations by project type and region.
-
-Columns
 
 Column Name	Type	Notes
 
@@ -131,7 +112,7 @@ description	TEXT	Human-readable explanation
 created_at	TIMESTAMP	Auto-generated
 
 
-SQL
+SQL:
 
 CREATE TABLE IF NOT EXISTS calculations (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
@@ -149,13 +130,6 @@ Code Updates Required After Tables Go Live
 
 File	Update Required	Description
 
-askkai.js	Yes	Pull formula data from calculations table for smarter material lists.
-quote.html	Yes	Fetch user’s saved suppliers dynamically from users.saved_suppliers or suppliers table. Also, use calculations table for accurate materials calculation logic.
-settings.html	Yes	Enable storage and retrieval of saved contacts, quotes, emails via Supabase.
-
-
-
----
-
-Do you want me to proceed with fully integrating the Supabase JS queries in your quote.html and settings.html now?
-
+askkai.js	Yes	Integrate Calculations & Materials Table for working logic.
+quote.html	Yes	Fetch suppliers from user data, apply real material pricing and calculations.
+settings.html	Yes	Manage saved contacts, quotes, suppliers, and email drafts via Supabase.
