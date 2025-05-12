@@ -11,7 +11,13 @@
       font-family: sans-serif;
     }
     .result-card {
-      @apply bg-white p-4 rounded-lg shadow;
+      background-color: #fff;
+      padding: 1rem;
+      border-radius: 0.5rem;
+      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+    }
+    .input-hint::placeholder {
+      color: #9ca3af;
     }
   </style>
 </head>
@@ -30,12 +36,12 @@
       </select>
 
       <div class="grid grid-cols-2 gap-4">
-        <input type="number" id="deckWidth" placeholder="Deck Width (m)" class="p-2 border rounded" />
-        <input type="number" id="deckLength" placeholder="Deck Length (m)" class="p-2 border rounded" />
-        <input type="number" id="deckHeight" placeholder="Deck Height Off Ground (m)" class="p-2 border rounded" />
-        <input type="number" id="boardWidth" placeholder="Board Width (mm)" class="p-2 border rounded" />
-        <input type="number" id="boardGap" placeholder="Board Gap (mm)" value="3" class="p-2 border rounded" />
-        <input type="number" id="boardLength" placeholder="Board Length (m)" class="p-2 border rounded" />
+        <input type="number" id="deckWidth" placeholder="Deck Width (m) – Board Length" class="p-2 border rounded input-hint" />
+        <input type="number" id="deckLength" placeholder="Deck Length (m)" class="p-2 border rounded input-hint" />
+        <input type="number" id="deckHeight" placeholder="Deck Height Off Ground (m)" class="p-2 border rounded input-hint" />
+        <input type="number" id="boardWidth" placeholder="Board Width (mm)" class="p-2 border rounded input-hint" />
+        <input type="number" id="boardGap" placeholder="Board Gap (mm) Default 3mm" value="3" class="p-2 border rounded input-hint" />
+        <input type="number" id="boardLength" placeholder="Board Length (m)" class="p-2 border rounded input-hint" readonly />
       </div>
 
       <label class="block font-bold mt-4">Material Selections</label>
@@ -68,6 +74,17 @@
   </main>
 
   <script>
+    function roundToNearest(value, step = 0.6) {
+      return Math.ceil(value / step) * step;
+    }
+
+    document.getElementById('deckWidth').addEventListener('input', () => {
+      const width = parseFloat(document.getElementById('deckWidth').value);
+      if (width) {
+        document.getElementById('boardLength').value = roundToNearest(width).toFixed(1);
+      }
+    });
+
     function calculateDeck() {
       const width = parseFloat(document.getElementById('deckWidth').value);
       const length = parseFloat(document.getElementById('deckLength').value);
@@ -84,12 +101,12 @@
       }
 
       const joistCount = Math.ceil((width * 1000) / spacing) + 1;
-      const bearerCount = Math.ceil(length / 1.8) + 1;
+      const bearerRows = Math.ceil(length / 1.8) + 1;
       const boardCount = Math.ceil((width * 1000) / (boardWidth + boardGap)) * (length / boardLength);
       const totalBoards = Math.ceil(boardCount * 1.05);
 
       const postSpacing = 1.8;
-      const totalPosts = Math.ceil((length / postSpacing) * bearerCount);
+      const totalPosts = Math.ceil((length / postSpacing) * bearerRows);
 
       let embedDepth = 0.45;
       if (deckType === 'low') embedDepth = 0.6;
@@ -98,20 +115,22 @@
       const postDepth = height + embedDepth;
       const stumpSize = height < 1.2 ? '100x100' : '125x125';
 
-      const concretePerPost = (Math.PI * Math.pow(0.15, 2) * postDepth).toFixed(2); // 300mm dia
-      const totalConcrete = (concretePerPost * totalPosts).toFixed(1);
+      // Concrete Calculation
+      const holeRadius = 0.15; // 300mm dia hole
+      const concretePerPost = Math.PI * holeRadius * holeRadius * postDepth; // m³ per post
+      const totalConcreteM3 = concretePerPost * totalPosts;
+      const bagsRequired = Math.ceil(totalConcreteM3 / 0.01); // Each bag covers 0.01 m³
 
       const results = `
         <div class="result-card">
-          <h2 class="text-xl font-bold text-green-600 mb-2">Material List</h2>
+          <h2 class="text-xl font-bold text-green-600 mb-2">Generated Material List</h2>
           <ul class="list-disc list-inside space-y-1 text-sm">
             <li><strong>Deck Area:</strong> ${width}m × ${length}m</li>
             <li><strong>Total Joists:</strong> ${joistCount}</li>
-            <li><strong>Total Bearers:</strong> ${bearerCount}</li>
-            <li><strong>Stumps / Posts:</strong> ${totalPosts}</li>
-            <li><strong>Post Size:</strong> ${stumpSize}, <strong>Depth:</strong> ${postDepth.toFixed(2)}m</li>
-            <li><strong>Decking Boards:</strong> ${totalBoards} boards of ${boardLength}m</li>
-            <li><strong>Concrete Volume:</strong> ${totalConcrete}m³ (approx. ${Math.ceil(totalConcrete * 1000)}L)</li>
+            <li><strong>Total Bearer Pieces (90x45 Laminated):</strong> ${bearerRows * 2}</li>
+            <li><strong>Stumps / Posts:</strong> ${totalPosts} (${stumpSize}) at ${postDepth.toFixed(2)}m depth</li>
+            <li><strong>Decking Boards:</strong> ${totalBoards} boards at ${boardLength}m length</li>
+            <li><strong>Concrete Volume:</strong> ${totalConcreteM3.toFixed(2)}m³ (~${bagsRequired} x 20kg bags)</li>
             <li><strong>Joist Spacing:</strong> ${spacing}mm</li>
           </ul>
         </div>
