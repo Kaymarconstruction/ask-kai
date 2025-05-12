@@ -7,6 +7,7 @@
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
   <style>
     #quoteBox { max-height: 50vh; overflow-y: auto; white-space: pre-wrap; }
+    .hidden { display: none; }
   </style>
 </head>
 <body class="bg-gray-100 text-gray-800">
@@ -22,9 +23,10 @@
 
 <main class="max-w-3xl mx-auto py-8 px-4 space-y-6">
 
+  <!-- Selection Section -->
   <div class="bg-white p-6 rounded-xl shadow space-y-4">
     <label class="block text-lg font-bold text-gray-800">Project Details</label>
-    
+
     <!-- Location -->
     <select id="location" class="w-full border p-2 rounded">
       <option value="">Select Location</option>
@@ -35,28 +37,68 @@
       <option value="Canada">Canada</option>
     </select>
 
-    <!-- Roof Type -->
+    <!-- Project Type -->
+    <select id="projectType" class="w-full border p-2 rounded">
+      <option value="">Select Project Type</option>
+      <option value="decking">Decking</option>
+      <option value="pergola">Pergola</option>
+    </select>
+  </div>
+
+  <!-- Decking Form -->
+  <div id="deckingForm" class="bg-white p-6 rounded-xl shadow space-y-4 hidden">
+    <h2 class="text-lg font-semibold">Decking Details</h2>
+    <input type="number" id="deckElevation" class="w-full border p-2 rounded" placeholder="Deck Elevation Off Ground (m)" />
+    <input type="number" id="deckWidth" class="w-full border p-2 rounded" placeholder="Deck Width (m)" />
+    <input type="number" id="deckLength" class="w-full border p-2 rounded" placeholder="Deck Length (m)" />
+    <select id="deckType" class="w-full border p-2 rounded">
+      <option value="">Select Decking Type</option>
+      <option value="Merbau">Merbau</option>
+      <option value="Spotted Gum">Spotted Gum</option>
+      <option value="Blackbutt">Blackbutt</option>
+      <option value="Composite">Composite</option>
+    </select>
+    <select id="boardWidth" class="w-full border p-2 rounded">
+      <option value="">Select Board Size</option>
+      <option value="90x19">90x19</option>
+      <option value="140x19">140x19</option>
+      <option value="87x19">87x19</option>
+      <option value="137x19">137x19</option>
+      <option value="87x21">87x21</option>
+      <option value="137x21">137x21</option>
+    </select>
+    <select id="joistSpacing" class="w-full border p-2 rounded">
+      <option value="">Select Joist Spacing</option>
+      <option value="450">450mm centers</option>
+      <option value="600">600mm centers</option>
+    </select>
+  </div>
+
+  <!-- Pergola Form -->
+  <div id="pergolaForm" class="bg-white p-6 rounded-xl shadow space-y-4 hidden">
+    <h2 class="text-lg font-semibold">Pergola Details</h2>
     <select id="roofType" class="w-full border p-2 rounded">
       <option value="">Select Roof Type</option>
       <option value="skillion">Skillion</option>
       <option value="pitched">Pitched</option>
     </select>
-
-    <!-- Pergola Height -->
     <input type="number" id="pergolaHeight" class="w-full border p-2 rounded" placeholder="Pergola Height (m)" />
-
-    <!-- Roof Pitch (Visible only if Pitched) -->
     <input type="number" id="roofPitch" class="w-full border p-2 rounded hidden" placeholder="Roof Pitch (Degrees)" />
-
-    <!-- Width and Length -->
-    <input type="number" id="width" class="w-full border p-2 rounded" placeholder="Width of Pergola (m)" />
-    <input type="number" id="length" class="w-full border p-2 rounded" placeholder="Length of Pergola (m)" />
-
-    <!-- Submit Button -->
-    <button id="submitQuote" class="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg">
-      Generate Materials List
-    </button>
+    <input type="number" id="pergolaWidth" class="w-full border p-2 rounded" placeholder="Pergola Width (m)" />
+    <input type="number" id="pergolaLength" class="w-full border p-2 rounded" placeholder="Pergola Length (m)" />
+    <select id="roofMaterial" class="w-full border p-2 rounded">
+      <option value="">Select Roofing Material</option>
+      <option value="Colorbond">Colorbond</option>
+      <option value="Polycarbonate">Polycarbonate</option>
+      <option value="Shingles">Shingles</option>
+      <option value="Tiles">Tiles</option>
+    </select>
   </div>
+
+  <!-- Generate Button -->
+  <button id="submitQuote" class="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg mt-4">
+    Generate Materials List
+  </button>
 
   <!-- Quote Output -->
   <div id="quoteBox" class="bg-white p-6 rounded-xl shadow text-sm text-gray-800"></div>
@@ -84,9 +126,16 @@
 </footer>
 
 <script>
-  const quoteBox = document.getElementById('quoteBox');
+  const projectType = document.getElementById('projectType');
+  const deckingForm = document.getElementById('deckingForm');
+  const pergolaForm = document.getElementById('pergolaForm');
   const roofType = document.getElementById('roofType');
   const roofPitch = document.getElementById('roofPitch');
+
+  projectType.addEventListener('change', () => {
+    deckingForm.classList.toggle('hidden', projectType.value !== 'decking');
+    pergolaForm.classList.toggle('hidden', projectType.value !== 'pergola');
+  });
 
   roofType.addEventListener('change', () => {
     roofPitch.classList.toggle('hidden', roofType.value !== 'pitched');
@@ -94,19 +143,38 @@
 
   document.getElementById('submitQuote').addEventListener('click', async () => {
     const location = document.getElementById('location').value;
-    const type = roofType.value;
-    const height = parseFloat(document.getElementById('pergolaHeight').value) || 0;
-    const pitch = parseFloat(document.getElementById('roofPitch').value) || 0;
-    const width = parseFloat(document.getElementById('width').value) || 0;
-    const length = parseFloat(document.getElementById('length').value) || 0;
+    const type = projectType.value;
 
-    if (!location || !type || !height || !width || !length) {
-      alert('Please fill in all required fields.');
+    if (!location || !type) {
+      alert('Please select both Location and Project Type.');
       return;
     }
 
-    const prompt = `Location: ${location}, Roof Type: ${type}, Pergola Height: ${height}m, Roof Pitch: ${pitch}°, Width: ${width}m, Length: ${length}m. Generate a full material list for this pergola including posts, beams, rafters, roof sheets, fixings, and concrete.`;
+    let prompt = `Location: ${location}, Project Type: ${type}. `;
 
+    if (type === 'decking') {
+      const deckElevation = document.getElementById('deckElevation').value;
+      const deckWidth = document.getElementById('deckWidth').value;
+      const deckLength = document.getElementById('deckLength').value;
+      const deckType = document.getElementById('deckType').value;
+      const boardWidth = document.getElementById('boardWidth').value;
+      const joistSpacing = document.getElementById('joistSpacing').value;
+
+      prompt += `Deck Elevation: ${deckElevation}m, Width: ${deckWidth}m, Length: ${deckLength}m, Deck Type: ${deckType}, Board Width: ${boardWidth}, Joist Spacing: ${joistSpacing}mm.`;
+    }
+
+    if (type === 'pergola') {
+      const pergolaHeight = document.getElementById('pergolaHeight').value;
+      const roofTypeValue = document.getElementById('roofType').value;
+      const roofPitchValue = document.getElementById('roofPitch').value;
+      const pergolaWidth = document.getElementById('pergolaWidth').value;
+      const pergolaLength = document.getElementById('pergolaLength').value;
+      const roofMaterial = document.getElementById('roofMaterial').value;
+
+      prompt += `Pergola Height: ${pergolaHeight}m, Roof Type: ${roofTypeValue}, Roof Pitch: ${roofPitchValue}°, Width: ${pergolaWidth}m, Length: ${pergolaLength}m, Roof Material: ${roofMaterial}.`;
+    }
+
+    const quoteBox = document.getElementById('quoteBox');
     quoteBox.innerHTML = "<span class='text-green-600 font-medium'>Kai is generating your materials list...</span>";
 
     try {
@@ -135,11 +203,11 @@
     if (!supplierEmail) return alert('Please select a supplier.');
 
     const subject = encodeURIComponent("Material Quote Request");
-    const body = encodeURIComponent(`Hi there,\n\nI'm requesting a quote for the following materials:\n\n${quoteBox.innerText}\n\nCheers,\n[Your Name]`);
+    const body = encodeURIComponent(`Hi there,\n\nPlease provide a quote for the following materials:\n\n${document.getElementById('quoteBox').innerText}\n\nThanks,\n[Your Name]`);
     window.location.href = `mailto:${supplierEmail}?subject=${subject}&body=${body}`;
   });
 
-  // TODO: Fetch supplier list dynamically from Supabase and populate #supplierDropdown
+  // TODO: Populate suppliers from Supabase into #supplierDropdown
 </script>
 
 </body>
