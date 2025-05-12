@@ -2,156 +2,91 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Decking Calculator – Ask Kai</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
-  <style>
-    body {
-      background-color: #f3f4f6;
-      font-family: sans-serif;
-    }
-    .result-card {
-      background-color: #fff;
-      padding: 1rem;
-      border-radius: 0.5rem;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.1);
-    }
-    .input-hint::placeholder {
-      color: #9ca3af;
-    }
-  </style>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Calculators – Ask Kai</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
 </head>
-<body class="text-gray-800">
-  <main class="max-w-3xl mx-auto p-6 space-y-6">
-    <h1 class="text-3xl font-bold text-green-600 text-center">Decking Calculator</h1>
+<body class="bg-gray-100 text-gray-800">
+  body {
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+  }
 
-    <!-- INPUT FORM -->
-    <div class="bg-white p-6 rounded-lg shadow space-y-4">
-      <label class="block font-bold">Deck Type</label>
-      <select id="deckType" class="w-full p-2 border rounded">
-        <option value="">Select Deck Type</option>
-        <option value="ground">Ground-Level (&lt;600mm)</option>
-        <option value="low">Low-Rise (600mm–1200mm)</option>
-        <option value="high">High-Rise (1200mm+)</option>
-      </select>
+  /* Default to desktop background */
+  body {
+    background-image: url('https://i.imgur.com/jhqlVA5_d.png');
+  }
 
-      <div class="grid grid-cols-2 gap-4">
-        <input type="number" id="deckWidth" placeholder="Deck Width (m) – Board Length" class="p-2 border rounded input-hint" />
-        <input type="number" id="deckLength" placeholder="Deck Length (m)" class="p-2 border rounded input-hint" />
-        <input type="number" id="deckHeight" placeholder="Deck Height Off Ground (m)" class="p-2 border rounded input-hint" />
-        <input type="number" id="boardWidth" placeholder="Board Width (mm)" class="p-2 border rounded input-hint" />
-        <input type="number" id="boardGap" placeholder="Board Gap (mm) Default 3mm" value="3" class="p-2 border rounded input-hint" />
-        <input type="number" id="boardLength" placeholder="Board Length (m)" class="p-2 border rounded input-hint" readonly />
-      </div>
+  /* Mobile background override */
+  @media (max-width: 768px) {
+    body {
+      background-image: url('https://i.imgur.com/qzRmu0O_d.jpeg');
+    }
+  }
 
-      <label class="block font-bold mt-4">Material Selections</label>
-      <select id="deckingMaterial" class="w-full p-2 border rounded">
-        <option value="">Decking Material</option>
-        <option>Merbau</option>
-        <option>Spotted Gum</option>
-        <option>Treated Pine</option>
-        <option>Composite</option>
-      </select>
+  <!-- Banner -->
+  <div class="w-full bg-black">
+    <img src="https://i.imgur.com/nDIhtRr.png" alt="Kaymar Banner" class="w-full max-h-24 object-contain mx-auto">
+  </div>
 
-      <select id="framingMaterial" class="w-full p-2 border rounded">
-        <option value="">Framing Material</option>
-        <option>Treated Pine</option>
-        <option>LVL</option>
-        <option>Hardwood</option>
-      </select>
-
-      <select id="joistSpacing" class="w-full p-2 border rounded">
-        <option value="">Joist Spacing</option>
-        <option value="450">450mm</option>
-        <option value="600">600mm</option>
-      </select>
-
-      <button onclick="calculateDeck()" class="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700">Calculate</button>
+  <!-- Header -->
+  <header class="bg-white shadow p-4 flex items-center justify-between relative">
+    <div class="flex items-center space-x-4">
+      <button onclick="toggleMenu()" class="bg-black text-white p-2 rounded">
+        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+        </svg>
+      </button>
+      <h1 class="text-xl font-bold text-green-600">Calculator Hub</h1>
     </div>
+    <div id="menuDropdown" class="hidden absolute mt-16 ml-2 w-60 bg-white border border-gray-300 shadow-lg rounded-md z-50">
+      <a href="index.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Home</a>
+      <a href="quote.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Quote Generator</a>
+      <a href="rafter-calc.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Rafter Calculator</a>
+      <a href="decking-calc.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100 font-semibold">Decking Calculator</a>
+      <a href="stringer-calc.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Stair Calculator</a>
+      <a href="area-calc.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Area / m³ Calculator</a>
+      <a href="apprentice-hub.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Apprentice Hub</a>
+      <a href="settings.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Settings</a>
+      <a href="upgrade.html" class="block px-4 py-2 text-sm text-gray-800 hover:bg-gray-100">Upgrade</a>
+      <button onclick="logoutUser()" class="w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-gray-100">Log Out</button>
+    </div>
+  </header>
 
-    <!-- RESULTS -->
-    <div id="results" class="space-y-4"></div>
+  <main class="max-w-4xl mx-auto py-8 px-4">
+    <h2 class="text-2xl font-bold text-green-700 mb-6">Choose a Calculator</h2>
+    <ul class="space-y-3">
+      <li><a href="rafter-calc.html" class="text-blue-600 hover:underline">Rafter Length Calculator</a></li>
+      <li><a href="decking-calc.html" class="text-blue-600 hover:underline font-semibold">Decking Board Calculator</a></li>
+      <li><a href="stringer-calc.html" class="text-blue-600 hover:underline">Stair/Stringer Calculator</a></li>
+      <li><a href="area-calc.html" class="text-blue-600 hover:underline">Area / Cubic Volume Calculator</a></li>
+    </ul>
+
+    <a href="index.html" class="inline-block mt-8 text-sm text-blue-600 hover:underline">Back to Chat</a>
   </main>
 
+  <footer class="text-center text-gray-500 text-sm p-6">
+    &copy; 2025 Kaymar Construction | Powered by Ask Kai
+    <div class="flex justify-center space-x-6 mt-2">
+      <a href="https://www.instagram.com/askkai_official" class="text-blue-600 hover:underline">Instagram</a>
+      <a href="https://www.tiktok.com/@askkai_official" class="text-blue-600 hover:underline">TikTok</a>
+      <a href="https://www.facebook.com/askkai_official" class="text-blue-600 hover:underline">Facebook</a>
+      <a href="https://www.youtube.com/@askkai_official" class="text-blue-600 hover:underline">YouTube</a>
+      <a href="https://www.threads.net/@askkai_official" class="text-blue-600 hover:underline">Threads</a>
+    </div>
+  </footer>
+
   <script>
-    function roundToNearest(value, step = 0.6) {
-      return Math.ceil(value / step) * step;
+    function toggleMenu() {
+      document.getElementById('menuDropdown').classList.toggle('hidden');
     }
-
-    document.getElementById('deckWidth').addEventListener('input', () => {
-      const width = parseFloat(document.getElementById('deckWidth').value);
-      if (width) {
-        document.getElementById('boardLength').value = roundToNearest(width).toFixed(1);
-      }
-    });
-
-    function calculateDeck() {
-      const width = parseFloat(document.getElementById('deckWidth').value);
-      const length = parseFloat(document.getElementById('deckLength').value);
-      const height = parseFloat(document.getElementById('deckHeight').value);
-      const boardWidth = parseFloat(document.getElementById('boardWidth').value);
-      const boardGap = parseFloat(document.getElementById('boardGap').value || 3);
-      const boardLength = parseFloat(document.getElementById('boardLength').value);
-      const spacing = parseFloat(document.getElementById('joistSpacing').value);
-      const deckType = document.getElementById('deckType').value;
-
-      if (!width || !length || !height || !boardWidth || !boardLength || !spacing) {
-        alert("Please complete all fields.");
-        return;
-      }
-
-      const joistCount = Math.ceil((width * 1000) / spacing) + 1;
-      const bearerRows = Math.ceil(length / 1.8) + 1;
-      const boardCount = Math.ceil((width * 1000) / (boardWidth + boardGap)) * (length / boardLength);
-      const totalBoards = Math.ceil(boardCount * 1.05);
-
-      const postSpacing = 1.8;
-      const totalPosts = Math.ceil((length / postSpacing) * bearerRows);
-
-      let embedDepth = 0.45;
-      if (deckType === 'low') embedDepth = 0.6;
-      else if (deckType === 'high') embedDepth = 0.9;
-
-      const postDepth = height + embedDepth;
-      const stumpSize = height < 1.2 ? '100x100' : '125x125';
-
-      // Concrete Calculation
-      const holeRadius = 0.15; // 300mm dia hole
-      const concretePerPost = Math.PI * holeRadius * holeRadius * postDepth; // m³ per post
-      const totalConcreteM3 = concretePerPost * totalPosts;
-      const bagsRequired = Math.ceil(totalConcreteM3 / 0.01); // Each bag covers 0.01 m³
-
-      const results = `
-        <div class="result-card">
-          <h2 class="text-xl font-bold text-green-600 mb-2">Generated Material List</h2>
-          <ul class="list-disc list-inside space-y-1 text-sm">
-            <li><strong>Deck Area:</strong> ${width}m × ${length}m</li>
-            <li><strong>Total Joists:</strong> ${joistCount}</li>
-            <li><strong>Total Bearer Pieces (90x45 Laminated):</strong> ${bearerRows * 2}</li>
-            <li><strong>Stumps / Posts:</strong> ${totalPosts} (${stumpSize}) at ${postDepth.toFixed(2)}m depth</li>
-            <li><strong>Decking Boards:</strong> ${totalBoards} boards at ${boardLength}m length</li>
-            <li><strong>Concrete Volume:</strong> ${totalConcreteM3.toFixed(2)}m³ (~${bagsRequired} x 20kg bags)</li>
-            <li><strong>Joist Spacing:</strong> ${spacing}mm</li>
-          </ul>
-        </div>
-      `;
-
-      document.getElementById('results').innerHTML = results;
-      <div id="emailSection" class="hidden bg-white p-6 rounded-lg shadow space-y-4 mt-4">
-  <h2 class="text-lg font-bold text-green-600">Request a Quote</h2>
-  <label class="block font-bold">Select Supplier</label>
-  <select id="supplierDropdown" class="w-full p-2 border rounded">
-    <option value="">Select Supplier</option>
-    <!-- Populate dynamically later from Supabase -->
-    <option value="supplier@example.com">Example Supplier</option>
-  </select>
-  <button onclick="emailSupplier()" class="w-full bg-black text-white py-2 rounded hover:bg-gray-800">Email Supplier</button>
-</div>
-
+    function logoutUser() {
+      sessionStorage.clear();
+      localStorage.removeItem('promptCount');
+      localStorage.removeItem('kaiTokens');
+      window.location.href = 'logout.html';
     }
   </script>
-  function emailSupplier() {
-  const supplierEmail = document.getElementById('supplierDropdown').value;
-  if (!supplierEmail) return alert('Please select a supplier.');
 </body>
 </html>
