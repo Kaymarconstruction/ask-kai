@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Quote Generator – Ask Kai</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.0.0/dist/umd/supabase.min.js"></script>
   <style>
     body {
       background-image: url('https://i.imgur.com/jhqlVA5.png');
@@ -12,10 +13,7 @@
       background-position: center;
       background-repeat: no-repeat;
     }
-    .overlay {
-      background-color: rgba(255, 255, 255, 0.95);
-      backdrop-filter: blur(4px);
-    }
+    .overlay { background-color: rgba(255, 255, 255, 0.95); backdrop-filter: blur(4px); }
     #quoteBox { max-height: 50vh; overflow-y: auto; white-space: pre-wrap; }
     .hidden { display: none; }
   </style>
@@ -37,14 +35,12 @@
   </div>
 </div>
 
-<h1 class="text-3xl font-bold text-center text-green-600 mt-6">Quote Generator</h1>
-
 <main class="max-w-3xl mx-auto py-8 px-4 space-y-6 overlay rounded-xl mt-6">
+  <h2 class="text-3xl font-bold text-center text-green-600 mb-6">Quote Generator</h2>
 
   <!-- Project Details -->
   <div class="bg-white p-6 rounded-xl shadow space-y-4">
     <label class="block text-lg font-bold text-gray-800">Project Details</label>
-
     <select id="location" class="w-full border p-2 rounded">
       <option value="">Select Location</option>
       <option value="AUS">Australia</option>
@@ -57,25 +53,25 @@
     <select id="tradeType" class="w-full border p-2 rounded">
       <option value="">Select Trade</option>
       <option value="carpentry">Carpentry</option>
-      <option value="electrical" disabled>Electrical (Coming Soon)</option>
-      <option value="plumbing" disabled>Plumbing (Coming Soon)</option>
     </select>
 
     <select id="projectType" class="w-full border p-2 rounded">
       <option value="">Select Project</option>
+      <option value="decking">Decking</option>
+      <option value="pergola">Pergola</option>
     </select>
   </div>
 
   <!-- Decking Form -->
   <div id="deckingForm" class="bg-white p-6 rounded-xl shadow space-y-4 hidden">
-    <h2 class="text-lg font-semibold">Decking Details</h2>
-    <input type="number" id="deckElevation" class="w-full border p-2 rounded" placeholder="Deck Elevation Off Ground (mm)" />
+    <h3 class="text-lg font-semibold">Decking Details</h3>
+    <input type="number" id="deckElevation" class="w-full border p-2 rounded" placeholder="Deck Elevation Off Ground (m)" />
     <input type="number" id="deckWidth" class="w-full border p-2 rounded" placeholder="Deck Width (m)" />
     <input type="number" id="deckLength" class="w-full border p-2 rounded" placeholder="Deck Length (m)" />
     <select id="deckType" class="w-full border p-2 rounded"></select>
-    <select id="boardWidth" class="w-full border p-2 rounded"></select>
+    <select id="boardSize" class="w-full border p-2 rounded"></select>
     <select id="subfloorTimber" class="w-full border p-2 rounded">
-      <option value="">Select Subfloor Timber</option>
+      <option value="">Subfloor Timber</option>
       <option value="Treated Pine">Treated Pine</option>
       <option value="F17 Hardwood">F17 Hardwood</option>
       <option value="Treated LVL">Treated LVL</option>
@@ -87,74 +83,134 @@
     </select>
   </div>
 
-  <!-- Pergola Form -->
-  <div id="pergolaForm" class="bg-white p-6 rounded-xl shadow space-y-4 hidden">
-    <h2 class="text-lg font-semibold">Pergola Details</h2>
-    <select id="roofType" class="w-full border p-2 rounded">
-      <option value="">Select Roof Type</option>
-      <option value="skillion">Skillion</option>
-      <option value="pitched">Pitched</option>
-    </select>
-    <input type="number" id="roofPitch" class="w-full border p-2 rounded hidden" placeholder="Roof Pitch (Degrees)" />
-    <select id="roofMaterial" class="w-full border p-2 rounded">
-      <option value="">Select Roofing Material</option>
-      <option value="Colorbond">Colorbond</option>
-      <option value="Polycarbonate">Polycarbonate</option>
-      <option value="Shingles">Shingles</option>
-      <option value="Tiles">Tiles</option>
-    </select>
-    <input type="number" id="pergolaHeight" class="w-full border p-2 rounded" placeholder="Pergola Height (m)" />
-    <input type="number" id="pergolaWidth" class="w-full border p-2 rounded" placeholder="Pergola Width (m)" />
-    <input type="number" id="pergolaLength" class="w-full border p-2 rounded" placeholder="Pergola Length (m)" />
-  </div>
+  <!-- Prompt Box -->
+  <textarea id="extraDetails" rows="3" class="w-full border rounded-lg p-3" placeholder="Additional project details..."></textarea>
 
   <button id="submitQuote" class="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg mt-4">Generate Materials List</button>
 
-  <div id="quoteBox" class="bg-white p-6 rounded-xl shadow text-sm text-gray-800"></div>
+  <!-- Generated Quote -->
+  <div id="quoteBox" class="bg-white p-6 rounded-xl shadow text-sm text-gray-800 mt-6"></div>
 
+  <!-- Email Supplier Section -->
+  <div id="emailSection" class="hidden bg-white p-6 rounded-xl shadow space-y-4">
+    <label class="block text-sm font-medium">Select Supplier</label>
+    <select id="supplierDropdown" class="w-full border p-2 rounded"></select>
+    <button id="emailSupplierBtn" class="w-full bg-black hover:bg-gray-900 text-white py-2 rounded-lg">Send to Supplier</button>
+  </div>
 </main>
 
-<script>
-  const tradeType = document.getElementById('tradeType');
-  const projectType = document.getElementById('projectType');
-  const deckingForm = document.getElementById('deckingForm');
-  const pergolaForm = document.getElementById('pergolaForm');
-  const roofType = document.getElementById('roofType');
-  const roofPitch = document.getElementById('roofPitch');
+<footer class="text-center text-gray-500 text-sm p-6">
+  &copy; 2025 Kaymar Construction | Powered by Ask Kai
+</footer>
 
-  tradeType.addEventListener('change', () => {
-    projectType.innerHTML = '<option value="">Select Project</option>';
-    if (tradeType.value === 'carpentry') {
-      projectType.innerHTML += `<option value="decking">Decking</option><option value="pergola">Pergola</option>`;
+<script>
+  const SUPABASE_URL = 'YOUR_SUPABASE_URL';
+  const SUPABASE_KEY = 'YOUR_SUPABASE_PUBLIC_KEY';
+  const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  const menuBtn = document.getElementById('menuBtn');
+  const menuDropdown = document.getElementById('menuDropdown');
+
+  menuBtn.addEventListener('click', () => menuDropdown.classList.toggle('hidden'));
+  window.addEventListener('click', (e) => {
+    if (!menuBtn.contains(e.target) && !menuDropdown.contains(e.target)) {
+      menuDropdown.classList.add('hidden');
     }
   });
 
+  function logoutUser() {
+    sessionStorage.clear();
+    localStorage.removeItem('promptCount');
+    window.location.href = 'logout.html';
+  }
+
+  const projectType = document.getElementById('projectType');
+  const deckingForm = document.getElementById('deckingForm');
   projectType.addEventListener('change', () => {
     deckingForm.classList.toggle('hidden', projectType.value !== 'decking');
-    pergolaForm.classList.toggle('hidden', projectType.value !== 'pergola');
-    if (projectType.value === 'decking') loadDeckingMaterials();
+    if (projectType.value === 'decking') loadDeckingOptions();
   });
 
-  roofType.addEventListener('change', () => {
-    roofPitch.classList.toggle('hidden', roofType.value !== 'pitched');
-  });
-
-  async function loadDeckingMaterials() {
-    const response = await fetch('https://askkai-backend-clean.onrender.com/materials?category=Decking');
-    const { materials } = await response.json();
-
-    const deckType = document.getElementById('deckType');
-    const boardWidth = document.getElementById('boardWidth');
-
-    const types = [...new Set(materials.map(m => m.material_name))];
-    deckType.innerHTML = '<option value="">Select Decking Type</option>' + types.map(t => `<option value="${t}">${t}</option>`).join('');
-
-    deckType.addEventListener('change', () => {
-      const selectedType = deckType.value;
-      const sizes = materials.filter(m => m.material_name === selectedType).map(m => m.size);
-      boardWidth.innerHTML = '<option value="">Select Board Size</option>' + sizes.map(s => `<option value="${s}">${s}</option>`).join('');
-    });
+  async function loadDeckingOptions() {
+    const { data, error } = await supabase.from('materials').select('material_name').eq('category', 'Decking');
+    const deckTypeSelect = document.getElementById('deckType');
+    deckTypeSelect.innerHTML = '<option value="">Select Decking Type</option>';
+    if (data) data.forEach(item => deckTypeSelect.innerHTML += `<option value="${item.material_name}">${item.material_name}</option>`);
   }
+
+  document.getElementById('deckType').addEventListener('change', async (e) => {
+    const selectedType = e.target.value;
+    const { data, error } = await supabase.from('materials').select('size').eq('material_name', selectedType);
+    const boardSizeSelect = document.getElementById('boardSize');
+    boardSizeSelect.innerHTML = '<option value="">Select Board Size</option>';
+    if (data) data.forEach(item => boardSizeSelect.innerHTML += `<option value="${item.size}">${item.size}</option>`);
+  });
+
+  document.getElementById('submitQuote').addEventListener('click', async () => {
+    const location = document.getElementById('location').value;
+    const trade = document.getElementById('tradeType').value;
+    const project = projectType.value;
+    const extraDetails = document.getElementById('extraDetails').value;
+
+    if (!location || !trade || !project) return alert('Please complete all Project Details.');
+
+    let prompt = `Location: ${location}, Trade: ${trade}, Project: ${project}. `;
+
+    if (project === 'decking') {
+      prompt += `
+      Deck Elevation: ${document.getElementById('deckElevation').value}m, 
+      Width: ${document.getElementById('deckWidth').value}m, 
+      Length: ${document.getElementById('deckLength').value}m, 
+      Deck Type: ${document.getElementById('deckType').value}, 
+      Board Size: ${document.getElementById('boardSize').value}, 
+      Subfloor Timber: ${document.getElementById('subfloorTimber').value}, 
+      Joist Spacing: ${document.getElementById('joistSpacing').value}mm. `;
+    }
+
+    prompt += `Additional Details: ${extraDetails}`;
+
+    const quoteBox = document.getElementById('quoteBox');
+    quoteBox.innerHTML = "<span class='text-green-600 font-medium'>Kai is generating your materials list...</span>";
+
+    try {
+      const response = await fetch("https://askkai-backend-clean.onrender.com/generate-quote", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ messages: [{ role: "user", content: prompt }] })
+      });
+
+      const data = await response.json();
+      quoteBox.innerText = data.reply || "- Unable to generate quote. Try again.";
+
+      if (data.reply && data.reply.length > 10) loadSuppliers();
+
+    } catch (error) {
+      console.error("Error generating quote:", error);
+      quoteBox.innerText = "- Kai hit a snag. Try again shortly.";
+    }
+  });
+
+  async function loadSuppliers() {
+    const userId = sessionStorage.getItem('askkaiUserId'); 
+    const { data } = await supabase.from('users').select('saved_suppliers').eq('id', userId).single();
+    const supplierDropdown = document.getElementById('supplierDropdown');
+    supplierDropdown.innerHTML = '<option value="">Select Supplier</option>';
+    if (data?.saved_suppliers) {
+      data.saved_suppliers.forEach(supplier => {
+        supplierDropdown.innerHTML += `<option value="${supplier.email}">${supplier.name}</option>`;
+      });
+      document.getElementById('emailSection').classList.remove('hidden');
+    }
+  }
+
+  document.getElementById('emailSupplierBtn').addEventListener('click', () => {
+    const supplierEmail = document.getElementById('supplierDropdown').value;
+    if (!supplierEmail) return alert('Please select a supplier.');
+
+    const subject = encodeURIComponent("Material Quote Request");
+    const body = encodeURIComponent(`Hi there,\n\nPlease provide a quote for the following materials:\n\n${document.getElementById('quoteBox').innerText}\n\nThanks,\n[Your Name]`);
+    window.location.href = `mailto:${supplierEmail}?subject=${subject}&body=${body}`;
+  });
 </script>
 
 </body>
