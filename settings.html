@@ -8,80 +8,130 @@
 </head>
 <body class="bg-gray-50 text-gray-900">
 
-  <div class="max-w-xl mx-auto p-6 space-y-6">
-    <h1 class="text-2xl font-bold text-green-600">Your Account</h1>
+<div class="max-w-xl mx-auto p-6 space-y-6">
+  <h1 class="text-2xl font-bold text-green-600">Your Account</h1>
 
-    <div class="bg-white p-4 shadow rounded space-y-4">
-      <div>
-        <label class="block text-sm font-medium">Email</label>
-        <p id="userEmail" class="text-gray-700">Loading...</p>
-      </div>
-
-      <div>
-        <label class="block text-sm font-medium mb-1">Profile Picture</label>
-        <div class="flex items-center space-x-4">
-          <label class="cursor-pointer relative">
-            <img id="profilePreview" src="https://i.imgur.com/vUk9jxA.jpeg" alt="Profile Preview" class="w-24 h-24 rounded-full object-cover border border-gray-300" />
-            <input id="profilePic" type="file" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer" />
-          </label>
-          <span class="text-sm text-gray-500">Tap image to change</span>
-        </div>
-      </div>
-
-      <div>
-        <label class="block text-sm font-medium">Subscription Tier</label>
-        <p id="planTier" class="text-green-700 font-semibold">Loading...</p>
-      </div>
-
-      <!-- New Contact Management Section -->
-      <div>
-        <label class="block text-sm font-medium mb-1">Contacts</label>
-        <div class="flex space-x-4">
-          <a href="addcontacts.html" class="bg-black text-white px-4 py-2 rounded hover:bg-gray-800">Add Contacts</a>
-          <a href="contacts.html" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">View Contacts</a>
-        </div>
-      </div>
-
-      <div>
-        <label class="block text-sm font-medium">Token Usage</label>
-        <p id="promptUsage" class="text-gray-700">0 / 10</p>
-      </div>
-
-      <button id="saveBtn" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Save Settings</button>
+  <div class="bg-white p-4 shadow rounded space-y-4">
+    <div>
+      <label class="block text-sm font-medium">Email</label>
+      <p id="userEmail" class="text-gray-700">Loading...</p>
     </div>
 
-    <a href="index.html" class="text-blue-600 underline text-sm">Back to Chat</a>
+    <div>
+      <label class="block text-sm font-medium mb-1">Profile Picture</label>
+      <div class="flex items-center space-x-4">
+        <label class="cursor-pointer relative">
+          <img id="profilePreview" src="https://i.imgur.com/vUk9jxA.jpeg" alt="Profile Preview" class="w-24 h-24 rounded-full object-cover border border-gray-300" />
+          <input id="profilePic" type="file" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer" />
+        </label>
+        <span class="text-sm text-gray-500">Tap image to change</span>
+      </div>
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium">Subscription Tier</label>
+      <p id="planTier" class="text-green-700 font-semibold">Loading...</p>
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium mb-1">Contacts</label>
+      <div class="flex space-x-4">
+        <a href="addcontacts.html" class="bg-black text-white px-4 py-2 rounded hover:bg-gray-800">Add Contacts</a>
+        <a href="contacts.html" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">View Contacts</a>
+      </div>
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium">Saved Quotes</label>
+      <ul id="savedQuotes" class="text-gray-700 space-y-2"></ul>
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium">Saved Email Drafts</label>
+      <ul id="savedEmails" class="text-gray-700 space-y-2"></ul>
+    </div>
+
+    <div>
+      <label class="block text-sm font-medium">Token Usage</label>
+      <p id="promptUsage" class="text-gray-700">0 / 10</p>
+    </div>
+
+    <button id="saveBtn" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Save Settings</button>
   </div>
 
-  <script>
-    const user = sessionStorage.getItem('askkaiUser') || 'demo@email.com';
-    const promptCount = localStorage.getItem('promptCount') || '0';
-    const plan = localStorage.getItem('planTier') || 'Free Plan';
-    const savedProfile = localStorage.getItem('profilePreview');
+  <a href="index.html" class="text-blue-600 underline text-sm">Back to Chat</a>
+</div>
 
-    document.getElementById('userEmail').textContent = user;
-    document.getElementById('promptUsage').textContent = `${promptCount} / ${plan === 'Free Plan' ? '10' : '∞'}`;
-    document.getElementById('planTier').textContent = plan;
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
+<script>
+  const SUPABASE_URL = 'YOUR_SUPABASE_URL';
+  const SUPABASE_KEY = 'YOUR_SUPABASE_ANON_KEY';
+  const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-    if (savedProfile) {
-      document.getElementById('profilePreview').src = savedProfile;
-    }
+  const user = sessionStorage.getItem('askkaiUser') || 'demo@email.com';
+  const promptCount = localStorage.getItem('promptCount') || '0';
+  const plan = localStorage.getItem('planTier') || 'Free Plan';
+  const savedProfile = localStorage.getItem('profilePreview');
 
-    document.getElementById('profilePic').addEventListener('change', (e) => {
-      const file = e.target.files[0];
-      if (!file) return;
-      const reader = new FileReader();
-      reader.onload = () => {
-        document.getElementById('profilePreview').src = reader.result;
-        localStorage.setItem('profilePreview', reader.result);
-      };
-      reader.readAsDataURL(file);
+  document.getElementById('userEmail').textContent = user;
+  document.getElementById('promptUsage').textContent = `${promptCount} / ${plan === 'Free Plan' ? '10' : '∞'}`;
+  document.getElementById('planTier').textContent = plan;
+  if (savedProfile) {
+    document.getElementById('profilePreview').src = savedProfile;
+  }
+
+  document.getElementById('profilePic').addEventListener('change', (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => {
+      document.getElementById('profilePreview').src = reader.result;
+      localStorage.setItem('profilePreview', reader.result);
+    };
+    reader.readAsDataURL(file);
+  });
+
+  document.getElementById('saveBtn').addEventListener('click', () => {
+    alert('Settings saved!');
+  });
+
+  async function loadSavedData() {
+    const { data: quotes } = await supabase.from('quotes').select('*').eq('email', user);
+    const { data: emails } = await supabase.from('email_drafts').select('*').eq('email', user);
+
+    const quoteList = document.getElementById('savedQuotes');
+    const emailList = document.getElementById('savedEmails');
+
+    quoteList.innerHTML = '';
+    emailList.innerHTML = '';
+
+    quotes?.forEach(q => {
+      const li = document.createElement('li');
+      li.innerHTML = `<div>${q.title || 'Untitled Quote'} 
+        <button onclick="deleteQuote(${q.id})" class="text-red-600 ml-2 text-sm">Delete</button></div>`;
+      quoteList.appendChild(li);
     });
 
-    document.getElementById('saveBtn').addEventListener('click', () => {
-      alert('Settings saved!');
+    emails?.forEach(e => {
+      const li = document.createElement('li');
+      li.innerHTML = `<div>${e.subject || 'Untitled Draft'} 
+        <button onclick="deleteEmail(${e.id})" class="text-red-600 ml-2 text-sm">Delete</button></div>`;
+      emailList.appendChild(li);
     });
-  </script>
+  }
+
+  async function deleteQuote(id) {
+    await supabase.from('quotes').delete().eq('id', id);
+    loadSavedData();
+  }
+
+  async function deleteEmail(id) {
+    await supabase.from('email_drafts').delete().eq('id', id);
+    loadSavedData();
+  }
+
+  loadSavedData();
+</script>
 
 </body>
 </html>
