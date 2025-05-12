@@ -23,55 +23,62 @@
 </header>
 
 <main class="max-w-3xl mx-auto py-8 px-4 space-y-6">
+  <div class="bg-white p-6 rounded-xl shadow space-y-4">
+    <p class="text-sm text-gray-700">
+      Fill the form for quick input, or describe your job in detail in the chat prompt below. You can also update the materials list with further prompts after generation.
+    </p>
 
-  <!-- Free Text Input -->
-  <div class="bg-white p-6 rounded-xl shadow">
-    <label for="quoteInput" class="block font-semibold mb-2">Describe your job in detail:</label>
-    <textarea id="quoteInput" rows="4" class="w-full border rounded-lg p-3"
-      placeholder="e.g. 7.2x3.6m deck, 600mm high, treated pine stumps, 140x45 double bearers, 90x45 joists, composite decking, VIC"></textarea>
-    <button id="submitQuote" class="mt-4 w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg">Generate Materials List</button>
-  </div>
+    <form id="quoteForm" class="space-y-4">
+      <h2 class="font-semibold text-lg">Decking Details</h2>
+      <input type="number" name="deckWidth" class="w-full border p-2 rounded" placeholder="Deck Width (m)" />
+      <input type="number" name="deckLength" class="w-full border p-2 rounded" placeholder="Deck Length (m)" />
+      <select name="deckingType" class="w-full border p-2 rounded">
+        <option value="">Select Decking Type</option>
+        <option>Merbau</option>
+        <option>Spotted Gum</option>
+        <option>Blackbutt</option>
+        <option>Composite</option>
+      </select>
+      <select name="boardWidth" class="w-full border p-2 rounded">
+        <option value="">Select Board Width</option>
+        <option>90x19</option>
+        <option>140x19</option>
+        <option>87x19</option>
+        <option>137x19</option>
+        <option>87x21</option>
+        <option>137x21</option>
+      </select>
 
-  <!-- Structured Input Form -->
-  <div class="bg-white p-6 rounded-xl shadow">
-    <h2 class="text-lg font-semibold mb-4">Or Fill Out Job Details Below</h2>
-    <form id="materialForm" class="space-y-4">
-      <select name="projectType" class="w-full border p-2 rounded">
-        <option value="">Select Project Type</option>
-        <option value="Deck">Deck</option>
-        <option value="Pergola">Pergola</option>
-        <option value="Fence">Fence</option>
-      </select>
-      <input type="text" name="dimensions" class="w-full border p-2 rounded" placeholder="Dimensions (e.g., 5x3m)" />
-      <select name="postDetails" class="w-full border p-2 rounded">
-        <option value="">Select Posts</option>
-        <option value="90x90 H4">90x90 H4</option>
-        <option value="100x100 H4">100x100 H4</option>
-      </select>
-      <select name="beamDetails" class="w-full border p-2 rounded">
-        <option value="">Select Beams</option>
-        <option value="140x45 MGP10">140x45 MGP10</option>
-        <option value="190x45 MGP10">190x45 MGP10</option>
-      </select>
-      <input type="text" name="rafterSpacing" class="w-full border p-2 rounded" placeholder="Rafter Spacing (e.g., 600mm centers)" />
+      <h2 class="font-semibold text-lg">Pergola Details</h2>
+      <input type="text" name="location" class="w-full border p-2 rounded" placeholder="Location (e.g., VIC)" />
+      <input type="number" name="pergolaWidth" class="w-full border p-2 rounded" placeholder="Pergola Width (m)" />
+      <input type="number" name="pergolaLength" class="w-full border p-2 rounded" placeholder="Pergola Length (m)" />
+      <input type="number" name="roofPitch" class="w-full border p-2 rounded" placeholder="Roof Pitch (degrees)" />
       <select name="roofType" class="w-full border p-2 rounded">
         <option value="">Select Roof Type</option>
-        <option value="Colorbond">Colorbond</option>
-        <option value="Polycarbonate">Polycarbonate</option>
+        <option>Colorbond</option>
+        <option>Polycarbonate</option>
+        <option>Shingles</option>
+        <option>Tiles</option>
       </select>
-      <select name="region" class="w-full border p-2 rounded">
-        <option value="VIC">VIC (Default)</option>
-        <option value="NSW">NSW</option>
-        <option value="QLD">QLD</option>
-      </select>
-      <button type="submit" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg">Generate from Form</button>
+
+      <button type="submit" class="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700">
+        Generate from Form
+      </button>
     </form>
   </div>
 
-  <!-- Quote Output -->
+  <div class="bg-white p-6 rounded-xl shadow space-y-4">
+    <label class="block font-semibold mb-2">Chat Prompt</label>
+    <textarea id="quoteInput" rows="4" class="w-full border rounded-lg p-3"
+      placeholder="Describe the job in detail..."></textarea>
+    <button id="submitQuote" class="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700">
+      Generate Materials List
+    </button>
+  </div>
+
   <div id="quoteBox" class="bg-white p-6 rounded-xl shadow text-sm text-gray-800"></div>
 
-  <!-- Email Supplier Section -->
   <div id="emailSection" class="hidden bg-white p-6 rounded-xl shadow space-y-4">
     <label class="block text-sm font-medium">Choose Supplier</label>
     <select id="supplierDropdown" class="w-full border p-2 rounded">
@@ -79,41 +86,42 @@
       <option value="bowens@example.com">Bowens</option>
       <option value="mitre10@example.com">Mitre 10</option>
     </select>
-    <button id="emailSupplierBtn" class="mt-2 w-full bg-black hover:bg-gray-900 text-white py-2 rounded-lg">Send to Supplier</button>
+    <button id="emailSupplierBtn" class="mt-2 w-full bg-black text-white py-2 rounded hover:bg-gray-900">
+      Send to Supplier
+    </button>
   </div>
-
-  <!-- Disclaimer -->
-  <div class="bg-yellow-50 border-l-4 border-yellow-500 text-yellow-700 p-4 rounded shadow">
-    <p>This estimate is for materials only. Always confirm with your supplier or engineer before purchasing.</p>
-  </div>
-
 </main>
 
 <footer class="text-center text-gray-500 text-sm p-6">
   &copy; 2025 Kaymar Construction | Powered by Ask Kai
 </footer>
 
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 <script>
-  let generatedQuote = '';
-  const quoteInput = document.getElementById('quoteInput');
+  const SUPABASE_URL = 'YOUR_SUPABASE_URL';
+  const SUPABASE_KEY = 'YOUR_SUPABASE_ANON_KEY';
+  const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  const user = sessionStorage.getItem('askkaiUser') || 'demo@email.com';
   const quoteBox = document.getElementById('quoteBox');
   const emailSection = document.getElementById('emailSection');
+  let generatedQuote = '';
 
-  document.getElementById('submitQuote').addEventListener('click', async () => {
-    const input = quoteInput.value.trim();
+  document.getElementById('submitQuote').addEventListener('click', () => {
+    const input = document.getElementById('quoteInput').value.trim();
     if (!input) return;
-    await generateQuote([{ role: "user", content: input }]);
+    generateQuote([{ role: "user", content: input }]);
   });
 
-  document.getElementById('materialForm').addEventListener('submit', async (e) => {
+  document.getElementById('quoteForm').addEventListener('submit', (e) => {
     e.preventDefault();
     const formData = new FormData(e.target);
-    const fields = [...formData.entries()].map(([key, value]) => `${key}: ${value}`).join(', ');
-    await generateQuote([{ role: "user", content: `Project Details - ${fields}` }]);
+    const details = [...formData.entries()].map(([k, v]) => `${k}: ${v}`).join(', ');
+    generateQuote([{ role: "user", content: `Project Details - ${details}` }]);
   });
 
   async function generateQuote(messages) {
-    quoteBox.innerHTML = "<span class='text-green-600 font-medium'>Kai is generating your materials list...</span>";
+    quoteBox.innerHTML = "<span class='text-green-600 font-medium'>Kai is working on it...</span>";
     emailSection.classList.add('hidden');
 
     try {
@@ -125,28 +133,36 @@
 
       const data = await response.json();
       const reply = data.reply || "- Unable to generate quote. Try again.";
-
       generatedQuote = reply;
       quoteBox.innerText = reply;
 
       if (reply.length > 10) {
         emailSection.classList.remove('hidden');
+        await supabase.from('quotes').insert([{ email: user, content: reply, created_at: new Date() }]);
       }
 
-      quoteInput.value = '';
-
+      document.getElementById('quoteInput').value = '';
     } catch (error) {
       console.error("Error generating quote:", error);
-      quoteBox.innerText = "- Kai hit a snag. Try again shortly.";
+      quoteBox.innerText = "- Kai hit a snag. Try again.";
     }
   }
 
   document.getElementById('emailSupplierBtn').addEventListener('click', () => {
     const supplierEmail = document.getElementById('supplierDropdown').value.trim();
-    if (!supplierEmail) return alert('Please select a supplier.');
+    if (!supplierEmail) return alert('Select a supplier.');
 
     const subject = encodeURIComponent("Material Quote Request");
-    const body = encodeURIComponent(`Hi there,\n\nHope you're doing well. I'm looking to get a quote for the following items:\n\n${generatedQuote}\n\nIf you have any questions, give me a buzz. Appreciate it!\n\nCheers,\n[Your Name]`);
+    const body = encodeURIComponent(`Hi there,
+
+Hope you're doing well. I'm after a quote for:
+
+${generatedQuote}
+
+If you have any questions, give me a buzz.
+
+Cheers,  
+[Your Name]`);
 
     window.location.href = `mailto:${supplierEmail}?subject=${subject}&body=${body}`;
   });
