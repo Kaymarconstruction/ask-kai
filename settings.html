@@ -33,22 +33,29 @@
       <p id="planTier" class="text-green-700 font-semibold">Loading...</p>
     </div>
 
+    <!-- Contacts & Suppliers -->
     <div>
-      <label class="block text-sm font-medium mb-1">Contacts</label>
+      <label class="block text-sm font-medium mb-1">Contacts & Suppliers</label>
       <div class="flex space-x-4">
         <a href="addcontacts.html" class="bg-black text-white px-4 py-2 rounded hover:bg-gray-800">Add Contacts</a>
         <a href="contacts.html" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">View Contacts</a>
       </div>
     </div>
 
+    <!-- Saved Quotes Section -->
     <div>
-      <label class="block text-sm font-medium">Saved Quotes</label>
-      <ul id="savedQuotes" class="text-gray-700 space-y-2"></ul>
+      <label class="block text-sm font-medium mb-1">Saved Quotes</label>
+      <ul id="savedQuotes" class="text-gray-700 space-y-2">
+        <!-- Dynamically populated -->
+      </ul>
     </div>
 
+    <!-- Saved Email Drafts -->
     <div>
-      <label class="block text-sm font-medium">Saved Email Drafts</label>
-      <ul id="savedEmails" class="text-gray-700 space-y-2"></ul>
+      <label class="block text-sm font-medium mb-1">Saved Email Drafts</label>
+      <ul id="savedEmails" class="text-gray-700 space-y-2">
+        <!-- Dynamically populated -->
+      </ul>
     </div>
 
     <div>
@@ -62,12 +69,7 @@
   <a href="index.html" class="text-blue-600 underline text-sm">Back to Chat</a>
 </div>
 
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
 <script>
-  const SUPABASE_URL = 'YOUR_SUPABASE_URL';
-  const SUPABASE_KEY = 'YOUR_SUPABASE_ANON_KEY';
-  const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-
   const user = sessionStorage.getItem('askkaiUser') || 'demo@email.com';
   const promptCount = localStorage.getItem('promptCount') || '0';
   const plan = localStorage.getItem('planTier') || 'Free Plan';
@@ -76,6 +78,7 @@
   document.getElementById('userEmail').textContent = user;
   document.getElementById('promptUsage').textContent = `${promptCount} / ${plan === 'Free Plan' ? '10' : '∞'}`;
   document.getElementById('planTier').textContent = plan;
+
   if (savedProfile) {
     document.getElementById('profilePreview').src = savedProfile;
   }
@@ -93,44 +96,19 @@
 
   document.getElementById('saveBtn').addEventListener('click', () => {
     alert('Settings saved!');
+    // Add Supabase logic here for permanent storage if required.
   });
 
-  async function loadSavedData() {
-    const { data: quotes } = await supabase.from('quotes').select('*').eq('email', user);
-    const { data: emails } = await supabase.from('email_drafts').select('*').eq('email', user);
-
-    const quoteList = document.getElementById('savedQuotes');
-    const emailList = document.getElementById('savedEmails');
-
-    quoteList.innerHTML = '';
-    emailList.innerHTML = '';
-
-    quotes?.forEach(q => {
-      const li = document.createElement('li');
-      li.innerHTML = `<div>${q.title || 'Untitled Quote'} 
-        <button onclick="deleteQuote(${q.id})" class="text-red-600 ml-2 text-sm">Delete</button></div>`;
-      quoteList.appendChild(li);
-    });
-
-    emails?.forEach(e => {
-      const li = document.createElement('li');
-      li.innerHTML = `<div>${e.subject || 'Untitled Draft'} 
-        <button onclick="deleteEmail(${e.id})" class="text-red-600 ml-2 text-sm">Delete</button></div>`;
-      emailList.appendChild(li);
-    });
+  function loadListFromStorage(key, elementId) {
+    const items = JSON.parse(localStorage.getItem(key) || '[]');
+    const container = document.getElementById(elementId);
+    container.innerHTML = items.length 
+      ? items.map(item => `<li>- ${item}</li>`).join('') 
+      : `<li>No ${elementId.replace('saved', '').toLowerCase()} saved yet.</li>`;
   }
 
-  async function deleteQuote(id) {
-    await supabase.from('quotes').delete().eq('id', id);
-    loadSavedData();
-  }
-
-  async function deleteEmail(id) {
-    await supabase.from('email_drafts').delete().eq('id', id);
-    loadSavedData();
-  }
-
-  loadSavedData();
+  loadListFromStorage('savedQuotes', 'savedQuotes');
+  loadListFromStorage('savedEmails', 'savedEmails');
 </script>
 
 </body>
