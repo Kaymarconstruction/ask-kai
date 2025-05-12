@@ -137,6 +137,17 @@
       `;
 
       document.getElementById('results').innerHTML = results;
+      <div id="emailSection" class="hidden bg-white p-6 rounded-lg shadow space-y-4 mt-4">
+  <h2 class="text-lg font-bold text-green-600">Request a Quote</h2>
+  <label class="block font-bold">Select Supplier</label>
+  <select id="supplierDropdown" class="w-full p-2 border rounded">
+    <option value="">Select Supplier</option>
+    <!-- Populate dynamically later from Supabase -->
+    <option value="supplier@example.com">Example Supplier</option>
+  </select>
+  <button onclick="emailSupplier()" class="w-full bg-black text-white py-2 rounded hover:bg-gray-800">Email Supplier</button>
+</div>
+
     }
   </script>
 </body>
