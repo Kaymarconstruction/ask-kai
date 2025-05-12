@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Decking Calculator – Ask Kai</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+  <style>
+    body {
+      background-color: #f3f4f6;
+      font-family: sans-serif;
+    }
+    .result-card {
+      @apply bg-white p-4 rounded-lg shadow;
+    }
+  </style>
+</head>
+<body class="text-gray-800">
+  <main class="max-w-3xl mx-auto p-6 space-y-6">
+    <h1 class="text-3xl font-bold text-green-600 text-center">Decking Calculator</h1>
+
+    <!-- INPUT FORM -->
+    <div class="bg-white p-6 rounded-lg shadow space-y-4">
+      <label class="block font-bold">Deck Type</label>
+      <select id="deckType" class="w-full p-2 border rounded">
+        <option value="">Select Deck Type</option>
+        <option value="ground">Ground-Level (&lt;600mm)</option>
+        <option value="low">Low-Rise (600mm–1200mm)</option>
+        <option value="high">High-Rise (1200mm+)</option>
+      </select>
+
+      <div class="grid grid-cols-2 gap-4">
+        <input type="number" id="deckWidth" placeholder="Deck Width (m)" class="p-2 border rounded" />
+        <input type="number" id="deckLength" placeholder="Deck Length (m)" class="p-2 border rounded" />
+        <input type="number" id="deckHeight" placeholder="Deck Height Off Ground (m)" class="p-2 border rounded" />
+        <input type="number" id="boardWidth" placeholder="Board Width (mm)" class="p-2 border rounded" />
+        <input type="number" id="boardGap" placeholder="Board Gap (mm)" value="3" class="p-2 border rounded" />
+        <input type="number" id="boardLength" placeholder="Board Length (m)" class="p-2 border rounded" />
+      </div>
+
+      <label class="block font-bold mt-4">Material Selections</label>
+      <select id="deckingMaterial" class="w-full p-2 border rounded">
+        <option value="">Decking Material</option>
+        <option>Merbau</option>
+        <option>Spotted Gum</option>
+        <option>Treated Pine</option>
+        <option>Composite</option>
+      </select>
+
+      <select id="framingMaterial" class="w-full p-2 border rounded">
+        <option value="">Framing Material</option>
+        <option>Treated Pine</option>
+        <option>LVL</option>
+        <option>Hardwood</option>
+      </select>
+
+      <select id="joistSpacing" class="w-full p-2 border rounded">
+        <option value="">Joist Spacing</option>
+        <option value="450">450mm</option>
+        <option value="600">600mm</option>
+      </select>
+
+      <button onclick="calculateDeck()" class="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700">Calculate</button>
+    </div>
+
+    <!-- RESULTS -->
+    <div id="results" class="space-y-4"></div>
+  </main>
+
+  <script>
+    function calculateDeck() {
+      const width = parseFloat(document.getElementById('deckWidth').value);
+      const length = parseFloat(document.getElementById('deckLength').value);
+      const height = parseFloat(document.getElementById('deckHeight').value);
+      const boardWidth = parseFloat(document.getElementById('boardWidth').value);
+      const boardGap = parseFloat(document.getElementById('boardGap').value || 3);
+      const boardLength = parseFloat(document.getElementById('boardLength').value);
+      const spacing = parseFloat(document.getElementById('joistSpacing').value);
+      const deckType = document.getElementById('deckType').value;
+
+      if (!width || !length || !height || !boardWidth || !boardLength || !spacing) {
+        alert("Please complete all fields.");
+        return;
+      }
+
+      const joistCount = Math.ceil((width * 1000) / spacing) + 1;
+      const bearerCount = Math.ceil(length / 1.8) + 1;
+      const boardCount = Math.ceil((width * 1000) / (boardWidth + boardGap)) * (length / boardLength);
+      const totalBoards = Math.ceil(boardCount * 1.05);
+
+      const postSpacing = 1.8;
+      const totalPosts = Math.ceil((length / postSpacing) * bearerCount);
+
+      let embedDepth = 0.45;
+      if (deckType === 'low') embedDepth = 0.6;
+      else if (deckType === 'high') embedDepth = 0.9;
+
+      const postDepth = height + embedDepth;
+      const stumpSize = height < 1.2 ? '100x100' : '125x125';
+
+      const concretePerPost = (Math.PI * Math.pow(0.15, 2) * postDepth).toFixed(2); // 300mm dia
+      const totalConcrete = (concretePerPost * totalPosts).toFixed(1);
+
+      const results = `
+        <div class="result-card">
+          <h2 class="text-xl font-bold text-green-600 mb-2">Material List</h2>
+          <ul class="list-disc list-inside space-y-1 text-sm">
+            <li><strong>Deck Area:</strong> ${width}m × ${length}m</li>
+            <li><strong>Total Joists:</strong> ${joistCount}</li>
+            <li><strong>Total Bearers:</strong> ${bearerCount}</li>
+            <li><strong>Stumps / Posts:</strong> ${totalPosts}</li>
+            <li><strong>Post Size:</strong> ${stumpSize}, <strong>Depth:</strong> ${postDepth.toFixed(2)}m</li>
+            <li><strong>Decking Boards:</strong> ${totalBoards} boards of ${boardLength}m</li>
+            <li><strong>Concrete Volume:</strong> ${totalConcrete}m³ (approx. ${Math.ceil(totalConcrete * 1000)}L)</li>
+            <li><strong>Joist Spacing:</strong> ${spacing}mm</li>
+          </ul>
+        </div>
+      `;
+
+      document.getElementById('results').innerHTML = results;
+    }
+  </script>
+</body>
+</html>
