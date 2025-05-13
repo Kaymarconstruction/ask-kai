@@ -1,1 +1,125 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="theme-color" content="#000000" />
+  <title>Plasterboard Materials Calculator – Ask Kai</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.0.0/dist/umd/supabase.min.js"></script>
+  <style>
+    body {
+      font-family: sans-serif;
+      background-image: url('https://i.imgur.com/jhqlVA5.png'); /* Desktop background */
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+    @media (max-width: 768px) {
+      body { background-image: url('https://i.imgur.com/qzRmu0O.jpeg'); } /* Mobile background */
+    }
+    .overlay { background-color: rgba(255, 255, 255, 0.92); backdrop-filter: blur(5px); }
+    .hidden { display: none; }
+  </style>
+</head>
+
+<body class="text-gray-800">
+
+<!-- Banner & Menu -->
+<div class="w-full bg-black p-4 relative flex flex-col items-center md:flex-row md:justify-between">
+  <div class="flex flex-col items-center md:items-start">
+    <img src="https://i.imgur.com/nDIhtRr.png" alt="Kaymar Banner" class="max-h-16 object-contain mx-auto md:mx-0" />
+    <h1 class="text-[#7AC142] text-xl md:text-3xl font-extrabold uppercase mt-4 text-center md:text-left">
+      Plasterboard Materials Calculator
+    </h1>
+  </div>
+
+  <button onclick="toggleMenu()" class="bg-white text-black p-2 rounded shadow mt-4 md:mt-0 md:ml-auto">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+    </svg>
+  </button>
+
+  <div id="menuDropdown" class="hidden absolute left-4 mt-16 w-64 bg-white border border-gray-300 shadow-lg rounded-md z-50">
+    <a href="index.html" class="block px-4 py-2 hover:bg-gray-100">Home</a>
+    <a href="plaster-calc.html" class="block px-4 py-2 hover:bg-gray-100">Plaster Calculator</a>
+    <a href="email-generator.html" class="block px-4 py-2 hover:bg-gray-100">Email Generator</a>
+    <a href="settings.html" class="block px-4 py-2 hover:bg-gray-100">Settings</a>
+    <button onclick="logoutUser()" class="w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100">Log Out</button>
+  </div>
+</div>
+
+<main class="max-w-3xl mx-auto p-6 space-y-6 overlay mt-10 rounded-xl">
+
+  <!-- Room Calculator Section -->
+  <div class="bg-white p-6 rounded-xl shadow space-y-4">
+    <h2 class="text-lg font-semibold text-gray-700">Room Configuration</h2>
+
+    <label for="ceilingHeight" class="block font-semibold mb-2">Ceiling Height (m):</label>
+    <input id="ceilingHeight" type="number" min="2.4" max="6.0" step="0.1" class="w-full border rounded-lg p-3" placeholder="e.g., 2.7">
+
+    <label class="block font-semibold mt-4">Sheet Height Required:</label>
+    <div id="sheetHeight" class="p-3 bg-gray-100 rounded-lg">Auto-filled</div>
+
+    <h3 class="text-md font-semibold mt-6">Wall Lengths</h3>
+    <div id="wallInputs" class="space-y-2">
+      <!-- Walls dynamically added here -->
+    </div>
+    <button onclick="addWall()" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg mt-2">➕ Add Wall</button>
+
+    <button onclick="addRoom()" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg mt-6 w-full">➕ Add Room</button>
+  </div>
+
+  <!-- Materials Summary -->
+  <div class="bg-white p-6 rounded-xl shadow space-y-4">
+    <h2 class="text-lg font-semibold text-gray-700">📦 Materials Summary</h2>
+    <div id="materialsSummary" class="space-y-2">
+      <!-- Auto-generated summary here -->
+    </div>
+  </div>
+
+  <!-- Send Order Section -->
+  <div class="bg-white p-6 rounded-xl shadow space-y-4">
+    <h2 class="text-lg font-semibold text-gray-700">📧 Send Order</h2>
+
+    <label class="block font-semibold mb-2">Recipient Type:</label>
+    <select id="recipientType" class="w-full border p-2 rounded">
+      <option value="">Select Type</option>
+      <option value="contacts">Contacts</option>
+      <option value="suppliers">Suppliers</option>
+    </select>
+
+    <select id="recipientDropdown" class="w-full border p-2 rounded mt-2">
+      <option value="">Select Recipient</option>
+    </select>
+
+    <button id="sendEmailBtn" class="w-full bg-black hover:bg-gray-900 text-white py-2 rounded-lg mt-4">Send Email</button>
+  </div>
+
+</main>
+
+<footer class="text-center text-gray-500 text-sm p-6 mt-4">
+  &copy; 2025 Kaymar Construction | Powered by Ask Kai
+  <div class="flex justify-center space-x-6 mt-2">
+    <a href="#" class="text-blue-600 hover:underline">Instagram</a>
+    <a href="#" class="text-blue-600 hover:underline">TikTok</a>
+    <a href="#" class="text-blue-600 hover:underline">Facebook</a>
+    <a href="#" class="text-blue-600 hover:underline">YouTube</a>
+    <a href="#" class="text-blue-600 hover:underline">Threads</a>
+  </div>
+</footer>
+
+<script src="js/plasterboard-calculator.js"></script>
+<script>
+function toggleMenu() {
+  document.getElementById('menuDropdown').classList.toggle('hidden');
+}
+function logoutUser() {
+  sessionStorage.clear();
+  window.location.href = 'signin.html';
+}
+</script>
+
+</body>
+</html>
 
