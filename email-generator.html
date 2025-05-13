@@ -2,14 +2,31 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Email Generator – Ask Kai</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
   <style>
-    #emailBox { max-height: 50vh; overflow-y: auto; white-space: pre-wrap; }
+    body {
+      font-family: sans-serif;
+      background-image: url('https://i.imgur.com/jhqlVA5.png');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+    @media (max-width: 768px) {
+      body {
+        background-image: url('https://i.imgur.com/qzRmu0O.jpeg');
+      }
+    }
+    .overlay {
+      background-color: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(5px);
+    }
+    #chatHistory { max-height: 300px; overflow-y: auto; white-space: pre-wrap; }
+    #finalDraft { min-height: 150px; white-space: pre-wrap; border: 1px solid #ccc; padding: 1rem; border-radius: 0.5rem; background: #fff; }
   </style>
 </head>
-<body class="bg-gray-100 text-gray-800">
+<body class="text-gray-800">
 
   <!-- Banner -->
   <div class="w-full bg-black">
@@ -22,25 +39,41 @@
     <a href="index.html" class="text-sm text-blue-600 hover:underline">Back to Chat</a>
   </header>
 
-  <!-- Prompt Input -->
-  <main class="max-w-3xl mx-auto py-8 px-4 space-y-6">
-    <div class="bg-white p-6 rounded-xl shadow">
-      <label for="emailInput" class="block font-semibold mb-2">
-        Enter the details of the intended email or paste an existing email for refinement.
-      </label>
-      <textarea id="emailInput" rows="4" class="w-full border rounded-lg p-3"
-        placeholder="e.g. Draft a follow-up email to a client regarding a recent quote..."></textarea>
-      <button id="submitEmail" class="mt-4 w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg">
-        Generate Email
+  <!-- Main Section -->
+  <main class="max-w-3xl mx-auto py-8 px-4 space-y-6 overlay mt-10 rounded-xl">
+    <div class="bg-white p-6 rounded-xl shadow space-y-4">
+      <label for="emailInput" class="block font-semibold mb-2">What would you like to say?</label>
+      <textarea id="emailInput" rows="3" class="w-full border rounded-lg p-3"
+        placeholder="e.g., Tell the client I’ll be there Friday arvo to finish the decking job..."></textarea>
+      <button id="submitPrompt" class="mt-2 w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg">
+        Draft with Kai
       </button>
     </div>
 
-    <!-- Email Output -->
-    <div id="emailBox" class="bg-white p-6 rounded-xl shadow text-sm text-gray-800"></div>
+    <!-- Chat History -->
+    <div id="chatHistory" class="bg-white p-6 rounded-xl shadow text-sm space-y-2 text-gray-800"></div>
 
-    <!-- Export Disclaimer -->
+    <!-- Final Draft -->
+    <h2 class="text-xl font-bold text-green-600">Draft Email</h2>
+    <div id="finalDraft" class="mb-4"></div>
+
+    <!-- Recipient Selection -->
+    <div class="bg-white p-6 rounded-xl shadow space-y-4">
+      <label class="block text-sm font-semibold">Select Recipient</label>
+      <select id="recipientDropdown" class="w-full border p-2 rounded">
+        <option value="">Select Recipient</option>
+        <!-- Placeholder: Populate via Supabase -->
+        <option value="client@example.com">Client: John Doe</option>
+        <option value="supplier@example.com">Supplier: Acme Supplies</option>
+        <option value="contractor@example.com">Contractor: BuildPro</option>
+      </select>
+      <button id="sendEmailBtn" class="w-full bg-black hover:bg-gray-900 text-white py-2 rounded-lg">
+        Send Email
+      </button>
+    </div>
+
     <div class="bg-yellow-50 border-l-4 border-yellow-500 text-yellow-700 p-4 rounded shadow">
-      <p>This generated email is a draft. Always review before sending to clients or suppliers.</p>
+      <p>This generated email is a draft. Please review before sending.</p>
     </div>
   </main>
 
@@ -48,36 +81,61 @@
   <footer class="text-center text-gray-500 text-sm p-6">
     &copy; 2025 Kaymar Construction | Powered by Ask Kai
     <div class="flex justify-center space-x-6 mt-2">
-      <a href="https://www.instagram.com/askkai_official" class="text-blue-600 hover:underline">Instagram</a>
-      <a href="https://www.tiktok.com/@askkai_official" class="text-blue-600 hover:underline">TikTok</a>
-      <a href="https://www.facebook.com/askkai_official" class="text-blue-600 hover:underline">Facebook</a>
-      <a href="https://www.youtube.com/@askkai_official" class="text-blue-600 hover:underline">YouTube</a>
-      <a href="https://www.threads.net/@askkai_official" class="text-blue-600 hover:underline">Threads</a>
+      <a href="#" class="text-blue-600 hover:underline">Instagram</a>
+      <a href="#" class="text-blue-600 hover:underline">TikTok</a>
+      <a href="#" class="text-blue-600 hover:underline">Facebook</a>
+      <a href="#" class="text-blue-600 hover:underline">YouTube</a>
+      <a href="#" class="text-blue-600 hover:underline">Threads</a>
     </div>
   </footer>
 
-  <!-- JS -->
+  <!-- JS Logic -->
   <script>
-    document.getElementById('submitEmail').addEventListener('click', async () => {
+    const chatHistory = document.getElementById('chatHistory');
+    const finalDraft = document.getElementById('finalDraft');
+
+    document.getElementById('submitPrompt').addEventListener('click', async () => {
       const input = document.getElementById('emailInput').value.trim();
-      const emailBox = document.getElementById('emailBox');
       if (!input) return;
 
-      emailBox.innerHTML = "<span class='text-green-600 font-medium'>Kai is crafting your email...</span>";
+      chatHistory.innerHTML += `<div><strong>You:</strong> ${input}</div>`;
+      document.getElementById('emailInput').value = "";
+      chatHistory.innerHTML += `<div><strong>Kai:</strong> Crafting your draft...</div>`;
+      chatHistory.scrollTop = chatHistory.scrollHeight;
 
-      const response = await fetch("https://askkai-backend-clean.onrender.com/email", {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ messages: [ { role: "user", content: input } ] })
-      });
+      const response = await fakeApiResponse(input); // Replace with real API
 
-      const data = await response.json();
-      const reply = data.reply || "Kai couldn’t generate an email. Try again.";
-
-      emailBox.textContent = reply;
+      chatHistory.lastChild.innerHTML = `<strong>Kai:</strong> ${response}`;
+      finalDraft.innerText = response;
     });
-  </script>
 
+    async function fakeApiResponse(input) {
+      return new Promise(resolve => {
+        setTimeout(() => {
+          resolve(`Hi [Recipient],\n\n${input.charAt(0).toUpperCase() + input.slice(1)}.\n\nCheers,\n[Your Name]`);
+        }, 1000);
+      });
+    }
+
+    document.getElementById('sendEmailBtn').addEventListener('click', () => {
+      const recipientEmail = document.getElementById('recipientDropdown').value;
+      const draftContent = finalDraft.innerText;
+
+      if (!recipientEmail) return alert("Please select a recipient.");
+      if (!draftContent) return alert("No draft available. Please generate one first.");
+
+      const subject = encodeURIComponent("Important Update from Kaymar Construction");
+      const body = encodeURIComponent(draftContent);
+
+      window.location.href = `mailto:${recipientEmail}?subject=${subject}&body=${body}`;
+    });
+
+    async function loadRecipientsFromSupabase() {
+      // TODO: Fetch saved_suppliers and saved_contacts from Supabase 'users' table
+      // Populate recipientDropdown options dynamically
+    }
+
+    loadRecipientsFromSupabase();
+  </script>
 </body>
 </html>
-
