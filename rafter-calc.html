@@ -2,57 +2,148 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Rafter Length Calculator – Ask Kai</title>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Rafter Calculator – Ask Kai</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
   <style>
-    .kaymar-green { color: #7AC142; }
+    body {
+      font-family: sans-serif;
+      background-image: url('https://i.imgur.com/jhqlVA5.png');
+      background-size: cover;
+      background-position: center;
+    }
+    @media (max-width: 768px) {
+      body {
+        background-image: url('https://i.imgur.com/qzRmu0O.jpeg');
+      }
+    }
+    .overlay {
+      background-color: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(5px);
+    }
+    .result-card {
+      background: white;
+      padding: 1rem;
+      border-radius: 0.5rem;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+    }
   </style>
 </head>
-<body class="bg-white text-gray-800">
-  <header class="bg-white shadow p-4 flex items-center justify-between">
-    <h1 class="text-xl font-bold kaymar-green">Rafter Length Calculator</h1>
-    <a href="index.html" class="text-sm text-blue-600 hover:underline">Back to Chat</a>
-  </header>
+<body class="text-gray-800">
 
-  <main class="max-w-xl mx-auto p-6">
-    <p class="mb-4 text-gray-700">
-      Enter your <strong>roof run</strong> (horizontal distance from wall to ridge) and <strong>roof pitch</strong> (in degrees). This tool uses basic trigonometry to calculate the sloping rafter length.
-    </p>
+<!-- Header -->
+<header class="w-full bg-black p-4 flex items-center justify-between relative">
+  <button onclick="toggleMenu()" class="bg-white text-black p-2 rounded shadow">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+      <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+    </svg>
+  </button>
+  <h1 class="text-2xl font-bold text-green-600">Rafter Calculator</h1>
+  <div id="menuDropdown" class="hidden absolute left-4 mt-16 w-48 bg-white border border-gray-300 shadow-lg rounded-md z-50">
+    <a href="index.html" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Home</a>
+    <a href="settings.html" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Settings</a>
+    <button onclick="logoutUser()" class="w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100">Log Out</button>
+  </div>
+</header>
 
-    <div class="space-y-4">
-      <div>
-        <label for="run" class="block font-medium">Roof Run (mm)</label>
-        <input type="number" id="run" class="w-full border p-3 rounded-lg" placeholder="e.g. 3000" />
-      </div>
+<main class="max-w-3xl mx-auto p-6 space-y-6 overlay mt-10">
+  <!-- Input Form -->
+  <div class="bg-white p-6 rounded-lg shadow space-y-4">
+    <label class="block font-bold">Roof Type</label>
+    <select id="roofType" class="w-full p-2 border rounded">
+      <option value="">Select Roof Type</option>
+      <option value="skillion">Skillion</option>
+      <option value="gable">Gable</option>
+      <option value="hip">Hip</option>
+      <option value="dutch">Dutch Gable</option>
+      <option value="valley">Valley Intersection</option>
+    </select>
 
-      <div>
-        <label for="pitch" class="block font-medium">Roof Pitch (degrees)</label>
-        <input type="number" id="pitch" class="w-full border p-3 rounded-lg" placeholder="e.g. 25" />
-      </div>
-
-      <button onclick="calculateRafter()" class="w-full bg-black text-white py-2 rounded hover:bg-gray-900 transition">Calculate Rafter Length</button>
-
-      <div id="result" class="text-lg font-semibold mt-4 text-green-700"></div>
+    <div class="grid grid-cols-2 gap-4">
+      <input type="number" id="span" placeholder="Building Span (m)" class="p-2 border rounded" />
+      <input type="number" id="pitchAngle" placeholder="Pitch Angle (°)" class="p-2 border rounded" />
+      <input type="number" id="rafterSpacing" placeholder="Rafter Spacing (mm)" class="p-2 border rounded" />
+      <input type="number" id="wallPlateWidth" placeholder="Wall Plate Width (mm)" class="p-2 border rounded" />
+      <input type="number" id="rafterDepth" placeholder="Rafter Depth (mm)" class="p-2 border rounded" />
     </div>
-  </main>
 
-  <script>
-    function calculateRafter() {
-      const run = parseFloat(document.getElementById('run').value);
-      const pitch = parseFloat(document.getElementById('pitch').value);
+    <button onclick="calculateRafters()" class="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700">Calculate</button>
+  </div>
 
-      if (isNaN(run) || isNaN(pitch)) {
-        document.getElementById('result').textContent = "Please enter valid numbers for run and pitch.";
-        return;
-      }
+  <!-- Results -->
+  <div id="results" class="space-y-4"></div>
 
-      const angleRad = pitch * (Math.PI / 180);
-      const rafterLength = run / Math.cos(angleRad);
+  <!-- Email Supplier Section -->
+  <div id="emailSection" class="hidden bg-white p-6 rounded-lg shadow space-y-4">
+    <label class="block text-sm font-medium">Select Supplier</label>
+    <select id="supplierDropdown" class="w-full border p-2 rounded">
+      <option value="">Select Supplier</option>
+      <option value="supplier1@example.com">Supplier 1</option>
+      <option value="supplier2@example.com">Supplier 2</option>
+    </select>
+    <button id="emailSupplierBtn" class="w-full bg-black text-white py-2 rounded hover:bg-gray-900">Email Supplier</button>
+  </div>
+</main>
 
-      document.getElementById('result').textContent =
-        `Estimated Rafter Length: ${rafterLength.toFixed(2)} mm`;
-    }
-  </script>
+<script>
+function toggleMenu() {
+  document.getElementById('menuDropdown').classList.toggle('hidden');
+}
+function logoutUser() {
+  sessionStorage.clear();
+  window.location.href = 'logout.html';
+}
+
+function calculateRafters() {
+  const roofType = document.getElementById('roofType').value;
+  const span = parseFloat(document.getElementById('span').value);
+  const pitchAngle = parseFloat(document.getElementById('pitchAngle').value);
+  const spacing = parseFloat(document.getElementById('rafterSpacing').value) / 1000; // convert mm to meters
+  const wallPlate = parseFloat(document.getElementById('wallPlateWidth').value);
+  const rafterDepth = parseFloat(document.getElementById('rafterDepth').value);
+
+  if (!roofType || !span || !pitchAngle || !spacing || !wallPlate || !rafterDepth) {
+    alert("Please complete all fields.");
+    return;
+  }
+
+  const pitchRadians = pitchAngle * (Math.PI / 180);
+  const run = roofType === 'skillion' ? span : span / 2;
+  const rise = run * Math.tan(pitchRadians);
+  const commonRafterLength = Math.sqrt(Math.pow(rise,2) + Math.pow(run,2)).toFixed(2);
+  const hipValleyLength = (run * Math.SQRT2 / Math.cos(pitchRadians)).toFixed(2);
+
+  const jackShortening = (spacing * Math.tan(pitchRadians)).toFixed(2);
+  const birdsmouth = (wallPlate / 2).toFixed(2);
+  const heelHeight = (rafterDepth * Math.sin(pitchRadians)).toFixed(2);
+  const totalRafters = Math.ceil(run / spacing) + 1;
+
+  let results = `
+    <div class="result-card">
+      <h2 class="text-xl font-bold text-green-600 mb-2">Calculation Results</h2>
+      <ul class="list-disc list-inside space-y-1 text-sm">
+        <li><strong>Common Rafter Length:</strong> ${commonRafterLength} m</li>
+        <li><strong>Hip/Valley Rafter Length:</strong> ${hipValleyLength} m</li>
+        <li><strong>Total Rafters Required:</strong> ${totalRafters}</li>
+        <li><strong>Jack Rafter Shortening per Rafter:</strong> ${jackShortening} m</li>
+        <li><strong>Birdsmouth Cut (Seat Cut):</strong> ${birdsmouth} mm</li>
+        <li><strong>Heel Height:</strong> ${heelHeight} mm</li>
+      </ul>
+    </div>
+  `;
+
+  document.getElementById('results').innerHTML = results;
+  document.getElementById('emailSection').classList.remove('hidden');
+}
+
+document.getElementById('emailSupplierBtn').addEventListener('click', () => {
+  const supplierEmail = document.getElementById('supplierDropdown').value;
+  if (!supplierEmail) return alert('Please select a supplier.');
+  const materials = document.getElementById('results').innerText;
+  const subject = encodeURIComponent("Rafter Material Quote Request");
+  const body = encodeURIComponent(`Hi Supplier,\n\nPlease provide a quote for the following materials:\n\n${materials}\n\nThanks,\n[Your Name]`);
+  window.location.href = `mailto:${supplierEmail}?subject=${subject}&body=${body}`;
+});
+</script>
 </body>
 </html>
