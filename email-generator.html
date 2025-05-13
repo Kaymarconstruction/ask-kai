@@ -20,6 +20,7 @@
     .overlay { background-color: rgba(255, 255, 255, 0.92); backdrop-filter: blur(5px); }
     #chatHistory { max-height: 300px; overflow-y: auto; white-space: pre-wrap; }
     #finalDraft { min-height: 150px; white-space: pre-wrap; border: 1px solid #ccc; padding: 1rem; border-radius: 0.5rem; background: #fff; }
+    .hidden { display: none; }
   </style>
 </head>
 
@@ -44,15 +45,19 @@
   <div class="bg-white p-6 rounded-xl shadow space-y-4">
     <label for="emailInput" class="block font-semibold mb-2">What would you like to say?</label>
     <textarea id="emailInput" rows="3" class="w-full border rounded-lg p-3" placeholder="e.g., Tell the client I’ll be there Friday arvo to finish the decking job..."></textarea>
-    <button id="submitPrompt" class="mt-2 w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg">
+    <button id="submitPrompt" class="mt-2 w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg" disabled>
       Draft with Kai
     </button>
+    <div id="loading" class="hidden text-green-600 font-medium mt-2">Kai is thinking...</div>
   </div>
 
   <div id="chatHistory" class="bg-white p-6 rounded-xl shadow text-sm space-y-2 text-gray-800"></div>
 
   <h2 class="text-xl font-bold text-green-600">Draft Email</h2>
   <div id="finalDraft" class="mb-4"></div>
+
+  <!-- Feedback Section -->
+  <div id="feedbackMessage" class="hidden text-center text-sm p-2 rounded-lg"></div>
 
   <!-- Recipient Section -->
   <div class="bg-white p-6 rounded-xl shadow space-y-4">
@@ -95,10 +100,18 @@
 function toggleMenu() {
   document.getElementById('menuDropdown').classList.toggle('hidden');
 }
+
 function logoutUser() {
   sessionStorage.clear();
   window.location.href = 'signin.html';
 }
+
+// Input Validation & Enable/Disable Submit
+const emailInput = document.getElementById('emailInput');
+const submitButton = document.getElementById('submitPrompt');
+emailInput.addEventListener('input', () => {
+  submitButton.disabled = emailInput.value.trim() === '';
+});
 </script>
 
 </body>
