@@ -1,6 +1,4 @@
-
-Ask Kai – Full Website Status & Development Tracker
-
+🌐 Project Overview
 Website: https://ask.kaymarconstruction.com
 Backend: Node.js (Render)
 Frontend: HTML + Tailwind (Netlify)
@@ -9,44 +7,53 @@ Stripe: Live Mode Active
 Owner: Mark Musolino
 Lead Dev Assistant: Jack Cooper (AI)
 
-
----
-
 ✅ LIVE / FUNCTIONAL FEATURES
-
 Core Website
+ Landing Page with Profile Image + Sign In/Up
 
-[x] Landing Page with profile image + sign in/up
-[x] Session-based auth with email login
-[x] Google Sign-In / OAuth (production ready)
-[x] Logout + session clearing
-[x] Settings page (prompts used, token count, subscription tier)
-[x] Responsive mobile-first design
+ Session-Based Auth with Email Login
+
+ Google Sign-In / OAuth (Production Ready)
+
+ Logout + Session Clearing
+
+ Settings Page (Prompts Used, Token Count, Subscription Tier)
+
+ Responsive Mobile-First Design
 
 Chat System
+ Kai Persona with Construction + Code Knowledge
 
-[x] Kai persona with construction + code knowledge
-[x] Token-based prompt limit (default 10)
-[x] Mark's account has unlimited access
-[x] Full chat interface with typing effect
-[x] Region-aware language + code guidance
-[x] Local storage of prompt count
+ Token-Based Prompt Limit (Default 10)
+
+ Mark's Account Has Unlimited Access
+
+ Full Chat Interface with Typing Effect
+
+ Region-Aware Language + Code Guidance
+
+ Local Storage of Prompt Count
 
 Menu Navigation
+ Dropdown Menu Styled for Mobile + Desktop
 
-[x] Dropdown menu styled for mobile + desktop
-[x] Links to Upgrade, Shop, Settings, Apprentice Hub, Quote Generator
-[x] Logout button
-[x] Team page with bios and photos
+ Updated: Black Button with White Hamburger Lines
+
+ Structured Dropdown Menu with Hierarchy
+
+ Links to Upgrade, Shop, Settings, Apprentice Hub, Quote Generator
+
+ Logout Button
+
+ Team Page with Bios and Photos
 
 Shop
+ Book Listings with Real Cover Art
 
-[x] Book listings with real cover art
-[x] Links to external Amazon/KDP active
+ Links to External Amazon/KDP Active
 
 Stripe Integration
-
-[x] Live payment links enabled for:
+ Live Payment Links Enabled:
 
 Ask Kai Plus ($14.99/mo)
 
@@ -56,147 +63,197 @@ Ask Kai Apprentice ($6.99/mo)
 
 Token Packs: Mini, Standard, Pro
 
+ Webhook Handler with Stripe Secret Key Deployed
 
-[x] Webhook handler with Stripe secret key deployed
-[x] Webhook listens for checkout.session.completed
+ Webhook Listens for checkout.session.completed
 
 Supabase Integration
+ Supabase Project Live (Pro Tier)
 
-[x] Supabase project live (Pro Tier)
-[x] Users, Materials, Suppliers, Calculations tables created and synced
-[x] Supabase insert email on /register endpoint
-[x] RLS enabled and configured
-[x] Environment secrets (SUPABASE_URL + KEY) added
+ Users, Materials, Suppliers, Calculations Tables Created and Synced
 
+ Supabase Insert Email on /register Endpoint
 
----
+ RLS Enabled and Configured
+
+ Environment Secrets (SUPABASE_URL + KEY) Added
 
 ⚙️ IN PROGRESS / PRIORITY DEVELOPMENT
-
 Quote Generator
+ GPT-Powered Material List Generator
 
-[x] GPT-powered material list generator
-[x] /quote endpoint with Kai's quoting brain
-[x] HTML interface completed
-[x] Chat history memory across prompts
-[x] Append structured quote summary in a live quote panel
-[x] Export to copy + disclaimer
-[x] Export materials list to email supplier (mailto pre-filled message)
-[x] User-select supplier (from saved supplier list in settings)
-[ ] Add preset quick-fill options in Quote Generator (common deck sizes)
-[x] Saved Quotes feature (stored in Supabase)
+ /quote Endpoint with Kai's Quoting Brain
+
+ HTML Interface Completed
+
+ Chat History Memory Across Prompts
+
+ Append Structured Quote Summary in a Live Quote Panel
+
+ Export to Copy + Disclaimer
+
+ Export Materials List to Email Supplier (mailto Pre-Filled Message)
+
+ User-Select Supplier (from Saved Supplier List)
+
+ Add Preset Quick-Fill Options in Quote Generator (Common Deck Sizes)
+
+ Saved Quotes Feature (Stored in Supabase)
 
 Calculators
+ Span Tables Page
 
-[x] Span Tables Page
-[x] Rafter Length Calculator
-[x] Decking Board Calculator
-[ ] Volume calculator for soil/concrete/rubbish
-[ ] Stair and Balustrade Calculator (UI present – logic pending)
-[ ] Restrict calculator access by plan tier (later phase)
+ Rafter Length Calculator
+
+ Decking Board Calculator
+
+ Plasterboard Materials Calculator (Completed)
+
+ Volume Calculator for Soil/Concrete/Rubbish
+
+ Stair and Balustrade Calculator (UI Present – Logic Pending)
+
+ Restrict Calculator Access by Plan Tier (Later Phase)
 
 Apprentice Hub
+ Banner + Resource List
 
-[x] Banner + resource list
-[x] Live tool links (Rafter, Span Tables, Decking)
-[x] Recommended Books section with external Amazon links
+ Live Tool Links (Rafter, Span Tables, Decking)
+
+ Recommended Books Section with External Amazon Links
 
 Material Pricing Scraper & Database
+ Supabase Schema Created (Materials)
 
-[x] Supabase schema created (materials)
-[ ] Switch Bunnings + Bowens scrapers to Puppeteer
-[x] Focus Bowens as priority before Bunnings
-[ ] Validate Puppeteer scraper on Render
-[x] Build GET /materials?category= API for frontend material list view
-[x] Add search endpoint /materials/search?q=
-[x] Add scrape source logging to each material for audit/debug
-[ ] Weekly scraper schedule for Bowens confirmed
+ Switch Bunnings + Bowens Scrapers to Puppeteer
 
+ Focus Bowens as Priority Before Bunnings
 
----
+ Validate Puppeteer Scraper on Render
+
+ Build GET /materials?category= API for Frontend Material List
+
+ Add Search Endpoint /materials/search?q=
+
+ Add Scrape Source Logging for Audit/Debug
+
+ Weekly Scraper Schedule for Bowens Confirmed
 
 ⏳ UPCOMING FEATURES
-
 Auth & Membership
+ Google Sign-In / OAuth (Live)
 
-[x] Google Sign-In / OAuth (live)
-[ ] Facebook Sign-In (in setup)
-[ ] Apple / Microsoft OAuth (optional)
-[ ] Reset password via email
-[ ] Save user chat history (Supabase JSON storage)
-[ ] Admin dashboard to view users/emails and monitor token balances
-[ ] Lock site to soft-launch participants only (whitelist active)
+ Facebook Sign-In (In Setup)
+
+ Apple / Microsoft OAuth (Optional)
+
+ Reset Password via Email
+
+ Save User Chat History (Supabase JSON Storage)
+
+ Admin Dashboard to View Users/Emails and Monitor Token Balances
+
+ Lock Site to Soft-Launch Participants Only (Whitelist Active)
 
 Kai Brain Upgrades
+ Quote Generator Brain Now Default on Homepage
 
-[x] Quote generator brain now default on homepage
-[ ] Prompt users for region/code before answering
-[ ] Use defaults for common timber, spacing, fasteners
-[ ] Integrate real brand specs (Ekodeck, Hyne, Bunnings)
-[ ] Shorter, clearer answers (20–80 words)
-[ ] Accurate deck/timber/spacing calculations with location check
-[ ] Reuse session memory between inputs
-[ ] Fix Kai response rendering on main index.html (materials not appearing)
+ Prompt Users for Region/Code Before Answering
+
+ Use Defaults for Common Timber, Spacing, Fasteners
+
+ Integrate Real Brand Specs (Ekodeck, Hyne, Bunnings)
+
+ Shorter, Clearer Answers (20–80 Words)
+
+ Accurate Deck/Timber/Spacing Calculations with Location Check
+
+ Reuse Session Memory Between Inputs
+
+ Fix Kai Response Rendering on Main index.html
 
 Quotes Management
+ quotesManager.js (New Feature)
 
-[ ] quotesManager.js (new feature)
+Manage Saved Quotes
 
-Manage saved quotes
+Edit and Resend Quotes
 
-Edit and resend quotes
+Attach to Suppliers Dynamically
 
-Attach to suppliers dynamically
-
-Export as PDF or email directly
-
+Export as PDF or Email Directly
 
 Mobile App
+ PWA Web App Wrapper
 
-[x] PWA Web App wrapper
-[x] Token sync + offline chat view
-[x] Mobile UI now live in auth pages
-[ ] Facebook login support in app
-[ ] App Store / Google Play deployment
+ Token Sync + Offline Chat View
+
+ Mobile UI Now Live in Auth Pages
+
+ Facebook Login Support in App
+
+ App Store / Google Play Deployment
 
 Admin & Support
+ Track User Emails in Secure Backend (Supabase ✅)
 
-[x] Track user emails in secure backend (Supabase ✅)
-[x] support@kaymarconstruction.com setup
-[x] Legal disclaimers / terms page
-[ ] View token balances server-side
+ support@kaymarconstruction.com Setup
 
+ Legal Disclaimers / Terms Page
 
----
+ View Token Balances Server-Side
 
-FEATURE IDEAS (BOOKMARKED)
+💡 FEATURE IDEAS (BOOKMARKED)
+ Facade & Floorplan Designer GPT (Pro Series Exclusive)
 
-[ ] Facade & Floorplan Designer GPT (Pro Series Exclusive)
-[ ] Construction Forum for verified users (moderated)
-[ ] Scheduler/Calendar integration with Google Calendar + SMS for job bookings
-[x] Supplier quote email draft (active)
-[x] Settings: add profile picture upload, display active plan, and allow saved supplier emails
+ Construction Forum for Verified Users (Moderated)
 
+ Scheduler/Calendar Integration with Google Calendar + SMS for Job Bookings
 
----
+ Supplier Quote Email Draft (Active)
 
-PRE-PRODUCTION LAUNCH CHECKLIST
+ Settings: Add Profile Picture Upload, Display Active Plan, and Allow Saved Supplier Emails
 
-[ ] dotenv module install confirmed in deployment (Render)
-[ ] SUPABASE_URL and SUPABASE_KEY confirmed on Render secrets
-[ ] Live /materials API response tested from frontend
-[ ] materials.html tested for UI rendering and backend connection
-[ ] Error UI confirmed (e.g., no results found, fetch fail)
-[ ] Schedule weekly refresh of Bowens confirmed
-[ ] Confirm .env file created and working locally
-[ ] Confirm askkai.js running clean in terminal with Supabase
-[ ] Stripe webhook test mode reviewed
-[ ] Menu dropdown and nav links working clean on all pages
-[ ] Mobile rendering double-checked for layout break
-[ ] Add instructions to README for local test + deploy
+🧩 PRE-PRODUCTION LAUNCH CHECKLIST (UPDATED)
+ dotenv Module Install Confirmed in Deployment (Render)
 
+ SUPABASE_URL and SUPABASE_KEY Confirmed on Render Secrets
 
----
+ Live /materials API Response Tested from Frontend
 
-Would you like me to also prepare a prioritised sprint plan for the remaining tasks?
+ materials.html Tested for UI Rendering and Backend Connection
+
+ Error UI Confirmed (No Results Found, Fetch Fail)
+
+ Schedule Weekly Refresh of Bowens Confirmed
+
+ Confirm .env File Created and Working Locally
+
+ Confirm askkai.js Running Clean in Terminal with Supabase
+
+ Stripe Webhook Test Mode Reviewed
+
+ Menu Dropdown and Nav Links Working Clean on All Pages
+
+ Mobile Rendering Double-Checked for Layout Breaks
+
+ Add Instructions to README for Local Test + Deploy
+
+ Final Load Test of API Endpoints (askkai.js)
+
+ Move Supabase Keys to Secure Storage Before Final Production
+
+📢 Next Actions Suggested:
+
+Finalize Quotes Manager Logic (quotesManager.js).
+
+Complete Stair and Volume Calculator Logic.
+
+Move all API URLs and Keys to Secure Config Files.
+
+Add Missing README Instructions for Devs.
+
+Perform Final Load/Stress Testing on API.
+
+Would you like me to export this as project.md and include it directly for deployment? 📦✅
 
