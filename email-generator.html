@@ -4,129 +4,105 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="theme-color" content="#000000" />
-  <title>Email Generator – Ask Kai</title>
+  <title>Ask Kai – Site Chat</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
-  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.0.0/dist/umd/supabase.min.js"></script>
   <style>
-    body {
-      font-family: sans-serif;
-      background-image: url('https://i.imgur.com/jhqlVA5.png');
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      background-image: url('https://i.imgur.com/jhqlVA5.png'); /* Desktop background */
       background-size: cover;
       background-position: center;
       background-repeat: no-repeat;
     }
     @media (max-width: 768px) {
-      body { background-image: url('https://i.imgur.com/qzRmu0O.jpeg'); }
+      body { 
+        background-image: url('https://i.imgur.com/qzRmu0O.jpeg'); /* Mobile background */
+      }
     }
-    .overlay { background-color: rgba(255, 255, 255, 0.92); backdrop-filter: blur(5px); }
-    #chatHistory { max-height: 300px; overflow-y: auto; white-space: pre-wrap; scroll-behavior: smooth; }
-    #finalDraft { min-height: 150px; white-space: pre-wrap; border: 1px solid #ccc; padding: 1rem; border-radius: 0.5rem; background: #fff; }
-    .hidden { display: none; }
-    #charCounter { font-size: 0.75rem; color: #555; text-align: right; }
+    #kaiReply { 
+      max-height: 60vh; 
+      overflow-y: auto; 
+      white-space: pre-wrap; 
+    }
+    .blinking-cursor { 
+      display: inline-block; 
+      width: 10px; 
+      height: 1em; 
+      background-color: #7AC142; 
+      margin-left: 4px; 
+      animation: blink 1s steps(2, start) infinite; 
+    }
+    @keyframes blink { 
+      0%, 100% { opacity: 0; } 
+      50% { opacity: 1; } 
+    }
+    .overlay { 
+      background-color: rgba(255, 255, 255, 0.95); 
+      backdrop-filter: blur(4px); 
+    }
   </style>
 </head>
 
-<body class="text-gray-800">
+<body class="text-gray-800 flex flex-col">
 
-<!-- Session Check -->
-<script>
-  if (!sessionStorage.getItem('askkaiUser')) {
-    window.location.href = 'signin.html';
-  }
-</script>
+<!-- Header -->
+<div class="w-full bg-black p-4 relative flex flex-col md:flex-row items-center md:justify-between">
+  <div class="flex flex-col items-center md:items-start">
+    <img src="https://i.imgur.com/nDIhtRr.png" alt="Kaymar Banner" class="max-h-16 object-contain mx-auto md:mx-0" />
+    <h1 class="text-[#7AC142] text-xl md:text-3xl font-extrabold uppercase mt-4 text-center md:text-left">
+      Trademail Generator
+    </h1>
+  </div>
 
-<!-- Banner & Menu -->
-<div class="w-full bg-black p-4 relative flex flex-col items-center">
-  <button onclick="toggleMenu()" class="absolute left-4 top-4 bg-black text-white p-2 rounded shadow">
+  <button onclick="toggleMenu()" class="bg-white text-black p-2 rounded shadow mt-4 md:mt-0 md:ml-auto">
     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
     </svg>
   </button>
 
-  <img src="https://i.imgur.com/nDIhtRr.png" alt="Kaymar Construction Banner" class="max-h-16 object-contain mx-auto" />
-  <h1 class="text-[#7AC142] text-xl md:text-3xl font-extrabold uppercase mt-4 text-center">
-    Trademail Generator
-  </h1>
-
-  <div id="menuDropdown" class="hidden absolute left-4 mt-16 w-48 bg-white border border-gray-300 shadow-lg rounded-md z-50">
-    <a href="index.html" class="block px-4 py-2 hover:bg-gray-100">Home</a>
-    <a href="settings.html" class="block px-4 py-2 hover:bg-gray-100">Settings</a>
+  <div id="menuDropdown" class="hidden absolute left-4 mt-16 w-64 bg-white border border-gray-300 shadow-lg rounded-md z-50">
+    <a href="index.html" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Home</a>
+    <a href="settings.html" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Settings</a>
     <button onclick="logoutUser()" class="w-full text-left px-4 py-2 text-red-600 hover:bg-gray-100">Log Out</button>
   </div>
 </div>
 
-<main class="max-w-3xl mx-auto p-6 space-y-6 overlay mt-10 rounded-xl">
-  <div class="bg-white p-6 rounded-xl shadow space-y-4">
-    <label for="emailInput" class="block font-semibold mb-2">What would you like to say?</label>
-    <textarea id="emailInput" rows="3" maxlength="500" class="w-full border rounded-lg p-3" placeholder="e.g., Tell the client I’ll be there Friday arvo to finish the decking job..."></textarea>
-    <div id="charCounter">0 / 500 characters</div>
-    <button id="submitPrompt" class="mt-2 w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg" disabled>
-      Draft with Kai
-    </button>
-    <div id="loading" class="hidden text-green-600 font-medium mt-2">Kai is thinking...</div>
-  </div>
-
-  <div id="chatHistory" class="bg-white p-6 rounded-xl shadow text-sm space-y-2 text-gray-800"></div>
-
-  <h2 class="text-xl font-bold text-green-600">Draft Email</h2>
-  <div id="finalDraft" class="mb-4"></div>
-
-  <div id="feedbackMessage" class="hidden text-center text-sm p-2 rounded-lg"></div>
-
-  <div class="bg-white p-6 rounded-xl shadow space-y-4">
-    <label class="block text-sm font-semibold">Recipient Type</label>
-    <select id="recipientType" class="w-full border p-2 rounded" onchange="loadRecipients()">
-      <option value="">Select Type</option>
-      <option value="contacts">Contacts</option>
-      <option value="suppliers">Suppliers</option>
-    </select>
-    <select id="recipientDropdown" class="w-full border p-2 rounded mt-2">
-      <option value="">Select Recipient</option>
-    </select>
-    <button id="sendEmailBtn" class="w-full bg-black hover:bg-gray-900 text-white py-2 rounded-lg mt-2">
-      Send Email
-    </button>
-    <button id="saveDraftBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white py-2 rounded-lg mt-2">
-      Save Draft
-    </button>
-  </div>
-
-  <div class="bg-yellow-50 border-l-4 border-yellow-500 text-yellow-700 p-4 rounded shadow">
-    <p>This generated email is a draft. Please review before sending.</p>
-  </div>
-
-  <footer class="text-center text-gray-500 text-sm p-6 mt-4">
-    &copy; 2025 Kaymar Construction | Powered by Ask Kai
-    <div class="flex justify-center space-x-6 mt-2">
-      <a href="#" class="text-blue-600 hover:underline">Instagram</a>
-      <a href="#" class="text-blue-600 hover:underline">TikTok</a>
-      <a href="#" class="text-blue-600 hover:underline">Facebook</a>
-      <a href="#" class="text-blue-600 hover:underline">YouTube</a>
-      <a href="#" class="text-blue-600 hover:underline">Threads</a>
+<!-- Main Chat Section -->
+<main class="max-w-3xl mx-auto p-4 w-full flex-grow">
+  <div class="overlay p-6 rounded-xl shadow space-y-6">
+    <div id="kaiReply" class="bg-white p-4 rounded-xl shadow space-y-4 text-sm text-gray-800 mb-6"></div>
+    <div class="flex flex-col space-y-2">
+      <textarea id="askInput" rows="3" class="w-full border rounded-lg p-3" placeholder="e.g. 6x4m deck, 250mm off ground, H3 pine joists, 140mm merbau decking, VIC"></textarea>
+      <button id="submitBtn" class="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded">Submit</button>
+      <p class="text-xs text-gray-600 text-center mt-2">
+        Describe your job in detail. 
+        <span class="text-red-600 font-semibold">Be specific</span> – location, materials, sizes, etc.
+      </p>
     </div>
-  </footer>
+  </div>
 </main>
 
-<script src="email-generator.js"></script>
+<footer class="text-center text-gray-500 text-sm p-6 mt-4">
+  &copy; 2025 Kaymar Construction | Powered by Ask Kai
+  <div class="flex justify-center space-x-6 mt-2">
+    <a href="#" class="text-blue-600 hover:underline">Instagram</a>
+    <a href="#" class="text-blue-600 hover:underline">TikTok</a>
+    <a href="#" class="text-blue-600 hover:underline">Facebook</a>
+    <a href="#" class="text-blue-600 hover:underline">YouTube</a>
+    <a href="#" class="text-blue-600 hover:underline">Threads</a>
+  </div>
+</footer>
+
 <script>
 function toggleMenu() {
   document.getElementById('menuDropdown').classList.toggle('hidden');
 }
-
 function logoutUser() {
   sessionStorage.clear();
   window.location.href = 'signin.html';
 }
-
-const emailInput = document.getElementById('emailInput');
-const submitButton = document.getElementById('submitPrompt');
-const charCounter = document.getElementById('charCounter');
-
-emailInput.addEventListener('input', () => {
-  const currentLength = emailInput.value.length;
-  charCounter.textContent = `${currentLength} / 500 characters`;
-  submitButton.disabled = currentLength === 0;
-});
 </script>
 
 </body>
