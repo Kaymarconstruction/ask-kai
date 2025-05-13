@@ -12,6 +12,7 @@
       background-image: url('https://i.imgur.com/jhqlVA5.png');
       background-size: cover;
       background-position: center;
+      background-repeat: no-repeat;
     }
     @media (max-width: 768px) {
       body { background-image: url('https://i.imgur.com/qzRmu0O.jpeg'); }
@@ -25,13 +26,13 @@
 <body class="text-gray-800">
 
 <!-- Banner & Menu -->
-<div class="w-full bg-black flex items-center justify-between p-4">
-  <button onclick="toggleMenu()" class="bg-white text-black p-2 rounded shadow">
+<div class="w-full bg-black flex items-center justify-between p-4 relative">
+  <button onclick="toggleMenu()" class="bg-black text-white p-2 rounded shadow">
     <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
       <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
     </svg>
   </button>
-  <h1 class="text-xl font-bold text-green-600">Email Generator</h1>
+  <img src="https://i.imgur.com/nDIhtRr.png" alt="Kaymar Banner" class="max-h-16 object-contain" />
   <div id="menuDropdown" class="hidden absolute left-4 mt-16 w-48 bg-white border border-gray-300 shadow-lg rounded-md z-50">
     <a href="index.html" class="block px-4 py-2 hover:bg-gray-100">Home</a>
     <a href="settings.html" class="block px-4 py-2 hover:bg-gray-100">Settings</a>
@@ -42,8 +43,7 @@
 <main class="max-w-3xl mx-auto p-6 space-y-6 overlay mt-10 rounded-xl">
   <div class="bg-white p-6 rounded-xl shadow space-y-4">
     <label for="emailInput" class="block font-semibold mb-2">What would you like to say?</label>
-    <textarea id="emailInput" rows="3" class="w-full border rounded-lg p-3"
-      placeholder="e.g., Tell the client I’ll be there Friday arvo to finish the decking job..."></textarea>
+    <textarea id="emailInput" rows="3" class="w-full border rounded-lg p-3" placeholder="e.g., Tell the client I’ll be there Friday arvo to finish the decking job..."></textarea>
     <button id="submitPrompt" class="mt-2 w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded-lg">
       Draft with Kai
     </button>
@@ -76,20 +76,30 @@
   <div class="bg-yellow-50 border-l-4 border-yellow-500 text-yellow-700 p-4 rounded shadow">
     <p>This generated email is a draft. Please review before sending.</p>
   </div>
+
+  <footer class="text-center text-gray-500 text-sm p-6 mt-4">
+    &copy; 2025 Kaymar Construction | Powered by Ask Kai
+    <div class="flex justify-center space-x-6 mt-2">
+      <a href="#" class="text-blue-600 hover:underline">Instagram</a>
+      <a href="#" class="text-blue-600 hover:underline">TikTok</a>
+      <a href="#" class="text-blue-600 hover:underline">Facebook</a>
+      <a href="#" class="text-blue-600 hover:underline">YouTube</a>
+      <a href="#" class="text-blue-600 hover:underline">Threads</a>
+    </div>
+  </footer>
 </main>
 
-<footer class="text-center text-gray-500 text-sm p-6">
-  &copy; 2025 Kaymar Construction | Powered by Ask Kai
-  <div class="flex justify-center space-x-6 mt-2">
-    <a href="#" class="text-blue-600 hover:underline">Instagram</a>
-    <a href="#" class="text-blue-600 hover:underline">TikTok</a>
-    <a href="#" class="text-blue-600 hover:underline">Facebook</a>
-    <a href="#" class="text-blue-600 hover:underline">YouTube</a>
-    <a href="#" class="text-blue-600 hover:underline">Threads</a>
-  </div>
-</footer>
-
 <script src="email-generator.js"></script>
+
+<script>
+function toggleMenu() {
+  document.getElementById('menuDropdown').classList.toggle('hidden');
+}
+function logoutUser() {
+  sessionStorage.clear();
+  window.location.href = 'signin.html';
+}
+</script>
 
 </body>
 </html>
