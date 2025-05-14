@@ -77,8 +77,8 @@
 </div>
 
 <script>
-  const SUPABASE_URL = window.SUPABASE_URL || 'https://ndvmxpkoyoimibntetef.supabase.co';
-  const SUPABASE_KEY = window.SUPABASE_KEY || 'YOUR_PUBLIC_ANON_KEY';
+  const SUPABASE_URL = 'https://ndvmxpkoyoimibntetef.supabase.co';
+  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5kdm14cGtveW9pbWlibnRldGVmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY1MDgxODksImV4cCI6MjA2MjA';
   const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
   const BUCKET = 'profile-pictures';
 
@@ -154,12 +154,6 @@
   });
 
   loadProfile();
-</script>
-
-<!-- Injected via Netlify/Render Environment -->
-<script>
-  window.SUPABASE_URL = '{{SUPABASE_URL}}';
-  window.SUPABASE_KEY = '{{SUPABASE_KEY}}';
 </script>
 
 </body>
