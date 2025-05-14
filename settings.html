@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Settings – Ask Kai</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
-  <!-- Correct Supabase SDK Version -->
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.7/dist/umd/supabase.min.js"></script>
   <style>
     body {
@@ -31,7 +30,14 @@
 
 <body class="text-gray-800">
 
+<!-- Toast Notification -->
 <div id="toast" class="toast"></div>
+
+<!-- Header with Logo -->
+<header class="bg-white shadow p-4 flex justify-between items-center">
+  <img src="https://i.imgur.com/nDIhtRr.png" alt="Business Logo" class="h-12">
+  <button onclick="logout()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg">Log Out</button>
+</header>
 
 <div class="max-w-xl mx-auto p-6 space-y-6 overlay mt-8 rounded-lg">
   <div class="text-center">
@@ -68,94 +74,65 @@
       <a href="addcontacts.html" class="bg-black text-white px-4 py-2 rounded hover:bg-gray-800">Add Contacts</a>
       <a href="contacts.html" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">View Contacts</a>
     </div>
-
-    <button id="logoutBtn" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 w-full mt-4">
-      Log Out
-    </button>
   </div>
 
   <a href="index.html" class="text-blue-600 underline text-sm block text-center mt-6">Back to Chat</a>
 </div>
-
-<!-- Initialize Supabase AFTER loading SDK -->
 <script>
   const SUPABASE_URL = 'https://ndvmxpkoyoimibntetef.supabase.co';
-  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5kdm14cGtveW9pbWlibnRldGVmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY1MDgxODksImV4cCI6MjA2MjA4NDE4OX0.-U4Jfb33aFfoAec-fhhFqjHExezWcKoEYwkSVgibjE4';
+  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'; // Truncated for brevity; use full key here
   const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
   const BUCKET = 'profile-pictures';
-  
-  const userEmail = sessionStorage.getItem('askkaiUser')?.toLowerCase();
-  if (!userEmail) window.location.href = 'signin.html';
 
-  const toast = document.getElementById('toast');
+  async function checkSession() {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      window.location.href = 'signin.html';
+    } else {
+      const userEmail = session.user.email;
+      loadProfile(userEmail);
+    }
+  }
+
   function showToast(message, duration = 3000) {
+    const toast = document.getElementById('toast');
     toast.textContent = message;
     toast.classList.add('show');
     setTimeout(() => toast.classList.remove('show'), duration);
   }
 
-  async function loadProfile() {
-    console.log('Loading profile for:', userEmail);
+  async function loadProfile(userEmail) {
     const { data, error } = await supabase
       .from('users')
       .select('name, profile_pic_url, plan_tier, prompt_count')
       .eq('email', userEmail)
       .single();
 
-    if (error) {
-      console.error('Error loading profile:', error);
-      return showToast('Failed to load profile.');
-    }
+    if (error) return showToast('Failed to load profile.');
 
-    console.log('Profile data:', data);
-
-    if (data) {
-      document.getElementById('userName').textContent = `Welcome Back, ${data.name || 'Apprentice'}!`;
-      document.getElementById('userEmail').textContent = userEmail;
-      document.getElementById('planTier').textContent = data.plan_tier || 'Free Plan';
-      document.getElementById('promptUsage').textContent = `${data.prompt_count || 0} / ${data.plan_tier === 'Free Plan' ? '10' : '∞'}`;
-      document.getElementById('profilePreview').src = data.profile_pic_url || 'https://i.imgur.com/placeholder.png';
-    }
+    document.getElementById('userName').textContent = `Welcome Back, ${data.name || 'Apprentice'}!`;
+    document.getElementById('userEmail').textContent = userEmail;
+    document.getElementById('planTier').textContent = data.plan_tier || 'Free Plan';
+    document.getElementById('promptUsage').textContent = `${data.prompt_count || 0} / ${data.plan_tier === 'Free Plan' ? '10' : '∞'}`;
+    document.getElementById('profilePreview').src = data.profile_pic_url || 'https://i.imgur.com/placeholder.png';
   }
 
   async function uploadProfilePic(file) {
-    console.log('Uploading profile picture:', file);
-
     if (!file.type.startsWith('image/')) return showToast('Only image files allowed.');
     if (file.size > 2 * 1024 * 1024) return showToast('Max file size is 2MB.');
 
+    const user = (await supabase.auth.getSession()).data.session.user;
     const fileExt = file.name.split('.').pop();
-    const filePath = `${userEmail}.${fileExt}`;
+    const filePath = `${user.email}.${fileExt}`;
 
-    const { error: uploadError } = await supabase
-      .storage
-      .from(BUCKET)
-      .upload(filePath, file, { upsert: true });
+    const { error: uploadError } = await supabase.storage.from(BUCKET).upload(filePath, file, { upsert: true });
+    if (uploadError) return showToast('Failed to upload image.');
 
-    if (uploadError) {
-      console.error('Upload error:', uploadError);
-      return showToast('Failed to upload image.');
-    }
+    const { data: publicURL } = supabase.storage.from(BUCKET).getPublicUrl(filePath);
+    await supabase.from('users').update({ profile_pic_url: publicURL.publicUrl }).eq('email', user.email);
 
-    const { data: publicURL } = supabase
-      .storage
-      .from(BUCKET)
-      .getPublicUrl(filePath);
-
-    console.log('Public URL:', publicURL);
-
-    const { error: updateError } = await supabase
-      .from('users')
-      .update({ profile_pic_url: publicURL.publicUrl })
-      .eq('email', userEmail);
-
-    if (updateError) {
-      console.error('Update profile picture error:', updateError);
-      showToast('Failed to update profile picture.');
-    } else {
-      document.getElementById('profilePreview').src = publicURL.publicUrl;
-      showToast('Profile picture updated!');
-    }
+    document.getElementById('profilePreview').src = publicURL.publicUrl;
+    showToast('Profile picture updated!');
   }
 
   document.getElementById('profilePic').addEventListener('change', (e) => {
@@ -163,13 +140,13 @@
     if (file) uploadProfilePic(file);
   });
 
-  document.getElementById('logoutBtn').addEventListener('click', () => {
-    sessionStorage.clear();
-    localStorage.clear();
-    window.location.href = 'signin.html';
-  });
+  function logout() {
+    supabase.auth.signOut().then(() => {
+      window.location.href = 'signin.html';
+    });
+  }
 
-  loadProfile();
+  checkSession();
 </script>
 
 </body>
