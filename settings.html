@@ -126,7 +126,7 @@
     if (file.size > 2 * 1024 * 1024) return showToast('Max file size is 2MB.');
 
     const fileExt = file.name.split('.').pop();
-    const filePath = `profile_pics/${userEmail}.${fileExt}`;
+    const filePath = `profile-pics/${userEmail}.${fileExt}`;
 
     const { error: uploadError } = await supabase
       .storage
