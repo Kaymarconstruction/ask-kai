@@ -5,108 +5,76 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Ask Kai – Site Chat</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.7/dist/umd/supabase.min.js"></script>
   <style>
-    html, body {
-      height: 100%;
-      margin: 0;
-      padding: 0;
+    body {
       background-image: url('https://i.imgur.com/jhqlVA5.png');
       background-size: cover;
       background-position: center;
+      font-family: sans-serif;
     }
     @media (max-width: 768px) {
-      body {
-        background-image: url('https://i.imgur.com/qzRmu0O.jpeg');
-      }
+      body { background-image: url('https://i.imgur.com/qzRmu0O.jpeg'); }
     }
-    #kaiReply { max-height: 60vh; overflow-y: auto; white-space: pre-wrap; }
-    .blinking-cursor { 
-      display: inline-block; width: 10px; height: 1em; background-color: #7AC142; 
-      margin-left: 4px; animation: blink 1s steps(2, start) infinite; 
+    .overlay { background-color: rgba(255, 255, 255, 0.95); backdrop-filter: blur(4px); }
+    .blinking-cursor {
+      display: inline-block;
+      width: 10px;
+      height: 1em;
+      background-color: #7AC142;
+      margin-left: 4px;
+      animation: blink 1s steps(2, start) infinite;
     }
     @keyframes blink { 0%, 100% { opacity: 0; } 50% { opacity: 1; } }
-    .overlay { background-color: rgba(255, 255, 255, 0.95); backdrop-filter: blur(4px); }
   </style>
 </head>
 
-<body class="text-gray-800 flex flex-col">
+<body class="text-gray-800 flex flex-col min-h-screen">
 
-<!-- Header -->
-<div class="w-full bg-black relative">
-  <div class="absolute left-2 top-1/2 transform -translate-y-1/2 z-50">
-    <button onclick="toggleMenu()" class="bg-black text-white p-2 rounded shadow">
-      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
-      </svg>
-    </button>
-
-    <!-- Updated Dropdown Menu -->
-    <div id="menuDropdown" class="hidden absolute left-0 mt-2 w-64 bg-white border border-gray-300 shadow-lg rounded-md z-50 p-4 space-y-2 text-gray-800 text-base font-medium">
-      <a href="index.html" class="block text-[#7AC142] hover:underline">Home</a>
-      <a href="settings.html" class="block text-gray-700 hover:underline">Profile</a>
-      <a href="apprentice-hub.html" class="block text-gray-700 hover:underline">Apprentice Hub</a>
-      <a href="plus-hub.html" class="block text-gray-700 hover:underline">Plus Hub</a>
-      <a href="pro-hub.html" class="block text-gray-700 hover:underline">Pro Hub</a>
-      <a href="upgrade.html" class="block text-gray-700 hover:underline">Upgrade</a>
-      <a href="team.html" class="block text-gray-700 hover:underline">Meet the Team</a>
-      <a href="app.html" class="block text-gray-400 cursor-not-allowed hover:underline">Download the App (Coming Soon)</a>
-      <hr class="my-2">
-      <p onclick="logoutUser()" class="block text-red-600 hover:underline cursor-pointer">Log Out</p>
-    </div>
+<!-- Header with Logo -->
+<header class="bg-white shadow p-4 flex justify-between items-center">
+  <img src="https://i.imgur.com/nDIhtRr.png" alt="Business Logo" class="h-12">
+  <div class="flex space-x-4">
+    <a href="settings.html" class="text-green-600 hover:underline">Profile</a>
+    <a href="upgrade.html" class="text-green-600 hover:underline">Upgrade</a>
+    <button onclick="logout()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg">Log Out</button>
   </div>
-  <img src="https://i.imgur.com/nDIhtRr.png" alt="Kaymar Banner" class="w-full max-h-24 object-contain mx-auto" />
-</div>
+</header>
 
-<!-- Main Chat Section -->
-<main class="max-w-3xl mx-auto p-4 w-full flex-grow">
+<main class="max-w-3xl mx-auto p-6 flex-grow w-full">
   <div class="overlay p-6 rounded-xl shadow space-y-6">
+    <h1 class="text-2xl font-bold text-green-600 text-center">Welcome to Ask Kai!</h1>
     <div id="kaiReply" class="bg-white p-4 rounded-xl shadow space-y-4 text-sm text-gray-800 mb-6"></div>
+
     <div class="flex flex-col space-y-2">
-      <textarea id="askInput" rows="3" class="w-full border rounded-lg p-3" placeholder="e.g. 6x4m deck, 250mm off ground, H3 pine joists, 140mm merbau decking, VIC"></textarea>
+      <textarea id="askInput" rows="3" class="w-full border rounded-lg p-3" placeholder="Ask Kai anything..."></textarea>
       <button id="submitBtn" class="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded">Submit</button>
-      <p class="text-xs text-gray-600 text-center mt-2">
-        Describe your job in detail. <span class="text-red-600 font-semibold">Be specific</span> – location, materials, sizes, etc.
-      </p>
     </div>
 
-    <!-- Profile Section -->
-    <div class="bg-white rounded-2xl shadow-lg p-6 mt-8 text-center">
-      <img src="https://i.imgur.com/uYWtV9r.png" alt="Kai Marlow" class="mx-auto mb-4 w-48 h-72 object-cover bg-white p-2 rounded-2xl shadow" />
-      <h2 class="text-2xl font-bold text-green-600 mb-4">Who is Kai?</h2>
-      <p class="text-gray-700 mb-6">
-        With 20+ years in carpentry and construction, Kai delivers expert advice backed by industry knowledge and local code. He’s your mate on-site, online. Ask him anything!
-      </p>
-      <footer class="text-center text-gray-500 text-sm">
-        &copy; 2025 Kaymar Construction | Powered by Ask Kai
-        <div class="flex justify-center space-x-4 mt-2">
-          <a href="https://www.instagram.com/askkai_official" class="text-blue-600 hover:underline">Instagram</a>
-          <a href="https://www.tiktok.com/@askkai_official" class="text-blue-600 hover:underline">TikTok</a>
-          <a href="https://www.facebook.com/askkai_official" class="text-blue-600 hover:underline">Facebook</a>
-          <a href="https://www.youtube.com/@askkai_official" class="text-blue-600 hover:underline">YouTube</a>
-          <a href="https://www.threads.net/@askkai_official" class="text-blue-600 hover:underline">Threads</a>
-        </div>
-      </footer>
-    </div>
+    <p class="text-xs text-gray-600 text-center mt-2">
+      Describe your job in detail. <span class="text-red-600 font-semibold">Be specific</span> – location, materials, sizes, etc.
+    </p>
   </div>
 </main>
 
-<!-- Chat Script -->
 <script>
-  const user = sessionStorage.getItem('askkaiUser');
-  if (!user) window.location.href = 'signin.html';
-  const isMark = user === 'mark@kaymarconstruction.com';
-  let promptCount = parseInt(localStorage.getItem('promptCount') || '0');
-  const MAX_FREE_PROMPTS = 10;
-  const messages = [];
+  const SUPABASE_URL = 'https://ndvmxpkoyoimibntetef.supabase.co';
+  const SUPABASE_KEY = 'YOUR_SUPABASE_KEY_HERE';
+  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-  function toggleMenu() {
-    document.getElementById('menuDropdown').classList.toggle('hidden');
+  async function checkSession() {
+    const { data: { session } } = await supabase.auth.getSession();
+    if (!session) {
+      window.location.href = 'signin.html';
+    } else {
+      console.log('Session Active:', session);
+    }
   }
 
-  function logoutUser() {
-    sessionStorage.clear();
-    localStorage.removeItem('promptCount');
-    window.location.href = 'logout.html';
+  function logout() {
+    supabase.auth.signOut().then(() => {
+      window.location.href = 'signin.html';
+    });
   }
 
   const askInput = document.getElementById('askInput');
@@ -116,14 +84,6 @@
   async function submitQuestion() {
     const userQuestion = askInput.value.trim();
     if (!userQuestion) return;
-
-    if (!isMark && promptCount >= MAX_FREE_PROMPTS) {
-      alert("You’ve hit your free limit. Time to upgrade.");
-      window.location.href = 'upgrade.html';
-      return;
-    }
-
-    messages.push({ role: "user", content: userQuestion });
 
     const qaContainer = document.createElement('div');
     qaContainer.className = 'mb-6';
@@ -135,9 +95,9 @@
 
     const kaiText = document.createElement('p');
     kaiText.className = 'text-left text-green-600 font-semibold whitespace-pre-wrap';
+    kaiText.textContent = "Kai is thinking...";
     const cursor = document.createElement('span');
     cursor.className = 'blinking-cursor';
-    kaiText.textContent = "Kai is thinking...";
     kaiText.appendChild(cursor);
     qaContainer.appendChild(kaiText);
 
@@ -151,17 +111,11 @@
       const response = await fetch('https://askkai-backend-clean.onrender.com/chat', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ messages, userEmail: user })
+        body: JSON.stringify({ message: userQuestion })
       });
 
       const data = await response.json();
-      const finalText = data.reply || "Kai’s stumped. Try again shortly.";
-      kaiText.textContent = finalText;
-
-      if (data.promptCount !== undefined) {
-        promptCount = data.promptCount;
-        localStorage.setItem('promptCount', promptCount.toString());
-      }
+      kaiText.textContent = data.reply || "Kai’s stumped. Try again shortly.";
     } catch (error) {
       console.error('Chat Error:', error);
       kaiText.textContent = "Kai ran into an issue. Please try again.";
@@ -172,13 +126,14 @@
   }
 
   submitBtn.addEventListener('click', submitQuestion);
-
   askInput.addEventListener('keydown', (event) => {
     if (event.key === 'Enter' && !event.shiftKey) {
       event.preventDefault();
       submitQuestion();
     }
   });
+
+  checkSession();
 </script>
 
 </body>
