@@ -5,6 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Settings – Ask Kai</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.0.0/dist/umd/supabase.min.js"></script>
   <style>
     body {
       background-image: url('https://i.imgur.com/jhqlVA5.png');
@@ -28,6 +29,7 @@
 </head>
 
 <body class="text-gray-800">
+
 <div id="toast" class="toast"></div>
 
 <div class="max-w-xl mx-auto p-6 space-y-6 overlay mt-8 rounded-lg">
@@ -74,12 +76,10 @@
   <a href="index.html" class="text-blue-600 underline text-sm block text-center mt-6">Back to Chat</a>
 </div>
 
-<script type="module">
-  import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js/+esm';
-
-  const SUPABASE_URL = 'https://ndvmxpkoyoimibntetef.supabase.co';
-  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5kdm14cGtveW9pbWlibnRldGVmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY1MDgxODksImV4cCI6MjA2MjA';
-  const supabase = createClient(SUPABASE_URL, SUPABASE_KEY);
+<script>
+  const SUPABASE_URL = window.SUPABASE_URL || 'https://ndvmxpkoyoimibntetef.supabase.co';
+  const SUPABASE_KEY = window.SUPABASE_KEY || 'YOUR_PUBLIC_ANON_KEY';
+  const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
   const BUCKET = 'profile-pictures';
 
   const userEmail = sessionStorage.getItem('askkaiUser')?.toLowerCase();
@@ -99,11 +99,7 @@
       .eq('email', userEmail)
       .single();
 
-    if (error) {
-      console.error('Error loading profile:', error);
-      showToast('Failed to load profile.');
-      return;
-    }
+    if (error) return showToast('Failed to load profile.');
 
     if (data) {
       document.getElementById('userName').textContent = `Welcome Back, ${data.name || 'Apprentice'}!`;
@@ -158,6 +154,12 @@
   });
 
   loadProfile();
+</script>
+
+<!-- Injected via Netlify/Render Environment -->
+<script>
+  window.SUPABASE_URL = '{{SUPABASE_URL}}';
+  window.SUPABASE_KEY = '{{SUPABASE_KEY}}';
 </script>
 
 </body>
