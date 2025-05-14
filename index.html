@@ -16,7 +16,7 @@
     @media (max-width: 768px) {
       body { background-image: url('https://i.imgur.com/qzRmu0O.jpeg'); }
     }
-    .overlay { background-color: rgba(255, 255, 255, 0.95); backdrop-filter: blur(4px); }
+    .overlay { background-color: rgba(255, 255, 255, 0.95); backdrop-filter: blur(5px); }
     .blinking-cursor {
       display: inline-block;
       width: 10px;
@@ -31,35 +31,44 @@
 
 <body class="text-gray-800 flex flex-col min-h-screen">
 
-<!-- Header with Logo -->
-<header class="bg-white shadow p-4 flex justify-between items-center">
-  <img src="https://i.imgur.com/nDIhtRr.png" alt="Business Logo" class="h-12">
-  <div class="flex space-x-4">
-    <a href="settings.html" class="text-green-600 hover:underline">Profile</a>
-    <a href="upgrade.html" class="text-green-600 hover:underline">Upgrade</a>
+<!-- Header with original banner -->
+<header class="bg-white shadow p-4 flex flex-col items-center space-y-2">
+  <img src="https://i.imgur.com/nDIhtRr.png" alt="Kaymar Banner" class="w-full max-h-24 object-contain" />
+  <div class="flex justify-center gap-4">
+    <a href="settings.html" class="text-green-600 font-medium hover:underline">Profile</a>
+    <a href="upgrade.html" class="text-green-600 font-medium hover:underline">Upgrade</a>
     <button onclick="logout()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg">Log Out</button>
   </div>
 </header>
 
-<main class="max-w-3xl mx-auto p-6 flex-grow w-full">
-  <div class="overlay p-6 rounded-xl shadow space-y-6">
-    <h1 class="text-2xl font-bold text-green-600 text-center">Welcome to Ask Kai!</h1>
-    <div id="kaiReply" class="bg-white p-4 rounded-xl shadow space-y-4 text-sm text-gray-800 mb-6"></div>
+<main class="max-w-xl mx-auto p-6 flex-grow w-full">
+  <div class="overlay p-6 rounded-xl shadow space-y-6 text-center">
+    <h1 class="text-2xl sm:text-3xl font-bold text-green-600">Welcome to Ask Kai!</h1>
 
-    <div class="flex flex-col space-y-2">
-      <textarea id="askInput" rows="3" class="w-full border rounded-lg p-3" placeholder="Ask Kai anything..."></textarea>
-      <button id="submitBtn" class="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded">Submit</button>
-    </div>
+    <textarea id="askInput" rows="2" placeholder="Ask Kai anything..." class="w-full border rounded-lg p-3 text-sm"></textarea>
+    <button id="submitBtn" class="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded text-lg font-semibold">Submit</button>
 
-    <p class="text-xs text-gray-600 text-center mt-2">
+    <p class="text-xs text-gray-600 mt-2">
       Describe your job in detail. <span class="text-red-600 font-semibold">Be specific</span> – location, materials, sizes, etc.
     </p>
+
+    <div id="kaiReply" class="bg-white p-4 rounded-xl shadow text-left text-sm text-gray-800 space-y-4"></div>
+
+    <!-- Kai's Profile -->
+    <div class="mt-10 bg-white p-6 rounded-xl shadow-lg text-center">
+      <img src="https://i.imgur.com/uYWtV9r.png" alt="Kai Marlow" class="w-40 h-60 mx-auto object-cover rounded-2xl mb-4" />
+      <h2 class="text-xl font-bold text-green-600">Who is Kai?</h2>
+      <p class="text-sm text-gray-700 mt-2">
+        With 20+ years in carpentry and construction, Kai delivers expert advice backed by real site experience.
+        He's your mate on-site, online. Ask him anything.
+      </p>
+    </div>
   </div>
 </main>
 
 <script>
   const SUPABASE_URL = 'https://ndvmxpkoyoimibntetef.supabase.co';
-  const SUPABASE_KEY = 'YOUR_SUPABASE_KEY_HERE';
+  const SUPABASE_KEY = 'YOUR_SUPABASE_KEY_HERE'; // Replace with your real key
   const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
   async function checkSession() {
@@ -67,7 +76,7 @@
     if (!session) {
       window.location.href = 'signin.html';
     } else {
-      console.log('Session Active:', session);
+      console.log('Session active for:', session.user.email);
     }
   }
 
@@ -86,25 +95,23 @@
     if (!userQuestion) return;
 
     const qaContainer = document.createElement('div');
-    qaContainer.className = 'mb-6';
-
     const userText = document.createElement('p');
-    userText.className = 'text-right text-blue-700 font-semibold mb-2';
+    userText.className = 'text-right text-blue-700 font-semibold mb-1';
     userText.textContent = `You: ${userQuestion}`;
-    qaContainer.appendChild(userText);
 
     const kaiText = document.createElement('p');
     kaiText.className = 'text-left text-green-600 font-semibold whitespace-pre-wrap';
-    kaiText.textContent = "Kai is thinking...";
+    kaiText.textContent = 'Kai is thinking...';
     const cursor = document.createElement('span');
     cursor.className = 'blinking-cursor';
     kaiText.appendChild(cursor);
-    qaContainer.appendChild(kaiText);
 
+    qaContainer.appendChild(userText);
+    qaContainer.appendChild(kaiText);
     kaiReply.appendChild(qaContainer);
     kaiReply.scrollTo({ top: kaiReply.scrollHeight, behavior: 'smooth' });
 
-    askInput.value = "";
+    askInput.value = '';
     submitBtn.disabled = true;
 
     try {
@@ -115,20 +122,19 @@
       });
 
       const data = await response.json();
-      kaiText.textContent = data.reply || "Kai’s stumped. Try again shortly.";
-    } catch (error) {
-      console.error('Chat Error:', error);
-      kaiText.textContent = "Kai ran into an issue. Please try again.";
+      kaiText.textContent = data.reply || "Kai’s stumped. Try again later.";
+    } catch (err) {
+      console.error('Chat error:', err);
+      kaiText.textContent = "Kai ran into a problem. Try again.";
     } finally {
       submitBtn.disabled = false;
-      kaiReply.scrollTo({ top: kaiReply.scrollHeight, behavior: 'smooth' });
     }
   }
 
   submitBtn.addEventListener('click', submitQuestion);
-  askInput.addEventListener('keydown', (event) => {
-    if (event.key === 'Enter' && !event.shiftKey) {
-      event.preventDefault();
+  askInput.addEventListener('keydown', (e) => {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
       submitQuestion();
     }
   });
