@@ -51,22 +51,18 @@
       <label class="block text-sm font-medium">Email</label>
       <p id="userEmail" class="text-gray-700">Loading...</p>
     </div>
-
     <div>
       <label class="block text-sm font-medium">Subscription Tier</label>
       <p id="planTier" class="text-green-700 font-semibold">Loading...</p>
     </div>
-
     <div>
       <label class="block text-sm font-medium">Token Usage</label>
       <p id="promptUsage" class="text-gray-700">Loading...</p>
     </div>
-
     <div class="flex space-x-4 mt-4">
       <a href="addcontacts.html" class="bg-black text-white px-4 py-2 rounded hover:bg-gray-800">Add Contacts</a>
       <a href="contacts.html" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">View Contacts</a>
     </div>
-
     <button id="logoutBtn" class="bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700 w-full mt-4">
       Log Out
     </button>
@@ -98,19 +94,17 @@
       .eq('email', userEmail)
       .single();
 
-    if (error) {
+    if (error || !data) {
       console.error('Error loading profile:', error);
       showToast('Failed to load profile.');
       return;
     }
 
-    if (data) {
-      document.getElementById('userName').textContent = `Welcome Back, ${data.name || 'Apprentice'}!`;
-      document.getElementById('userEmail').textContent = userEmail;
-      document.getElementById('planTier').textContent = data.plan_tier || 'Free Plan';
-      document.getElementById('promptUsage').textContent = `${data.prompt_count || 0} / ${data.plan_tier === 'Free Plan' ? '10' : '∞'}`;
-      document.getElementById('profilePreview').src = data.profile_pic_url || 'https://i.imgur.com/placeholder.png';
-    }
+    document.getElementById('userName').textContent = `Welcome Back, ${data.name || 'Apprentice'}!`;
+    document.getElementById('userEmail').textContent = userEmail;
+    document.getElementById('planTier').textContent = data.plan_tier || 'Free Plan';
+    document.getElementById('promptUsage').textContent = `${data.prompt_count || 0} / ${data.plan_tier === 'Free Plan' ? '10' : '∞'}`;
+    document.getElementById('profilePreview').src = data.profile_pic_url || 'https://i.imgur.com/placeholder.png';
   }
 
   async function uploadProfilePic(file) {
@@ -120,8 +114,7 @@
     const fileExt = file.name.split('.').pop();
     const filePath = `${userEmail}.${fileExt}`;
 
-    const { error: uploadError } = await supabase
-      .storage
+    const { error: uploadError } = await supabase.storage
       .from(BUCKET)
       .upload(filePath, file, { upsert: true });
 
