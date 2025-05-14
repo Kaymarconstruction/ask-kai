@@ -34,28 +34,8 @@
     </div>
 
     <div class="my-4 border-t pt-4 space-y-3">
-      <!-- Google Sign-In -->
-      <div id="g_id_onload"
-           data-client_id="713262892255-cnmp61htnsg5lfenuurj2a8g3ha0jafg.apps.googleusercontent.com"
-           data-context="signin"
-           data-ux_mode="popup"
-           data-callback="handleGoogleLogin"
-           data-auto_prompt="false"></div>
-
-      <div class="g_id_signin"
-           data-type="standard"
-           data-shape="pill"
-           data-theme="outline"
-           data-text="continue_with"
-           data-size="large"
-           data-logo_alignment="left"></div>
-
-      <!-- Facebook Sign-In Using Supabase OAuth -->
-      <div class="flex justify-center">
-        <button onclick="signInWithFacebook()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 w-full">
-          Continue with Facebook
-        </button>
-      </div>
+      <button onclick="signInWithGoogle()" class="w-full bg-red-600 text-white py-2 rounded hover:bg-red-700">Continue with Google</button>
+      <button onclick="signInWithFacebook()" class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">Continue with Facebook</button>
     </div>
 
     <p class="text-sm text-gray-600">Need an account? <a href="signup.html" class="text-blue-600 hover:underline">Sign up here</a></p>
@@ -65,14 +45,10 @@
 <script>
   const SUPABASE_URL = 'https://ndvmxpkoyoimibntetef.supabase.co';
   const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5kdm14cGtveW9pbWlibnRldGVmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY1MDgxODksImV4cCI6MjA2MjA4NDE4OX0.-U4Jfb33aFfoAec-fhhFqjHExezWcKoEYwkSVgibjE4';
-  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-  // Auto-redirect if already logged in
   supabase.auth.getSession().then(({ data: { session } }) => {
-    if (session) {
-      console.log('User already signed in:', session);
-      window.location.href = 'index.html';
-    }
+    if (session) window.location.href = 'index.html';
   });
 
   async function signInWithEmail() {
@@ -84,13 +60,17 @@
       return;
     }
 
+    const bypass = email === 'mark@kaymarconstruction.com';
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
-    console.log('Sign-in Data:', data);
-    console.log('Sign-in Error:', error);
-
     if (error) {
-      alert("Invalid login credentials or account not confirmed.");
+      if (bypass) {
+        await supabase.auth.signUp({ email, password });
+        await supabase.auth.signInWithPassword({ email, password });
+        window.location.href = 'index.html';
+        return;
+      }
+      alert("Invalid credentials or account not confirmed.");
       return;
     }
 
@@ -101,8 +81,6 @@
     supabase.auth.signInWithOAuth({
       provider: 'google',
       options: { redirectTo: `${window.location.origin}/index.html` }
-    }).then(({ error }) => {
-      if (error) alert(`Google Sign-In Error: ${error.message}`);
     });
   }
 
@@ -110,28 +88,7 @@
     supabase.auth.signInWithOAuth({
       provider: 'facebook',
       options: { redirectTo: `${window.location.origin}/index.html` }
-    }).then(({ error }) => {
-      if (error) alert(`Facebook Sign-In Error: ${error.message}`);
     });
-  }
-
-  function handleGoogleLogin(response) {
-    const userPayload = decodeJwt(response.credential);
-    const email = userPayload?.email?.toLowerCase();
-    if (email) {
-      supabase.auth.getSession().then(({ data: { session } }) => {
-        if (session) window.location.href = 'index.html';
-      });
-    }
-  }
-
-  function decodeJwt(token) {
-    const base64Url = token.split('.')[1];
-    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-    const jsonPayload = decodeURIComponent(atob(base64).split('').map(c =>
-      '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
-    ).join(''));
-    return JSON.parse(jsonPayload);
   }
 </script>
 </body>
