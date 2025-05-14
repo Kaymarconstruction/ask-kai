@@ -40,7 +40,7 @@
     </label>
     <input id="profilePic" type="file" accept="image/*" class="hidden" />
     <h1 id="userName" class="text-3xl font-bold text-green-600 mt-4">Welcome Back!</h1>
-    <button onclick="location.href='upgrade.html'"
+    <button onclick="location.href='upgrade.html'" 
             class="mt-4 bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg shadow">
       Manage Subscription
     </button>
@@ -118,7 +118,7 @@
     if (file.size > 2 * 1024 * 1024) return showToast('Max file size is 2MB.');
 
     const fileExt = file.name.split('.').pop();
-    const filePath = `profile_pics/${userEmail}.${fileExt}`;
+    const filePath = `${userEmail}.${fileExt}`;
 
     const { error: uploadError } = await supabase
       .storage
