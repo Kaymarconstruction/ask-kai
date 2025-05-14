@@ -130,14 +130,14 @@
 
     const { error: uploadError } = await supabase
       .storage
-      .from('profile_pictures')
+      .from('profile-pictures')
       .upload(filePath, file, { upsert: true });
 
     if (uploadError) return showToast('Failed to upload image.');
 
     const { data: publicURL } = supabase
       .storage
-      .from('profile_pictures')
+      .from('profile-pictures')
       .getPublicUrl(filePath);
 
     const { error: updateError } = await supabase
