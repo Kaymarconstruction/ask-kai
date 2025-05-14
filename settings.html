@@ -5,110 +5,121 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Settings – Ask Kai</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.0.0/dist/umd/supabase.min.js"></script>
+  <style>
+    body {
+      font-family: sans-serif;
+      background-image: url('https://i.imgur.com/jhqlVA5.png');
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+    @media (max-width: 768px) {
+      body {
+        background-image: url('https://i.imgur.com/qzRmu0O.jpeg');
+      }
+    }
+    .overlay {
+      background-color: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(5px);
+    }
+    .profile-pic-border {
+      border: 4px solid #7AC142;
+    }
+  </style>
 </head>
-<body class="bg-gray-50 text-gray-900">
 
-<div class="max-w-xl mx-auto p-6 space-y-6">
-  <h1 class="text-2xl font-bold text-green-600">Your Account</h1>
+<body class="text-gray-800">
 
-  <div class="bg-white p-4 shadow rounded space-y-4">
-    <div>
-      <label class="block text-sm font-medium">Email</label>
-      <p id="userEmail" class="text-gray-700">Loading...</p>
-    </div>
-
-    <div>
-      <label class="block text-sm font-medium mb-1">Profile Picture</label>
-      <div class="flex items-center space-x-4">
-        <label class="cursor-pointer relative">
-          <img id="profilePreview" src="https://i.imgur.com/vUk9jxA.jpeg" alt="Profile Preview" class="w-24 h-24 rounded-full object-cover border border-gray-300" />
-          <input id="profilePic" type="file" accept="image/*" class="absolute inset-0 opacity-0 cursor-pointer" />
-        </label>
-        <span class="text-sm text-gray-500">Tap image to change</span>
-      </div>
-    </div>
-
-    <div>
-      <label class="block text-sm font-medium">Subscription Tier</label>
-      <p id="planTier" class="text-green-700 font-semibold">Loading...</p>
-    </div>
-
-    <!-- Contacts & Suppliers -->
-    <div>
-      <label class="block text-sm font-medium mb-1">Contacts & Suppliers</label>
-      <div class="flex space-x-4">
-        <a href="addcontacts.html" class="bg-black text-white px-4 py-2 rounded hover:bg-gray-800">Add Contacts</a>
-        <a href="contacts.html" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">View Contacts</a>
-      </div>
-    </div>
-
-    <!-- Saved Quotes Section -->
-    <div>
-      <label class="block text-sm font-medium mb-1">Saved Quotes</label>
-      <ul id="savedQuotes" class="text-gray-700 space-y-2">
-        <!-- Dynamically populated -->
-      </ul>
-    </div>
-
-    <!-- Saved Email Drafts -->
-    <div>
-      <label class="block text-sm font-medium mb-1">Saved Email Drafts</label>
-      <ul id="savedEmails" class="text-gray-700 space-y-2">
-        <!-- Dynamically populated -->
-      </ul>
-    </div>
-
-    <div>
-      <label class="block text-sm font-medium">Token Usage</label>
-      <p id="promptUsage" class="text-gray-700">0 / 10</p>
-    </div>
-
-    <button id="saveBtn" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Save Settings</button>
+<div class="max-w-xl mx-auto p-6 overlay rounded-xl shadow-lg mt-10">
+  <div class="text-center mb-8">
+    <img id="profilePicPreview" src="https://i.imgur.com/placeholder.png" alt="Profile" 
+         class="mx-auto w-32 h-32 rounded-full shadow-lg mb-4 object-cover profile-pic-border" />
+    <h1 id="userName" class="text-2xl font-bold text-green-600">Welcome Back!</h1>
+    <input type="file" id="profilePicInput" accept="image/*" class="hidden" />
+    <button onclick="document.getElementById('profilePicInput').click()" 
+            class="mt-4 bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg shadow">
+      Change Profile Picture
+    </button>
   </div>
 
-  <a href="index.html" class="text-blue-600 underline text-sm">Back to Chat</a>
+  <div class="space-y-4 text-center">
+    <p><strong>Email:</strong> <span id="userEmail">Loading...</span></p>
+    <p><strong>Subscription:</strong> <span id="planTier">Loading...</span></p>
+    <p><strong>Token Usage:</strong> <span id="tokenUsage">Loading...</span></p>
+
+    <div class="flex justify-center space-x-4 mt-4">
+      <a href="contacts.html" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded">View Contacts</a>
+      <a href="addcontacts.html" class="bg-black hover:bg-gray-800 text-white px-4 py-2 rounded">Add Contact</a>
+    </div>
+
+    <button id="saveBtn" class="mt-6 bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded shadow">
+      Save Settings
+    </button>
+
+    <a href="index.html" class="block text-sm text-blue-600 hover:underline mt-6">Back to Chat</a>
+  </div>
 </div>
 
 <script>
-  const user = sessionStorage.getItem('askkaiUser') || 'demo@email.com';
-  const promptCount = localStorage.getItem('promptCount') || '0';
-  const plan = localStorage.getItem('planTier') || 'Free Plan';
-  const savedProfile = localStorage.getItem('profilePreview');
+  const SUPABASE_URL = 'https://ndvmxpkoyoimibntetef.supabase.co';
+  const SUPABASE_KEY = 'YOUR_SUPABASE_ANON_KEY';
+  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-  document.getElementById('userEmail').textContent = user;
-  document.getElementById('promptUsage').textContent = `${promptCount} / ${plan === 'Free Plan' ? '10' : '∞'}`;
-  document.getElementById('planTier').textContent = plan;
+  const userEmail = sessionStorage.getItem('askkaiUser');
+  if (!userEmail) window.location.href = 'signin.html';
 
-  if (savedProfile) {
-    document.getElementById('profilePreview').src = savedProfile;
+  async function loadProfile() {
+    const { data, error } = await supabase
+      .from('users')
+      .select('name, profile_pic_url, plan_tier, token_count')
+      .eq('email', userEmail)
+      .single();
+
+    if (data) {
+      document.getElementById('userName').innerText = `Welcome Back, ${data.name || 'Apprentice'}!`;
+      document.getElementById('userEmail').innerText = userEmail;
+      document.getElementById('planTier').innerText = data.plan_tier || 'Free Plan';
+      document.getElementById('tokenUsage').innerText = `${data.token_count || 0} Tokens`;
+
+      if (data.profile_pic_url) {
+        document.getElementById('profilePicPreview').src = data.profile_pic_url;
+      }
+    }
   }
 
-  document.getElementById('profilePic').addEventListener('change', (e) => {
+  loadProfile();
+
+  document.getElementById('profilePicInput').addEventListener('change', async (e) => {
     const file = e.target.files[0];
     if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => {
-      document.getElementById('profilePreview').src = reader.result;
-      localStorage.setItem('profilePreview', reader.result);
-    };
-    reader.readAsDataURL(file);
+
+    const fileName = `${userEmail}_profile_${Date.now()}`;
+    const { data, error } = await supabase
+      .storage
+      .from('profile-pictures')
+      .upload(fileName, file);
+
+    if (!error) {
+      const { publicURL } = supabase
+        .storage
+        .from('profile-pictures')
+        .getPublicUrl(fileName);
+
+      await supabase
+        .from('users')
+        .update({ profile_pic_url: publicURL })
+        .eq('email', userEmail);
+
+      document.getElementById('profilePicPreview').src = publicURL;
+    } else {
+      alert('Error uploading image. Try again.');
+    }
   });
 
   document.getElementById('saveBtn').addEventListener('click', () => {
-    alert('Settings saved!');
-    // Add Supabase logic here for permanent storage if required.
+    alert('Settings Saved Successfully!');
   });
-
-  function loadListFromStorage(key, elementId) {
-    const items = JSON.parse(localStorage.getItem(key) || '[]');
-    const container = document.getElementById(elementId);
-    container.innerHTML = items.length 
-      ? items.map(item => `<li>- ${item}</li>`).join('') 
-      : `<li>No ${elementId.replace('saved', '').toLowerCase()} saved yet.</li>`;
-  }
-
-  loadListFromStorage('savedQuotes', 'savedQuotes');
-  loadListFromStorage('savedEmails', 'savedEmails');
 </script>
 
 </body>
