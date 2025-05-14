@@ -25,7 +25,8 @@
 <div class="max-w-xl mx-auto p-6 space-y-6 overlay mt-8 rounded-lg">
   <div class="text-center">
     <img id="profilePreview" src="https://i.imgur.com/placeholder.png" alt="Profile"
-         class="mx-auto w-32 h-32 rounded-full object-cover shadow-lg profile-border" />
+         class="mx-auto w-32 h-32 rounded-full object-cover shadow-lg profile-border"
+         onerror="this.src='https://i.imgur.com/placeholder.png';" />
     <h1 id="userName" class="text-3xl font-bold text-green-600 mt-4">Welcome Back!</h1>
     <button onclick="location.href='upgrade.html'"
             class="mt-4 bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg shadow">
@@ -70,7 +71,7 @@
 
 <script>
   const SUPABASE_URL = 'https://ndvmxpkoyoimibntetef.supabase.co';
-  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'; // Replace with production key
+  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5kdm14cGtveW9pbWlibnRldGVmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY1MDgxODksImV4cCI6MjA2MjA4NDE4OX0.-U4Jfb33aFfoAec-fhhFqjHExezWcKoEYwkSVgibjE4';
   const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
   const userEmail = sessionStorage.getItem('askkaiUser');
@@ -79,15 +80,21 @@
   async function loadProfile() {
     const { data, error } = await supabase
       .from('users')
-      .select('name, profile_pic_url, plan_tier, token_usage')
+      .select('name, profile_pic_url, plan_tier, prompt_count')
       .eq('email', userEmail)
       .single();
+
+    if (error) {
+      console.error('Error loading profile:', error);
+      alert('Failed to load profile data.');
+      return;
+    }
 
     if (data) {
       document.getElementById('userName').textContent = `Welcome Back, ${data.name || 'Apprentice'}!`;
       document.getElementById('userEmail').textContent = userEmail;
       document.getElementById('planTier').textContent = data.plan_tier || 'Free Plan';
-      document.getElementById('promptUsage').textContent = `${data.token_usage || 0} / ${data.plan_tier === 'Free Plan' ? '10' : '∞'}`;
+      document.getElementById('promptUsage').textContent = `${data.prompt_count || 0} / ${data.plan_tier === 'Free Plan' ? '10' : '∞'}`;
       document.getElementById('profilePreview').src = data.profile_pic_url || 'https://i.imgur.com/placeholder.png';
     }
   }
@@ -104,21 +111,22 @@
       .from('profile_pictures')
       .upload(filePath, file, { upsert: true });
 
-    if (!uploadError) {
-      const { data: publicURL } = supabase
-        .storage
-        .from('profile_pictures')
-        .getPublicUrl(filePath);
-
-      await supabase
-        .from('users')
-        .update({ profile_pic_url: publicURL.publicUrl })
-        .eq('email', userEmail);
-
-      document.getElementById('profilePreview').src = publicURL.publicUrl;
-    } else {
+    if (uploadError) {
       alert('Failed to upload image.');
+      return;
     }
+
+    const { data: publicURL } = supabase
+      .storage
+      .from('profile_pictures')
+      .getPublicUrl(filePath);
+
+    await supabase
+      .from('users')
+      .update({ profile_pic_url: publicURL.publicUrl })
+      .eq('email', userEmail);
+
+    document.getElementById('profilePreview').src = publicURL.publicUrl;
   }
 
   document.getElementById('profilePic').addEventListener('change', (e) => {
