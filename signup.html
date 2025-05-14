@@ -34,28 +34,8 @@
     </div>
 
     <div class="my-4 border-t pt-4 space-y-3">
-      <!-- Google Sign-Up (Original Design) -->
-      <div id="g_id_onload"
-           data-client_id="713262892255-cnmp61htnsg5lfenuurj2a8g3ha0jafg.apps.googleusercontent.com"
-           data-context="signup"
-           data-ux_mode="popup"
-           data-callback="handleGoogleLogin"
-           data-auto_prompt="false"></div>
-
-      <div class="g_id_signin"
-           data-type="standard"
-           data-shape="pill"
-           data-theme="outline"
-           data-text="continue_with"
-           data-size="large"
-           data-logo_alignment="left"></div>
-
-      <!-- Facebook Sign-Up Using Supabase OAuth -->
-      <div class="flex justify-center">
-        <button onclick="signUpWithFacebook()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 w-full">
-          Continue with Facebook
-        </button>
-      </div>
+      <button onclick="signUpWithGoogle()" class="w-full bg-red-600 text-white py-2 rounded hover:bg-red-700">Continue with Google</button>
+      <button onclick="signUpWithFacebook()" class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">Continue with Facebook</button>
     </div>
 
     <p class="text-sm text-gray-600">Already have an account? <a href="signin.html" class="text-blue-600 hover:underline">Sign in here</a></p>
@@ -65,13 +45,10 @@
 <script>
   const SUPABASE_URL = 'https://ndvmxpkoyoimibntetef.supabase.co';
   const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5kdm14cGtveW9pbWlibnRldGVmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY1MDgxODksImV4cCI6MjA2MjA4NDE4OX0.-U4Jfb33aFfoAec-fhhFqjHExezWcKoEYwkSVgibjE4';
-  const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-  // Session check: If already signed in, redirect to index
   supabase.auth.getSession().then(({ data: { session } }) => {
-    if (session) {
-      window.location.href = 'index.html';
-    }
+    if (session) window.location.href = 'index.html';
   });
 
   async function signUpWithEmail() {
@@ -80,26 +57,35 @@
 
     if (!email || !password) return alert("Please fill in both fields.");
 
-    const { data, error } = await supabase.auth.signUp({ email, password });
+    const bypassConfirmation = email === 'mark@kaymarconstruction.com';
 
-    console.log('Signup Data:', data);
-    console.log('Signup Error:', error);
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
+      options: { emailRedirectTo: bypassConfirmation ? 'index.html' : undefined }
+    });
 
     if (error) {
       alert(error.message);
       return;
     }
 
-    alert("Please check your email to confirm your account.");
-    window.location.href = 'index.html';
+    if (bypassConfirmation) {
+      const { error: signinError } = await supabase.auth.signInWithPassword({ email, password });
+      if (signinError) {
+        alert("Auto-sign in failed.");
+      } else {
+        window.location.href = 'index.html';
+      }
+    } else {
+      alert("Please check your email to confirm your account.");
+    }
   }
 
   function signUpWithGoogle() {
     supabase.auth.signInWithOAuth({
       provider: 'google',
       options: { redirectTo: `${window.location.origin}/index.html` }
-    }).then(({ error }) => {
-      if (error) alert(`Google Sign-Up Error: ${error.message}`);
     });
   }
 
@@ -107,28 +93,7 @@
     supabase.auth.signInWithOAuth({
       provider: 'facebook',
       options: { redirectTo: `${window.location.origin}/index.html` }
-    }).then(({ error }) => {
-      if (error) alert(`Facebook Sign-Up Error: ${error.message}`);
     });
-  }
-
-  function handleGoogleLogin(response) {
-    const userPayload = decodeJwt(response.credential);
-    const email = userPayload?.email?.toLowerCase();
-    if (email) {
-      supabase.auth.getSession().then(({ data: { session } }) => {
-        if (session) window.location.href = 'index.html';
-      });
-    }
-  }
-
-  function decodeJwt(token) {
-    const base64Url = token.split('.')[1];
-    const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-    const jsonPayload = decodeURIComponent(atob(base64).split('').map(c =>
-      '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
-    ).join(''));
-    return JSON.parse(jsonPayload);
   }
 </script>
 </body>
