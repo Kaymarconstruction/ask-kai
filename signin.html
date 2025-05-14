@@ -51,8 +51,7 @@
            data-size="large"
            data-logo_alignment="left"></div>
 
-      <!-- Facebook Sign-In (Original Design) -->
-      <div id="fb-root"></div>
+      <!-- Facebook Sign-In -->
       <div class="flex justify-center">
         <button onclick="signInWithFacebook()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 w-full">
           Continue with Facebook
@@ -69,9 +68,10 @@
   const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5kdm14cGtveW9pbWlibnRldGVmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY1MDgxODksImV4cCI6MjA2MjA4NDE4OX0.-U4Jfb33aFfoAec-fhhFqjHExezWcKoEYwkSVgibjE4';
   const supabase = window.supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-  // Session check: If already signed in, redirect to index
+  // Auto-redirect if already logged in
   supabase.auth.getSession().then(({ data: { session } }) => {
     if (session) {
+      console.log('User already signed in:', session);
       window.location.href = 'index.html';
     }
   });
@@ -80,13 +80,17 @@
     const email = document.getElementById('email').value.trim().toLowerCase();
     const password = document.getElementById('password').value.trim();
 
-    if (!email || !password) return alert("Please enter both email and password.");
+    if (!email || !password) {
+      alert("Please enter both email and password.");
+      return;
+    }
 
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
+    console.log('Sign-in response:', data, error);
+
     if (error) {
-      console.error('Sign-in error:', error);
-      alert(error.message);
+      alert("Invalid login credentials or account not confirmed.");
       return;
     }
 
@@ -111,7 +115,6 @@
     });
   }
 
-  // Handle Google One Tap / Popup Login Callback
   function handleGoogleLogin(response) {
     const userPayload = decodeJwt(response.credential);
     const email = userPayload?.email?.toLowerCase();
@@ -131,10 +134,9 @@
     return JSON.parse(jsonPayload);
   }
 
-  // Facebook SDK Init
   window.fbAsyncInit = function() {
     FB.init({
-      appId      : 'YOUR_FACEBOOK_APP_ID', // Replace with your Facebook App ID
+      appId      : 'YOUR_FACEBOOK_APP_ID',
       cookie     : true,
       xfbml      : true,
       version    : 'v18.0'
