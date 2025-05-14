@@ -6,57 +6,55 @@
   <title>Ask Kai – Site Chat</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
   <style>
-    html, body { 
-      height: 100%; 
-      margin: 0; 
-      padding: 0; 
-      background-image: url('https://i.imgur.com/jhqlVA5.png'); 
-      background-size: cover; 
-      background-position: center; 
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      background-image: url('https://i.imgur.com/jhqlVA5.png');
+      background-size: cover;
+      background-position: center;
+    }
+    @media (max-width: 768px) {
+      body {
+        background-image: url('https://i.imgur.com/qzRmu0O.jpeg');
+      }
     }
     #kaiReply { max-height: 60vh; overflow-y: auto; white-space: pre-wrap; }
     .blinking-cursor { 
-      display: inline-block; 
-      width: 10px; 
-      height: 1em; 
-      background-color: #7AC142; 
-      margin-left: 4px; 
-      animation: blink 1s steps(2, start) infinite; 
+      display: inline-block; width: 10px; height: 1em; background-color: #7AC142; 
+      margin-left: 4px; animation: blink 1s steps(2, start) infinite; 
     }
     @keyframes blink { 0%, 100% { opacity: 0; } 50% { opacity: 1; } }
-    .overlay { 
-      background-color: rgba(255, 255, 255, 0.95); 
-      backdrop-filter: blur(4px); 
-    }
+    .overlay { background-color: rgba(255, 255, 255, 0.95); backdrop-filter: blur(4px); }
   </style>
 </head>
 
 <body class="text-gray-800 flex flex-col">
 
 <!-- Header -->
-<div class="w-full bg-black relative p-4 flex justify-between items-center">
-  <button onclick="toggleMenu()" class="bg-black p-2 rounded shadow">
-    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
-      <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16" />
-    </svg>
-  </button>
-  <img src="https://i.imgur.com/nDIhtRr.png" alt="Kaymar Banner" class="max-h-16 object-contain mx-auto" />
-</div>
+<div class="w-full bg-black relative">
+  <div class="absolute left-2 top-1/2 transform -translate-y-1/2 z-50">
+    <button onclick="toggleMenu()" class="bg-black text-white p-2 rounded shadow">
+      <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
+      </svg>
+    </button>
 
-<!-- Clean Dropdown Menu -->
-<div id="menuDropdown" class="hidden absolute top-16 left-4 w-64 bg-white border border-gray-300 shadow-lg rounded-md z-50 p-4 text-gray-800 text-sm font-medium space-y-2">
-  <a href="index.html" class="block hover:text-green-600">Home</a>
-  <a href="shop.html" class="block hover:text-green-600">Shop</a>
-  <a href="settings.html" class="block hover:text-green-600">Profile</a>
-  <a href="upgrade.html" class="block hover:text-green-600">Upgrade</a>
-  <a href="apprentice-hub.html" class="block hover:text-green-600">Apprentice Hub</a>
-  <a href="quote.html" class="block hover:text-green-600">Quote Generator (Pro)</a>
-  <a href="email-generator.html" class="block hover:text-green-600">Email Generator</a>
-  <a href="#" class="block text-gray-400 cursor-default">Floorplan Generator (Coming Soon)</a>
-  <a href="calculators.html" class="block hover:text-green-600">Calculators</a>
-  <a href="contacts.html" class="block hover:text-green-600">Contacts</a>
-  <a href="team.html" class="block hover:text-green-600">Meet the Team</a>
-  <button onclick="logoutUser()" class="w-full text-left text-red-600 hover:underline mt-4">Log Out</button>
+    <!-- Updated Dropdown Menu -->
+    <div id="menuDropdown" class="hidden absolute left-0 mt-2 w-64 bg-white border border-gray-300 shadow-lg rounded-md z-50 p-4 space-y-2 text-gray-800 text-base font-medium">
+      <a href="index.html" class="block text-[#7AC142] hover:underline">Home</a>
+      <a href="settings.html" class="block text-gray-700 hover:underline">Profile</a>
+      <a href="apprentice-hub.html" class="block text-gray-700 hover:underline">Apprentice Hub</a>
+      <a href="plus-hub.html" class="block text-gray-700 hover:underline">Plus Hub</a>
+      <a href="pro-hub.html" class="block text-gray-700 hover:underline">Pro Hub</a>
+      <a href="upgrade.html" class="block text-gray-700 hover:underline">Upgrade</a>
+      <a href="team.html" class="block text-gray-700 hover:underline">Meet the Team</a>
+      <a href="app.html" class="block text-gray-400 cursor-not-allowed hover:underline">Download the App (Coming Soon)</a>
+      <hr class="my-2">
+      <p onclick="logoutUser()" class="block text-red-600 hover:underline cursor-pointer">Log Out</p>
+    </div>
+  </div>
+  <img src="https://i.imgur.com/nDIhtRr.png" alt="Kaymar Banner" class="w-full max-h-24 object-contain mx-auto" />
 </div>
 
 <!-- Main Chat Section -->
@@ -66,14 +64,18 @@
     <div class="flex flex-col space-y-2">
       <textarea id="askInput" rows="3" class="w-full border rounded-lg p-3" placeholder="e.g. 6x4m deck, 250mm off ground, H3 pine joists, 140mm merbau decking, VIC"></textarea>
       <button id="submitBtn" class="w-full bg-green-600 hover:bg-green-700 text-white py-2 rounded">Submit</button>
-      <p class="text-xs text-gray-600 text-center mt-2">Describe your job in detail. <span class="text-red-600 font-semibold">Be specific</span> – location, materials, sizes, etc.</p>
+      <p class="text-xs text-gray-600 text-center mt-2">
+        Describe your job in detail. <span class="text-red-600 font-semibold">Be specific</span> – location, materials, sizes, etc.
+      </p>
     </div>
 
     <!-- Profile Section -->
     <div class="bg-white rounded-2xl shadow-lg p-6 mt-8 text-center">
       <img src="https://i.imgur.com/uYWtV9r.png" alt="Kai Marlow" class="mx-auto mb-4 w-48 h-72 object-cover bg-white p-2 rounded-2xl shadow" />
       <h2 class="text-2xl font-bold text-green-600 mb-4">Who is Kai?</h2>
-      <p class="text-gray-700 mb-6">With 20+ years in carpentry and construction, Kai delivers expert advice backed by industry knowledge and local code. He’s your mate on-site, online. Ask him anything!</p>
+      <p class="text-gray-700 mb-6">
+        With 20+ years in carpentry and construction, Kai delivers expert advice backed by industry knowledge and local code. He’s your mate on-site, online. Ask him anything!
+      </p>
       <footer class="text-center text-gray-500 text-sm">
         &copy; 2025 Kaymar Construction | Powered by Ask Kai
         <div class="flex justify-center space-x-4 mt-2">
@@ -181,4 +183,3 @@
 
 </body>
 </html>
-
