@@ -59,7 +59,7 @@
   const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
   const userEmail = sessionStorage.getItem('askkaiUser');
-  if (!userEmail || userEmail !== 'admin@kaymarconstruction.com') {
+  if (!userEmail || userEmail !== mark@kaymarconstruction.com') {
     alert('Unauthorized access. Redirecting...');
     window.location.href = 'signin.html';
   }
