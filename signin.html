@@ -7,7 +7,6 @@
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.7/dist/umd/supabase.min.js"></script>
   <script src="https://accounts.google.com/gsi/client" async defer></script>
-  <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js"></script>
   <style>
     body {
       background-image: url('https://i.imgur.com/jhqlVA5.png');
@@ -35,7 +34,7 @@
     </div>
 
     <div class="my-4 border-t pt-4 space-y-3">
-      <!-- Google Sign-In (Original Design) -->
+      <!-- Google Sign-In -->
       <div id="g_id_onload"
            data-client_id="713262892255-cnmp61htnsg5lfenuurj2a8g3ha0jafg.apps.googleusercontent.com"
            data-context="signin"
@@ -51,7 +50,7 @@
            data-size="large"
            data-logo_alignment="left"></div>
 
-      <!-- Facebook Sign-In -->
+      <!-- Facebook Sign-In Using Supabase OAuth -->
       <div class="flex justify-center">
         <button onclick="signInWithFacebook()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 w-full">
           Continue with Facebook
@@ -87,7 +86,8 @@
 
     const { data, error } = await supabase.auth.signInWithPassword({ email, password });
 
-    console.log('Sign-in response:', data, error);
+    console.log('Sign-in Data:', data);
+    console.log('Sign-in Error:', error);
 
     if (error) {
       alert("Invalid login credentials or account not confirmed.");
@@ -133,15 +133,6 @@
     ).join(''));
     return JSON.parse(jsonPayload);
   }
-
-  window.fbAsyncInit = function() {
-    FB.init({
-      appId      : 'YOUR_FACEBOOK_APP_ID',
-      cookie     : true,
-      xfbml      : true,
-      version    : 'v18.0'
-    });
-  };
 </script>
 </body>
 </html>
