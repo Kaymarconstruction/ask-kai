@@ -78,7 +78,7 @@
 
 <script>
   const SUPABASE_URL = 'https://ndvmxpkoyoimibntetef.supabase.co';
-  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5kdm14cGtveW9pbWlibnRldGVmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY1MDgxODksImV4cCI6MjA2MjA';
+  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5kdm14cGtveW9pbWlibnRldGVmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY1MDgxODksImV4cCI6MjA2MjA4NDE4OX0.-U4Jfb33aFfoAec-fhhFqjHExezWcKoEYwkSVgibjE4';
   const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
   const BUCKET = 'profile-pictures';
 
@@ -93,13 +93,19 @@
   }
 
   async function loadProfile() {
+    console.log('Loading profile for:', userEmail);
     const { data, error } = await supabase
       .from('users')
       .select('name, profile_pic_url, plan_tier, prompt_count')
       .eq('email', userEmail)
       .single();
 
-    if (error) return showToast('Failed to load profile.');
+    if (error) {
+      console.error('Error loading profile:', error);
+      return showToast('Failed to load profile.');
+    }
+
+    console.log('Profile data:', data);
 
     if (data) {
       document.getElementById('userName').textContent = `Welcome Back, ${data.name || 'Apprentice'}!`;
@@ -111,6 +117,8 @@
   }
 
   async function uploadProfilePic(file) {
+    console.log('Uploading profile picture:', file);
+
     if (!file.type.startsWith('image/')) return showToast('Only image files allowed.');
     if (file.size > 2 * 1024 * 1024) return showToast('Max file size is 2MB.');
 
@@ -122,12 +130,17 @@
       .from(BUCKET)
       .upload(filePath, file, { upsert: true });
 
-    if (uploadError) return showToast('Failed to upload image.');
+    if (uploadError) {
+      console.error('Upload error:', uploadError);
+      return showToast('Failed to upload image.');
+    }
 
     const { data: publicURL } = supabase
       .storage
       .from(BUCKET)
       .getPublicUrl(filePath);
+
+    console.log('Public URL:', publicURL);
 
     const { error: updateError } = await supabase
       .from('users')
@@ -135,6 +148,7 @@
       .eq('email', userEmail);
 
     if (updateError) {
+      console.error('Update profile picture error:', updateError);
       showToast('Failed to update profile picture.');
     } else {
       document.getElementById('profilePreview').src = publicURL.publicUrl;
