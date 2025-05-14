@@ -5,8 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Sign In – Ask Kai</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
-  <script src="https://accounts.google.com/gsi/client" async defer></script>
-  <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.7/dist/umd/supabase.min.js"></script>
   <style>
     body {
       background-image: url('https://i.imgur.com/jhqlVA5.png');
@@ -19,120 +18,65 @@
     }
   </style>
 </head>
+
 <body class="text-gray-800">
-  <main class="min-h-screen flex items-center justify-center p-4 sm:p-6 text-center">
-    <div class="overlay w-full max-w-md rounded-xl shadow-lg p-6 sm:p-8 space-y-4">
-      <img src="https://i.imgur.com/uYWtV9r.png" alt="Kai Marlow" class="w-32 sm:w-40 h-48 sm:h-60 object-cover rounded-2xl shadow mx-auto" />
-      <h1 class="text-2xl sm:text-3xl font-bold text-green-600">Sign In to Ask Kai</h1>
-      <p class="text-sm text-gray-700 leading-snug">Your AI site assistant. Built for tradies and DIYers. First 10 prompts are free.</p>
+<main class="min-h-screen flex items-center justify-center p-4 sm:p-6 text-center">
+  <div class="overlay w-full max-w-md rounded-xl shadow-lg p-6 sm:p-8 space-y-4">
+    <img src="https://i.imgur.com/uYWtV9r.png" alt="Kai Marlow" class="w-32 sm:w-40 h-48 sm:h-60 object-cover rounded-2xl shadow mx-auto" />
+    <h1 class="text-2xl sm:text-3xl font-bold text-green-600">Sign In to Ask Kai</h1>
+    <p class="text-sm text-gray-700 leading-snug">Your AI site assistant. Built for tradies and DIYers. First 10 prompts are free.</p>
 
-      <div class="space-y-3 text-left">
-        <input id="email" type="email" placeholder="Email address" class="w-full border p-3 rounded-lg" />
-        <input id="password" type="password" placeholder="Password" class="w-full border p-3 rounded-lg" />
-        <button onclick="signIn()" class="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700">Sign In</button>
-      </div>
-
-      <div class="my-4 border-t pt-4 space-y-2">
-        <!-- Google Sign-In -->
-        <div id="g_id_onload"
-          data-client_id="713262892255-cnmp61htnsg5lfenuurj2a8g3ha0jafg.apps.googleusercontent.com"
-          data-context="signin"
-          data-ux_mode="popup"
-          data-callback="handleGoogleLogin"
-          data-auto_prompt="false"></div>
-
-        <div class="g_id_signin"
-          data-type="standard"
-          data-shape="pill"
-          data-theme="outline"
-          data-text="continue_with"
-          data-size="large"
-          data-logo_alignment="left"></div>
-
-        <!-- Facebook Sign-In -->
-        <div id="fb-root"></div>
-        <div class="flex justify-center">
-          <button onclick="handleFacebookLogin()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 w-full">Continue with Facebook</button>
-        </div>
-      </div>
-
-      <p class="text-sm text-gray-600">Need an account? <a href="signup.html" class="text-blue-600 hover:underline">Sign up here</a></p>
+    <div class="space-y-3 text-left">
+      <input id="email" type="email" placeholder="Email address" class="w-full border p-3 rounded-lg" />
+      <input id="password" type="password" placeholder="Password" class="w-full border p-3 rounded-lg" />
+      <button onclick="signInWithEmail()" class="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700">Sign In</button>
     </div>
-  </main>
 
-  <script>
-    function signIn() {
-      const email = document.getElementById('email').value.trim().toLowerCase();
-      const password = document.getElementById('password').value.trim();
+    <div class="my-4 border-t pt-4 space-y-3">
+      <button onclick="signInWithGoogle()" class="w-full bg-red-600 text-white py-2 rounded hover:bg-red-700">Continue with Google</button>
+      <button onclick="signInWithFacebook()" class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">Continue with Facebook</button>
+    </div>
 
-      if (!email || !password) {
-        alert("Please enter both email and password.");
-        return;
-      }
+    <p class="text-sm text-gray-600">Need an account? <a href="signup.html" class="text-blue-600 hover:underline">Sign up here</a></p>
+  </div>
+</main>
 
-      if (email !== "mark@kaymarconstruction.com") {
-        alert("Access is restricted during development.");
-        return;
-      }
+<script>
+  const SUPABASE_URL = 'https://ndvmxpkoyoimibntetef.supabase.co';
+  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5kdm14cGtveW9pbWlibnRldGVmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY1MDgxODksImV4cCI6MjA2MjA4NDE4OX0.-U4Jfb33aFfoAec-fhhFqjHExezWcKoEYwkSVgibjE4';
+  const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-      sessionStorage.setItem('askkaiUser', email);
-      localStorage.setItem('promptCount', '0');
-      localStorage.setItem('planTier', 'Free Plan');
-      window.location.href = 'index.html';
+  async function signInWithEmail() {
+    const email = document.getElementById('email').value.trim().toLowerCase();
+    const password = document.getElementById('password').value.trim();
+
+    if (!email || !password) return alert("Please enter both email and password.");
+
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+
+    if (error) {
+      console.error('Sign-in error:', error);
+      alert(error.message);
+      return;
     }
 
-    function handleGoogleLogin(response) {
-      const userPayload = decodeJwt(response.credential);
-      const email = userPayload?.email?.toLowerCase();
+    console.log('Sign-in success:', data);
+    window.location.href = 'index.html';
+  }
 
-      if (email !== 'mark@kaymarconstruction.com') {
-        alert('Access restricted during development.');
-        return;
-      }
+  function signInWithGoogle() {
+    supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo: `${window.location.origin}/index.html` }
+    });
+  }
 
-      sessionStorage.setItem('askkaiUser', email);
-      localStorage.setItem('promptCount', '0');
-      localStorage.setItem('planTier', 'Free Plan');
-      window.location.href = 'index.html';
-    }
-
-    function decodeJwt(token) {
-      const base64Url = token.split('.')[1];
-      const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
-      const jsonPayload = decodeURIComponent(atob(base64).split('').map(c =>
-        '%' + ('00' + c.charCodeAt(0).toString(16)).slice(-2)
-      ).join(''));
-      return JSON.parse(jsonPayload);
-    }
-
-    window.fbAsyncInit = function() {
-      FB.init({
-        appId      : '2841591242694736', // your Facebook App ID
-        cookie     : true,
-        xfbml      : true,
-        version    : 'v18.0'
-      });
-    };
-
-    function handleFacebookLogin() {
-      FB.login(function(response) {
-        if (response.authResponse) {
-          FB.api('/me', {fields: 'name,email'}, function(userInfo) {
-            const email = userInfo.email?.toLowerCase();
-            if (email !== 'mark@kaymarconstruction.com') {
-              alert("Access restricted during development.");
-              return;
-            }
-            sessionStorage.setItem('askkaiUser', email);
-            localStorage.setItem('promptCount', '0');
-            localStorage.setItem('planTier', 'Free Plan');
-            window.location.href = 'index.html';
-          });
-        } else {
-          alert("Facebook login failed or cancelled.");
-        }
-      }, {scope: 'email'});
-    }
-  </script>
+  function signInWithFacebook() {
+    supabase.auth.signInWithOAuth({
+      provider: 'facebook',
+      options: { redirectTo: `${window.location.origin}/index.html` }
+    });
+  }
+</script>
 </body>
 </html>
