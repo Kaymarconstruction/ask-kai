@@ -7,7 +7,6 @@
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.7/dist/umd/supabase.min.js"></script>
   <script src="https://accounts.google.com/gsi/client" async defer></script>
-  <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js"></script>
   <style>
     body {
       background-image: url('https://i.imgur.com/jhqlVA5.png');
@@ -51,8 +50,7 @@
            data-size="large"
            data-logo_alignment="left"></div>
 
-      <!-- Facebook Sign-Up (Original Design) -->
-      <div id="fb-root"></div>
+      <!-- Facebook Sign-Up Using Supabase OAuth -->
       <div class="flex justify-center">
         <button onclick="signUpWithFacebook()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 w-full">
           Continue with Facebook
@@ -84,13 +82,14 @@
 
     const { data, error } = await supabase.auth.signUp({ email, password });
 
+    console.log('Signup Data:', data);
+    console.log('Signup Error:', error);
+
     if (error) {
-      console.error('Signup error:', error);
       alert(error.message);
       return;
     }
 
-    // Handle confirmation email scenario
     alert("Please check your email to confirm your account.");
     window.location.href = 'index.html';
   }
@@ -131,16 +130,6 @@
     ).join(''));
     return JSON.parse(jsonPayload);
   }
-
-  // Facebook SDK Init
-  window.fbAsyncInit = function() {
-    FB.init({
-      appId      : 'YOUR_FACEBOOK_APP_ID', // Replace with your actual Facebook App ID
-      cookie     : true,
-      xfbml      : true,
-      version    : 'v18.0'
-    });
-  };
 </script>
 </body>
 </html>
