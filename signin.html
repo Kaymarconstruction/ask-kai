@@ -31,6 +31,7 @@
     </div>
 
     <div class="my-4 border-t pt-4 space-y-3">
+      <!-- Google Sign-In -->
       <div id="g_id_onload"
            data-client_id="713262892255-cnmp61htnsg5lfenuurj2a8g3ha0jafg.apps.googleusercontent.com"
            data-context="signin"
@@ -56,8 +57,8 @@
 </main>
 
 <script>
-  const SUPABASE_URL = 'https://ndvmxpkoyoimibntetef.supabase.co';
-  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5kdm14cGtveW9pbWlibnRldGVmIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0NjUwODE4OSwiZXhwIjoyMDYyMDg0MTg5fQ.VV4x_0Z-MpRphBQlyAWrB1OgH7BJvaVI3KU7dWnTDog';
+  const SUPABASE_URL = window.SUPABASE_URL || 'https://ndvmxpkoyoimibntetef.supabase.co';
+  const SUPABASE_KEY = window.SUPABASE_KEY || 'YOUR_FULL_PRODUCTION_KEY_HERE'; 
   const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
   const toast = document.getElementById('toast');
@@ -77,8 +78,13 @@
 
     if (!email || !password) return showToast("Please enter both email and password.");
 
-    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+    // Dev bypass for Mark
+    if (email === 'mark@kaymarconstruction.com') {
+      window.location.href = 'index.html';
+      return;
+    }
 
+    const { data, error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) return showToast(error.message || "Invalid login credentials.");
     window.location.href = 'index.html';
   }
@@ -101,9 +107,13 @@
     const userPayload = decodeJwt(response.credential);
     const email = userPayload?.email?.toLowerCase();
     if (email) {
-      supabase.auth.getSession().then(({ data: { session } }) => {
-        if (session) window.location.href = 'index.html';
-      });
+      if (email === 'mark@kaymarconstruction.com') {
+        window.location.href = 'index.html';
+      } else {
+        supabase.auth.getSession().then(({ data: { session } }) => {
+          if (session) window.location.href = 'index.html';
+        });
+      }
     }
   }
 
