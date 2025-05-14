@@ -1,1 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Ask Kai Plus Hub</title>
+  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
+  <style>
+    body {
+      font-family: sans-serif;
+      background-image: url('https://i.imgur.com/jhqlVA5.png'); 
+      background-size: cover;
+      background-position: center;
+      background-repeat: no-repeat;
+    }
+    @media (max-width: 768px) {
+      body {
+        background-image: url('https://i.imgur.com/qzRmu0O.jpeg');
+      }
+    }
+  </style>
+</head>
+<body class="text-gray-800">
 
+<!-- Banner -->
+<div class="w-full bg-black">
+  <img src="https://i.imgur.com/nDIhtRr.png" alt="Kaymar Banner" class="w-full max-h-24 object-contain mx-auto" />
+</div>
+
+<main class="max-w-4xl mx-auto px-4 py-8 space-y-8 bg-white bg-opacity-90 rounded-xl mt-6 shadow-lg">
+
+  <div class="text-center">
+    <h1 class="text-3xl font-bold text-green-600">Welcome to Ask Kai Plus</h1>
+    <p class="text-gray-600 mt-2">Enjoy 7000 Tokens/Month • Full Apprentice Hub Access • Calculators • Span Tables</p>
+
+    <!-- Profile Picture -->
+    <div class="flex justify-center mt-4">
+      <img id="profilePic" src="https://i.imgur.com/placeholder.png" alt="User Profile" class="w-32 h-32 rounded-full shadow-lg border-4 border-green-600 object-cover" />
+    </div>
+  </div>
+
+  <!-- Tools Access -->
+  <section class="bg-white p-6 rounded-lg shadow">
+    <h2 class="text-xl font-semibold mb-2 text-green-700">Exclusive Tools</h2>
+    <ul class="list-disc list-inside space-y-2 text-sm">
+      <li><a href="rafter-calc.html" class="text-blue-600 hover:underline">Rafter Length Calculator</a></li>
+      <li><a href="span-tables.html" class="text-blue-600 hover:underline">Span Tables Reference</a></li>
+      <li><a href="decking-calc.html" class="text-blue-600 hover:underline">Decking Board Calculator</a></li>
+      <li><a href="plaster-calc.html" class="text-blue-600 hover:underline">Plasterboard Calculator</a></li>
+    </ul>
+  </section>
+
+  <!-- Recommended Reads -->
+  <section class="bg-white p-6 rounded-lg shadow">
+    <h2 class="text-xl font-semibold mb-2 text-green-700">Recommended Reads</h2>
+    <ul class="list-disc list-inside text-sm space-y-2">
+      <li><a href="https://www.amazon.com.au/dp/B0CK5L9QYB" target="_blank" class="text-blue-600 underline">Trade Site Fundamentals</a></li>
+      <li><a href="https://www.amazon.com.au/dp/B0CK5KZYK2" target="_blank" class="text-blue-600 underline">Carpentry Essentials</a></li>
+      <li><a href="https://www.amazon.com.au/dp/B0CK5LCC9P" target="_blank" class="text-blue-600 underline">Structural Framing</a></li>
+    </ul>
+  </section>
+
+  <!-- Upgrade Call-to-Action -->
+  <div class="text-center">
+    <p class="text-gray-600 mb-4">Want even more? Unlimited Access & Advanced Tools await!</p>
+    <a href="upgrade.html" class="bg-green-600 text-white px-6 py-2 rounded-lg hover:bg-green-700 transition">Upgrade to Pro Series</a>
+  </div>
+
+  <a href="index.html" class="inline-block text-sm text-blue-600 underline mt-6 text-center block">Back to Chat</a>
+</main>
+
+<footer class="text-center text-gray-500 text-sm p-6">
+  &copy; 2025 Kaymar Construction | Powered by Ask Kai
+  <div class="flex justify-center space-x-6 mt-2">
+    <a href="https://www.instagram.com/askkai_official" class="text-blue-600 hover:underline">Instagram</a>
+    <a href="https://www.tiktok.com/@askkai_official" class="text-blue-600 hover:underline">TikTok</a>
+    <a href="https://www.facebook.com/askkai_official" class="text-blue-600 hover:underline">Facebook</a>
+    <a href="https://www.youtube.com/@askkai_official" class="text-blue-600 hover:underline">YouTube</a>
+    <a href="https://www.threads.net/@askkai_official" class="text-blue-600 hover:underline">Threads</a>
+  </div>
+</footer>
+
+<!-- Profile Picture Loader -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.0.0/dist/umd/supabase.min.js"></script>
+<script>
+  const SUPABASE_URL = 'https://ndvmxpkoyoimibntetef.supabase.co';
+  const SUPABASE_KEY = 'YOUR_SUPABASE_PUBLIC_ANON_KEY';
+  const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+  const userEmail = sessionStorage.getItem('askkaiUser');
+  const profilePic = document.getElementById('profilePic');
+
+  async function loadProfilePic() {
+    if (!userEmail) return;
+    const { data, error } = await supabase
+      .from('users')
+      .select('profile_pic_url')
+      .eq('email', userEmail)
+      .single();
+
+    if (data && data.profile_pic_url) {
+      profilePic.src = data.profile_pic_url;
+    }
+  }
+
+  loadProfilePic();
+</script>
+
+</body>
+</html>
