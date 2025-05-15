@@ -4,11 +4,14 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Sign In – Ask Kai</title>
+  <script>
+    window.SUPABASE_URL = "https://ndvmxpkoyoimibntetef.supabase.co";
+    window.SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5kdm14cGtveW9pbWlibnRldGVmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY1MDgxODksImV4cCI6MjA2MjA4NDE4OX0.-U4Jfb33aFfoAec-fhhFqjHExezWcKoEYwkSVgibjE4";
+  </script>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.7/dist/umd/supabase.min.js"></script>
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js"></script>
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://accounts.google.com https://connect.facebook.net;">
   <style>
     body { background-image: url('https://i.imgur.com/jhqlVA5.png'); background-size: cover; background-position: center; }
     .overlay { background-color: rgba(255, 255, 255, 0.92); backdrop-filter: blur(5px); }
@@ -26,42 +29,55 @@
     <h1 class="text-2xl sm:text-3xl font-bold text-green-600">Sign In to Ask Kai</h1>
     <p class="text-sm text-gray-700 leading-snug">Your AI site assistant. Built for tradies and DIYers. First 10 prompts are free.</p>
     <div class="space-y-3 text-left">
-      <label for="email" class="sr-only">Email Address</label>
-      <input id="email" type="email" placeholder="Email address" class="w-full border p-3 rounded-lg" required aria-label="Email address" />
-      <label for="password" class="sr-only">Password</label>
-      <input id="password" type="password" placeholder="Password" class="w-full border p-3 rounded-lg" required aria-label="Password" />
+      <input id="email" type="email" placeholder="Email address" class="w-full border p-3 rounded-lg" required />
+      <input id="password" type="password" placeholder="Password" class="w-full border p-3 rounded-lg" required />
       <button onclick="signInWithEmail()" class="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700" id="signin-btn">Sign In</button>
     </div>
     <div class="my-4 border-t pt-4 space-y-3">
-      <button onclick="signInWithGoogle()" class="w-full bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">Continue with Google</button>
-      <button onclick="signInWithFacebook()" class="w-full bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Continue with Facebook</button>
+      <div id="g_id_onload"
+           data-client_id="YOUR_GOOGLE_CLIENT_ID"
+           data-context="signin"
+           data-ux_mode="popup"
+           data-callback="handleOAuthLogin"
+           data-auto_prompt="false"></div>
+      <div class="g_id_signin"
+           data-type="standard"
+           data-shape="pill"
+           data-theme="outline"
+           data-text="continue_with"
+           data-size="large"
+           data-logo_alignment="left"></div>
+      <div class="flex justify-center">
+        <button onclick="signInWithFacebook()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 w-full">Continue with Facebook</button>
+      </div>
     </div>
     <p class="text-sm text-gray-600">Need an account? <a href="signup.html" class="text-blue-600 hover:underline">Sign up here</a></p>
   </div>
 </main>
 <script>
-const SUPABASE_URL = window.SUPABASE_URL;
-const SUPABASE_KEY = window.SUPABASE_KEY;
-if (!SUPABASE_URL || !SUPABASE_KEY) {
-  alert('Supabase environment variables are not properly configured.');
-  throw new Error('Missing Supabase configuration.');
-}
-const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const supabase = supabase.createClient(window.SUPABASE_URL, window.SUPABASE_KEY);
 const toast = document.getElementById('toast');
 const signinBtn = document.getElementById('signin-btn');
+
 function showToast(message, duration = 3000) {
   toast.textContent = message;
   toast.classList.add('show');
   setTimeout(() => toast.classList.remove('show'), duration);
 }
+
+function disableButton(state) {
+  signinBtn.disabled = state;
+  signinBtn.innerHTML = state ? '<span class="spinner"></span> Signing In...' : 'Sign In';
+}
+
+function validateEmail(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+
 async function handleUserRecord() {
   const { data: userData } = await supabase.auth.getUser();
   if (userData?.user?.id) {
-    const { data: existingUser } = await supabase
-      .from('users')
-      .select('id')
-      .eq('id', userData.user.id)
-      .single();
+    const { data: existingUser } = await supabase.from('users').select('id').eq('id', userData.user.id).single();
     if (!existingUser) {
       await supabase.from('users').insert([{ 
         id: userData.user.id, 
@@ -73,39 +89,29 @@ async function handleUserRecord() {
     }
   }
 }
+
 async function signInWithEmail() {
   const email = document.getElementById('email').value.trim().toLowerCase();
   const password = document.getElementById('password').value.trim();
+
   if (!validateEmail(email)) return showToast("Invalid email format.");
   if (!password) return showToast("Password cannot be empty.");
+
   disableButton(true);
+
   try {
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) return showToast(error.message);
     await handleUserRecord();
     showToast("Sign in successful.");
-    setTimeout(() => { window.location.href = 'index.html'; }, 1000);
+    setTimeout(() => window.location.href = 'index.html', 1000);
   } catch (err) {
     showToast("Unexpected error during sign in.");
   } finally {
     disableButton(false);
   }
 }
-function disableButton(state) {
-  signinBtn.disabled = state;
-  signinBtn.innerHTML = state ? '<span class="spinner"></span> Signing In...' : 'Sign In';
-}
-function validateEmail(email) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-}
-function signInWithGoogle() {
-  supabase.auth.signInWithOAuth({
-    provider: 'google',
-    options: { redirectTo: `${window.location.origin}/index.html` }
-  })
-  .then(() => handleUserRecord())
-  .catch(err => showToast(`Google Sign-In Error: ${err.message}`));
-}
+
 function signInWithFacebook() {
   supabase.auth.signInWithOAuth({
     provider: 'facebook',
@@ -113,6 +119,10 @@ function signInWithFacebook() {
   })
   .then(() => handleUserRecord())
   .catch(err => showToast(`Facebook Sign-In Error: ${err.message}`));
+}
+
+function handleOAuthLogin() {
+  handleUserRecord();
 }
 </script>
 </body>
