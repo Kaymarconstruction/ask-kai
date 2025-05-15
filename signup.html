@@ -56,81 +56,99 @@
   </div>
 </main>
 <script>
-const supabase = supabase.createClient(window.SUPABASE_URL, window.SUPABASE_KEY);
-const toast = document.getElementById('toast');
-const signupBtn = document.getElementById('signup-btn');
+  const supabase = supabase.createClient(window.SUPABASE_URL, window.SUPABASE_KEY);
+  const toast = document.getElementById('toast');
+  const signupBtn = document.getElementById('signup-btn');
 
-function showToast(message, duration = 3000) {
-  toast.textContent = message;
-  toast.classList.add('show');
-  setTimeout(() => toast.classList.remove('show'), duration);
-}
+  function showToast(message, duration = 3000) {
+    toast.textContent = message;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), duration);
+  }
 
-function disableButton(state) {
-  signupBtn.disabled = state;
-  signupBtn.innerHTML = state ? '<span class="spinner"></span> Signing Up...' : 'Sign Up';
-}
+  function disableButton(state) {
+    signupBtn.disabled = state;
+    signupBtn.innerHTML = state ? '<span class="spinner"></span> Signing Up...' : 'Sign Up';
+  }
 
-function validateEmail(email) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-}
+  function validateEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  }
 
-function validatePassword(password) {
-  return password.length >= 8 && /\d/.test(password) && /[!@#$%^&*]/.test(password);
-}
+  function validatePassword(password) {
+    return password.length >= 8 && /\d/.test(password) && /[!@#$%^&*]/.test(password);
+  }
 
-async function handleUserRecord() {
-  const { data: userData } = await supabase.auth.getUser();
-  if (userData?.user?.id) {
-    const { data: existingUser } = await supabase.from('users').select('id').eq('id', userData.user.id).single();
-    if (!existingUser) {
-      await supabase.from('users').insert([{ 
-        id: userData.user.id, 
-        email: userData.user.email, 
-        plan_tier: 'Free',
-        prompt_count: 0,
-        created_at: new Date().toISOString()
-      }]);
+  async function handleUserRecord() {
+    const { data: userData } = await supabase.auth.getUser();
+    if (userData?.user?.id) {
+      const { data: existingUser } = await supabase.from('users').select('id').eq('id', userData.user.id).single();
+      if (!existingUser) {
+        await supabase.from('users').insert([{ 
+          id: userData.user.id, 
+          email: userData.user.email, 
+          plan_tier: 'Free',
+          prompt_count: 0,
+          created_at: new Date().toISOString()
+        }]);
+      }
     }
   }
-}
 
-async function signUpWithEmail() {
-  const email = document.getElementById('email').value.trim().toLowerCase();
-  const password = document.getElementById('password').value.trim();
-  const confirmPassword = document.getElementById('confirm-password').value.trim();
+  async function signUpWithEmail() {
+    const email = document.getElementById('email').value.trim().toLowerCase();
+    const password = document.getElementById('password').value.trim();
+    const confirmPassword = document.getElementById('confirm-password').value.trim();
 
-  if (!validateEmail(email)) return showToast("Invalid email format.");
-  if (!validatePassword(password)) return showToast("Password must be at least 8 characters, include a number and a symbol.");
-  if (password !== confirmPassword) return showToast("Passwords do not match.");
+    if (!validateEmail(email)) return showToast("Invalid email format.");
+    if (!validatePassword(password)) return showToast("Password must be at least 8 characters, include a number and a symbol.");
+    if (password !== confirmPassword) return showToast("Passwords do not match.");
 
-  disableButton(true);
+    disableButton(true);
 
-  try {
-    const { error } = await supabase.auth.signUp({ email, password });
-    if (error) return showToast(error.message);
-    await handleUserRecord();
-    showToast("Check your email to confirm your account.");
-    setTimeout(() => window.location.href = 'index.html', 2000);
-  } catch (err) {
-    showToast("Unexpected error during sign up.");
-  } finally {
-    disableButton(false);
+    try {
+      const { error } = await supabase.auth.signUp({ email, password });
+      if (error) return showToast(error.message);
+      await handleUserRecord();
+      showToast("Check your email to confirm your account.");
+      setTimeout(() => window.location.href = 'index.html', 2000);
+    } catch (err) {
+      showToast("Unexpected error during sign up.");
+    } finally {
+      disableButton(false);
+    }
   }
-}
 
-function signUpWithFacebook() {
-  supabase.auth.signInWithOAuth({
-    provider: 'facebook',
-    options: { redirectTo: `${window.location.origin}/index.html` }
-  })
-  .then(() => handleUserRecord())
-  .catch(err => showToast(`Facebook Sign-Up Error: ${err.message}`));
-}
+  function signUpWithFacebook() {
+    supabase.auth.signInWithOAuth({
+      provider: 'facebook',
+      options: { redirectTo: `${window.location.origin}/index.html` }
+    })
+    .then(() => handleUserRecord())
+    .catch(err => showToast(`Facebook Sign-Up Error: ${err.message}`));
+  }
 
-function handleOAuthSignUp() {
-  handleUserRecord();
-}
+  function handleOAuthSignUp() {
+    handleUserRecord();
+  }
+
+  // Facebook SDK Init
+  window.fbAsyncInit = function() {
+    FB.init({
+      appId: '2841591242694736',
+      cookie: true,
+      xfbml: true,
+      version: 'v15.0'
+    });
+  };
+
+  (function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = "https://connect.facebook.net/en_US/sdk.js";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));
 </script>
 </body>
 </html>
