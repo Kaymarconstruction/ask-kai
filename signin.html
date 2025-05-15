@@ -23,22 +23,22 @@
       }
     }
     .signin-container {
-      background: rgba(255,255,255,0.95);
+      background: rgba(255, 255, 255, 0.95);
       padding: 2rem;
       border-radius: 8px;
-      width: 100%;
+      width: 90%;
       max-width: 400px;
-      box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
       text-align: center;
     }
     .profile-pic {
-      width: 80px;
-      height: 80px;
+      width: 100px;
+      height: 100px;
       border-radius: 50%;
       margin-bottom: 10px;
     }
     .blurb {
-      font-size: 14px;
+      font-size: 16px;
       color: #333;
       margin-bottom: 20px;
     }
@@ -48,6 +48,7 @@
       margin-top: 10px;
       border-radius: 4px;
       border: 1px solid #ccc;
+      font-size: 16px;
     }
     .social-btn {
       display: flex;
@@ -56,6 +57,7 @@
       gap: 8px;
       font-weight: bold;
       margin-top: 10px;
+      cursor: pointer;
     }
     .google-btn {
       background: #4285F4;
@@ -71,7 +73,7 @@
 
 <div class="signin-container">
   <img src="https://i.imgur.com/uYWtV9r.png" alt="Kai" class="profile-pic" />
-  <div class="blurb">Need help on site? Ask me anything, I’ve got the tools to guide you!</div>
+  <div class="blurb">Smart, fast, and built by tradies – Ask Kai is your AI mate on the job!</div>
 
   <input type="email" id="email" placeholder="Email" required />
   <input type="password" id="password" placeholder="Password" required />
@@ -87,7 +89,7 @@
     Sign in with Facebook
   </button>
 
-  <p>Don’t have an account? <a href="signup.html">Sign Up</a></p>
+  <p>Don’t have an account? <a href="signup.html">Create Free Account</a></p>
   <img src="https://i.imgur.com/nDIhtRr.png" alt="Kaymar Logo" style="width: 150px; margin-top: 20px;" />
 </div>
 
@@ -102,7 +104,7 @@
 
 <script>
   const SUPABASE_URL = 'https://ndvmxpkoyoimibntetef.supabase.co';
-  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5kdm14cGtveW9pbWlibnRldGVmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY1MDgxODksImV4cCI6MjA2MjA4NDE4OX0.-U4Jfb33aFfoAec-fhhFqjHExezWcKoEYwkSVgibjE4'; // Replace with your actual key
+  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5kdm14cGtveW9pbWlibnRldGVmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY1MDgxODksImV4cCI6MjA2MjA4NDE4OX0.-U4Jfb33aFfoAec-fhhFqjHExezWcKoEYwkSVgibjE4'; // Replace with your real key
   const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
   const isDev = true;
@@ -126,9 +128,7 @@
   async function socialSignin(provider) {
     const { error } = await supabase.auth.signInWithOAuth({
       provider,
-      options: {
-        redirectTo: 'https://ask.kaymarconstruction.com/index.html'
-      }
+      options: { redirectTo: 'https://ask.kaymarconstruction.com/index.html' }
     });
 
     if (error) alert('OAuth Error: ' + error.message);
