@@ -15,27 +15,44 @@
             background-color: rgba(255, 255, 255, 0.92);
             backdrop-filter: blur(5px);
         }
+        .oauth-btn img {
+            display: inline-block;
+            vertical-align: middle;
+            margin-right: 8px;
+            width: 20px;
+            height: 20px;
+        }
     </style>
 </head>
 <body class="flex items-center justify-center min-h-screen">
-    <div class="overlay p-8 rounded-lg shadow-lg max-w-md w-full">
-        <h1 class="text-2xl font-bold mb-4">Sign In to Ask Kai</h1>
-        <p class="mb-6 text-gray-600">Your AI site assistant. Built for tradies and DIYers. First 10 prompts are free.</p>
+    <div class="overlay p-8 rounded-lg shadow-lg max-w-md w-full text-center">
+        <img src="https://i.imgur.com/WzVY7pX.png" alt="Kai Avatar" class="mx-auto mb-4 rounded-full w-24 h-24 shadow-lg">
+        <h1 class="text-2xl font-bold mb-2">Sign In to Ask Kai</h1>
+        <p class="mb-6 text-gray-600">Your AI Carpenter & Site Assistant. Built for tradies and DIYers. First 10 prompts are free!</p>
+
         <div class="space-y-3 text-left">
             <input id="email" type="email" placeholder="Email address" class="w-full border p-3 rounded-lg" />
             <input id="password" type="password" placeholder="Password" class="w-full border p-3 rounded-lg" />
             <button onclick="signInWithEmail()" class="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700">Sign In</button>
         </div>
+
         <div class="my-4 border-t pt-4 space-y-3">
-            <button onclick="signInWithGoogle()" class="w-full bg-red-600 text-white py-2 rounded hover:bg-red-700">Continue with Google</button>
-            <button onclick="signInWithFacebook()" class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">Continue with Facebook</button>
+            <button onclick="signInWithGoogle()" class="oauth-btn w-full bg-red-600 text-white py-2 rounded hover:bg-red-700 flex items-center justify-center">
+                <img src="https://img.icons8.com/color/48/000000/google-logo.png" alt="Google Icon"> 
+                Continue with Google
+            </button>
+            <button onclick="signInWithFacebook()" class="oauth-btn w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 flex items-center justify-center">
+                <img src="https://img.icons8.com/fluency/48/000000/facebook-new.png" alt="Facebook Icon"> 
+                Continue with Facebook
+            </button>
         </div>
+
         <p class="text-sm text-gray-600">Need an account? 
             <a href="signup.html" class="text-blue-600 hover:underline">Sign up here</a>
         </p>
     </div>
 
-    <script src="https://unpkg.com/@supabase/supabase-js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
     <script>
         const SUPABASE_URL = 'https://ndvmxpkoyoimibntetef.supabase.co';
         const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5kdm14cGtveW9pbWlibnRldGVmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY1MDgxODksImV4cCI6MjA2MjA4NDE4OX0.-U4Jfb33aFfoAec-fhhFqjHExezWcKoEYwkSVgibjE4';
@@ -48,7 +65,11 @@
             if (!email || !password) return alert("Please enter both email and password.");
 
             const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+
             if (error) return alert(error.message);
+
+            // Optional: Fetch profile data if needed
+            // const user = supabase.auth.user();
 
             window.location.href = 'index.html';
         }
