@@ -6,14 +6,48 @@
   <title>Sign In – Ask Kai</title>
   <script>
     window.SUPABASE_URL = "https://ndvmxpkoyoimibntetef.supabase.co";
-    window.SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5kdm14cGtveW9pbWlibnRldGVmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY1MDgxODksImV4cCI6MjA2MjA4NDE4OX0.-U4Jfb33aFfoAec-fhhFqjHExezWcKoEYwkSVgibjE4";
+    window.SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...";
   </script>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
   <style>
-    body { background-image: url('https://i.imgur.com/jhqlVA5.png'); background-size: cover; background-position: center; }
-    .overlay { background-color: rgba(255, 255, 255, 0.92); backdrop-filter: blur(5px); }
-    .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: #323232; color: #fff; padding: 12px 24px; border-radius: 8px; opacity: 0; transition: opacity 0.3s ease; z-index: 1000; }
-    .toast.show { opacity: 1; }
+    body {
+      background-image: url('https://i.imgur.com/jhqlVA5.png');
+      background-size: cover;
+      background-position: center;
+    }
+    .overlay {
+      background-color: rgba(255, 255, 255, 0.92);
+      backdrop-filter: blur(5px);
+    }
+    .toast {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: #323232;
+      color: #fff;
+      padding: 12px 24px;
+      border-radius: 8px;
+      opacity: 0;
+      transition: opacity 0.3s ease;
+      z-index: 1000;
+    }
+    .toast.show {
+      opacity: 1;
+    }
+    .spinner {
+      border: 3px solid rgba(0, 0, 0, 0.1);
+      border-left-color: #fff;
+      border-radius: 50%;
+      width: 18px;
+      height: 18px;
+      animation: spin 1s linear infinite;
+      display: inline-block;
+      vertical-align: middle;
+    }
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
   </style>
 </head>
 
@@ -22,16 +56,23 @@
 <main class="min-h-screen flex items-center justify-center p-4 sm:p-6 text-center">
   <div class="overlay w-full max-w-md rounded-xl shadow-lg p-6 sm:p-8 space-y-4">
     <img src="https://i.imgur.com/uYWtV9r.png" alt="Kai Marlow" class="w-32 sm:w-40 h-48 sm:h-60 object-cover rounded-2xl shadow mx-auto" />
-    <h1 class="text-2xl sm:text-3xl font-bold text-green-600">Sign In to Ask Kai</h1>
-    <p class="text-sm text-gray-700 leading-snug">Your AI site assistant. Built for tradies and DIYers. First 10 prompts are free.</p>
+    <h1 class="text-2xl sm:text-3xl font-bold text-green-600">Welcome Back to Ask Kai</h1>
+    <p class="text-sm text-gray-700 leading-snug">Your AI site assistant. Built for tradies and DIYers. First 10 prompts are free!</p>
     <div class="space-y-3 text-left">
-      <input id="email" type="email" placeholder="Email address" class="w-full border p-3 rounded-lg" required />
-      <input id="password" type="password" placeholder="Password" class="w-full border p-3 rounded-lg" required />
-      <button onclick="signInWithEmail()" class="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700" id="signin-btn">Sign In</button>
+      <input id="email" type="email" placeholder="Email address" class="w-full border p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" required />
+      <input id="password" type="password" placeholder="Password" class="w-full border p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" required />
+      <button onclick="signInWithEmail()" class="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 flex items-center justify-center gap-2" id="signin-btn">
+        Sign In
+      </button>
     </div>
+
     <div class="my-4 border-t pt-4 space-y-3">
-      <button onclick="signInWithGoogle()" class="w-full bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">Continue with Google</button>
-      <button onclick="signInWithFacebook()" class="w-full bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Continue with Facebook</button>
+      <button onclick="signInWithGoogle()" class="w-full bg-white text-gray-800 border border-gray-300 px-4 py-2 rounded hover:shadow flex items-center justify-center gap-2">
+        <img src="https://www.svgrepo.com/show/475656/google-color.svg" class="w-5 h-5" /> Continue with Google
+      </button>
+      <button onclick="signInWithFacebook()" class="w-full bg-[#1877F2] text-white px-4 py-2 rounded hover:bg-[#165cdb] flex items-center justify-center gap-2">
+        <img src="https://www.svgrepo.com/show/452196/facebook-1.svg" class="w-5 h-5 invert" /> Continue with Facebook
+      </button>
     </div>
     <p class="text-sm text-gray-600">Need an account? <a href="signup.html" class="text-blue-600 hover:underline">Sign up here</a></p>
   </div>
@@ -82,14 +123,13 @@
       return;
     }
 
-    // Unrestricted access for mark
     if (email === "mark@kaymarconstruction.com") {
       window.location.href = "index.html";
       return;
     }
 
     signinBtn.disabled = true;
-    signinBtn.innerHTML = "Signing In...";
+    signinBtn.innerHTML = '<span class="spinner"></span> Signing In...';
 
     const { error } = await supabase.auth.signInWithPassword({ email, password });
 
@@ -132,3 +172,4 @@
 </script>
 </body>
 </html>
+
