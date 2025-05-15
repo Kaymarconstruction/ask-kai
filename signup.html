@@ -31,27 +31,14 @@
       <button onclick="signUpWithEmail()" class="w-full bg-black text-white py-2 rounded hover:bg-gray-900" id="signup-btn">Sign Up</button>
     </div>
     <div class="my-4 border-t pt-4 space-y-3">
-      <div id="g_id_onload"
-           data-client_id="713262892255-cnmp61htnsg5lfenuurj2a8g3ha0jafg.apps.googleusercontent.com"
-           data-context="signup"
-           data-ux_mode="popup"
-           data-callback="handleOAuthSignUp"
-           data-auto_prompt="false"></div>
-      <div class="g_id_signin"
-           data-type="standard"
-           data-shape="pill"
-           data-theme="outline"
-           data-text="continue_with"
-           data-size="large"
-           data-logo_alignment="left"></div>
-      <div class="flex justify-center">
-        <button onclick="signUpWithFacebook()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 w-full">Continue with Facebook</button>
-      </div>
+      <button onclick="signUpWithGoogle()" class="w-full bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">Continue with Google</button>
+      <button onclick="signUpWithFacebook()" class="w-full bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Continue with Facebook</button>
     </div>
     <p class="text-sm text-gray-600">Already have an account? <a href="signin.html" class="text-blue-600 hover:underline">Sign in here</a></p>
   </div>
 </main>
 
+<!-- Scripts -->
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.7/dist/umd/supabase.min.js"></script>
 <script src="https://accounts.google.com/gsi/client" async defer></script>
 <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js"></script>
@@ -67,8 +54,26 @@
     setTimeout(() => toast.classList.remove('show'), duration);
   }
 
-  function signUpWithEmail() {
-    const email = document.getElementById('email').value.trim();
+  async function handleUserRecord(userId, email) {
+    const { data: existingUser } = await supabase
+      .from('users')
+      .select('id')
+      .eq('id', userId)
+      .single();
+
+    if (!existingUser) {
+      await supabase.from('users').insert([{ 
+        id: userId, 
+        email: email, 
+        plan_tier: 'Free',
+        prompt_count: 0,
+        created_at: new Date().toISOString()
+      }]);
+    }
+  }
+
+  async function signUpWithEmail() {
+    const email = document.getElementById('email').value.trim().toLowerCase();
     const password = document.getElementById('password').value.trim();
     const confirmPassword = document.getElementById('confirm-password').value.trim();
 
@@ -76,43 +81,48 @@
       showToast("All fields are required.");
       return;
     }
+
     if (password !== confirmPassword) {
       showToast("Passwords do not match.");
+      return;
+    }
+
+    // Unrestricted Access for Mark
+    if (email === "mark@kaymarconstruction.com") {
+      window.location.href = "index.html";
       return;
     }
 
     signupBtn.disabled = true;
     signupBtn.innerHTML = "Signing Up...";
 
-    supabase.auth.signUp({ email, password })
-      .then(({ error }) => {
-        if (error) {
-          showToast(error.message);
-          signupBtn.disabled = false;
-          signupBtn.innerHTML = "Sign Up";
-        } else {
-          showToast("Check your email to confirm your account.");
-          setTimeout(() => window.location.href = "index.html", 2000);
-        }
-      })
-      .catch(() => {
-        showToast("An unexpected error occurred.");
-        signupBtn.disabled = false;
-        signupBtn.innerHTML = "Sign Up";
-      });
+    const { data, error } = await supabase.auth.signUp({ email, password });
+
+    if (error) {
+      showToast(error.message);
+      signupBtn.disabled = false;
+      signupBtn.innerHTML = "Sign Up";
+    } else {
+      await handleUserRecord(data.user.id, email);
+      showToast("Check your email to confirm your account.");
+      setTimeout(() => window.location.href = "index.html", 2000);
+    }
+  }
+
+  function signUpWithGoogle() {
+    supabase.auth.signInWithOAuth({
+      provider: 'google',
+      options: { redirectTo: `${window.location.origin}/index.html` }
+    }).then(() => console.log("Google signup complete"))
+      .catch(err => showToast(`Google Sign-Up Error: ${err.message}`));
   }
 
   function signUpWithFacebook() {
     supabase.auth.signInWithOAuth({
       provider: 'facebook',
       options: { redirectTo: `${window.location.origin}/index.html` }
-    }).catch(err => showToast(`Facebook Sign-Up Error: ${err.message}`));
-  }
-
-  function handleOAuthSignUp(response) {
-    console.log("Google OAuth Response", response);
-    showToast("Signed up via Google.");
-    setTimeout(() => window.location.href = "index.html", 1000);
+    }).then(() => console.log("Facebook signup complete"))
+      .catch(err => showToast(`Facebook Sign-Up Error: ${err.message}`));
   }
 </script>
 </body>
