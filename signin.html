@@ -19,7 +19,6 @@
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
   </style>
 </head>
-
 <body class="text-gray-800">
 <div id="toast" class="toast" aria-live="polite"></div>
 <main class="min-h-screen flex items-center justify-center p-4 sm:p-6 text-center">
@@ -27,110 +26,111 @@
     <img src="https://i.imgur.com/uYWtV9r.png" alt="Kai Marlow" class="w-32 sm:w-40 h-48 sm:h-60 object-cover rounded-2xl shadow mx-auto" />
     <h1 class="text-2xl sm:text-3xl font-bold text-green-600">Join Ask Kai</h1>
     <p class="text-sm text-gray-700 leading-snug">Expert building help on-site or in the shed. First 10 prompts are free.</p>
-
     <div class="space-y-3 text-left">
       <label for="email" class="sr-only">Email Address</label>
       <input id="email" type="email" placeholder="Email address" class="w-full border p-3 rounded-lg" required aria-label="Email address" />
-      
       <label for="password" class="sr-only">Password</label>
       <input id="password" type="password" placeholder="Password" class="w-full border p-3 rounded-lg" required aria-label="Password" />
-
       <label for="confirm-password" class="sr-only">Confirm Password</label>
       <input id="confirm-password" type="password" placeholder="Confirm Password" class="w-full border p-3 rounded-lg" required aria-label="Confirm Password" />
-
       <button onclick="signUpWithEmail()" class="w-full bg-black text-white py-2 rounded hover:bg-gray-900" id="signup-btn">Sign Up</button>
     </div>
-
     <div class="my-4 border-t pt-4 space-y-3">
       <button onclick="signUpWithGoogle()" class="w-full bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">Continue with Google</button>
       <button onclick="signUpWithFacebook()" class="w-full bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Continue with Facebook</button>
     </div>
-
     <p class="text-sm text-gray-600">Already have an account? <a href="signin.html" class="text-blue-600 hover:underline">Sign in here</a></p>
   </div>
 </main>
-
 <script>
-  const SUPABASE_URL = window.SUPABASE_URL;
-  const SUPABASE_KEY = window.SUPABASE_KEY;
-
-  if (!SUPABASE_URL || !SUPABASE_KEY) {
-    alert('Supabase environment variables are not properly configured.');
-    throw new Error('Missing Supabase configuration.');
-  }
-
-  const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-  const toast = document.getElementById('toast');
-  const signupBtn = document.getElementById('signup-btn');
-
-  function showToast(message, duration = 3000) {
-    toast.textContent = message;
-    toast.classList.add('show');
-    setTimeout(() => toast.classList.remove('show'), duration);
-  }
-
-  async function signUpWithEmail() {
-    const email = document.getElementById('email').value.trim().toLowerCase();
-    const password = document.getElementById('password').value.trim();
-    const confirmPassword = document.getElementById('confirm-password').value.trim();
-
-    if (!validateEmail(email)) return showToast("Invalid email format.");
-    if (!validatePassword(password)) return showToast("Password must be at least 8 characters, include a number and a symbol.");
-    if (password !== confirmPassword) return showToast("Passwords do not match.");
-
-    disableButton(true);
-
-    try {
-      const { data, error } = await supabase.auth.signUp({ email, password });
-      if (error) return showToast(error.message);
-
-      // Create user profile in 'users' table
-      const { data: userData } = await supabase.auth.getUser();
-      if (userData?.user?.id) {
-        await supabase.from('users').insert([{ 
-          id: userData.user.id, 
-          email: userData.user.email, 
-          plan_tier: 'Free',
-          prompt_count: 0,
-          created_at: new Date().toISOString()
-        }]);
-      }
-
-      showToast("Check your email to confirm your account.");
-      setTimeout(() => { window.location.href = 'index.html'; }, 2000);
-    } catch (err) {
-      showToast("Unexpected error during sign up.");
-    } finally {
-      disableButton(false);
+const SUPABASE_URL = window.SUPABASE_URL;
+const SUPABASE_KEY = window.SUPABASE_KEY;
+if (!SUPABASE_URL || !SUPABASE_KEY) {
+  alert('Supabase environment variables are not properly configured.');
+  throw new Error('Missing Supabase configuration.');
+}
+const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const toast = document.getElementById('toast');
+const signupBtn = document.getElementById('signup-btn');
+function showToast(message, duration = 3000) {
+  toast.textContent = message;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), duration);
+}
+async function handleOAuthUser() {
+  const { data: userData } = await supabase.auth.getUser();
+  if (userData?.user?.id) {
+    const { data: existingUser } = await supabase
+      .from('users')
+      .select('id')
+      .eq('id', userData.user.id)
+      .single();
+    if (!existingUser) {
+      await supabase.from('users').insert([{ 
+        id: userData.user.id, 
+        email: userData.user.email, 
+        plan_tier: 'Free',
+        prompt_count: 0,
+        created_at: new Date().toISOString()
+      }]);
     }
   }
-
-  function disableButton(state) {
-    signupBtn.disabled = state;
-    signupBtn.innerHTML = state ? '<span class="spinner"></span> Signing Up...' : 'Sign Up';
+}
+async function signUpWithEmail() {
+  const email = document.getElementById('email').value.trim().toLowerCase();
+  const password = document.getElementById('password').value.trim();
+  const confirmPassword = document.getElementById('confirm-password').value.trim();
+  if (!validateEmail(email)) return showToast("Invalid email format.");
+  if (!validatePassword(password)) return showToast("Password must be at least 8 characters, include a number and a symbol.");
+  if (password !== confirmPassword) return showToast("Passwords do not match.");
+  disableButton(true);
+  try {
+    const { data, error } = await supabase.auth.signUp({ email, password });
+    if (error) return showToast(error.message);
+    const { data: userData } = await supabase.auth.getUser();
+    if (userData?.user?.id) {
+      await supabase.from('users').insert([{ 
+        id: userData.user.id, 
+        email: userData.user.email, 
+        plan_tier: 'Free',
+        prompt_count: 0,
+        created_at: new Date().toISOString()
+      }]);
+    }
+    showToast("Check your email to confirm your account.");
+    setTimeout(() => { window.location.href = 'index.html'; }, 2000);
+  } catch (err) {
+    showToast("Unexpected error during sign up.");
+  } finally {
+    disableButton(false);
   }
-
-  function validateEmail(email) {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  }
-
-  function validatePassword(password) {
-    return password.length >= 8 && /\d/.test(password) && /[!@#$%^&*]/.test(password);
-  }
-
-  function signUpWithGoogle() {
-    supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: { redirectTo: `${window.location.origin}/index.html` }
-    }).catch(err => showToast(`Google Sign-Up Error: ${err.message}`));
-  }
-
-  function signUpWithFacebook() {
-    supabase.auth.signInWithOAuth({
-      provider: 'facebook',
-      options: { redirectTo: `${window.location.origin}/index.html` }
-    }).catch(err => showToast(`Facebook Sign-Up Error: ${err.message}`));
-  }
+}
+function disableButton(state) {
+  signupBtn.disabled = state;
+  signupBtn.innerHTML = state ? '<span class="spinner"></span> Signing Up...' : 'Sign Up';
+}
+function validateEmail(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
+function validatePassword(password) {
+  return password.length >= 8 && /\d/.test(password) && /[!@#$%^&*]/.test(password);
+}
+function signUpWithGoogle() {
+  supabase.auth.signInWithOAuth({
+    provider: 'google',
+    options: { redirectTo: `${window.location.origin}/index.html` }
+  })
+  .then(() => handleOAuthUser())
+  .catch(err => showToast(`Google Sign-Up Error: ${err.message}`));
+}
+function signUpWithFacebook() {
+  supabase.auth.signInWithOAuth({
+    provider: 'facebook',
+    options: { redirectTo: `${window.location.origin}/index.html` }
+  })
+  .then(() => handleOAuthUser())
+  .catch(err => showToast(`Facebook Sign-Up Error: ${err.message}`));
+}
 </script>
 </body>
 </html>
