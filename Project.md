@@ -3,48 +3,23 @@
 ## Project Overview
 **Owner:** Mark - Kaymar Construction  
 **Lead Dev:** Code GPT  
-**Objective:** Launch AI-powered construction assistant with subscriptions, calculators, and generation tools.
+**Objective:** Launch AI-powered construction assistant with subscriptions, calculators, and productivity tools.
 
 ---
 
-## Current Stack & Services
-
-| Service     | Details          |
-|--------------|------------------|
-| Frontend     | Netlify (`askkai`) |
-| Backend/API  | Render (`askkai_backend_clean`) |
-| Database     | Supabase (`askkai-db`) |
-| AI Engine    | OpenAI (Integration Pending) |
+## Current Stack
+- **Frontend:** Netlify  
+- **Backend/API:** Render  
+- **Database/Storage:** Supabase  
+- **AI Brain:** OpenAI API (To be integrated)  
+- **Payments:** Stripe (Webhook Integrated)  
 
 ---
 
-## Supabase Configuration
+## Database Tables
 
-- **SUPABASE_URL:**  
-  `https://ndvmxpkoyoimibntetef.supabase.co`
-
-- **SUPABASE_KEY (anon public):**  
-  `eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5kdm14cGtveW9pbWlibnRldGVmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY1MDgxODksImV4cCI6MjA2MjA4NDE4OX0.-U4Jfb33aFfoAec-fhhFqjHExezWcKoEYwkSVgibjE4`
-
-- **Supabase Project Name:** `askkai-db`  
-- **Deployment Status:** Confirmed present on both Netlify & Render
-
----
-
-## Auth & API Integrations
-
-| Service     | Details                |
-|--------------|------------------------|
-| Facebook App ID | `2841591242694736` (Development Mode) |
-| Google Client ID | `713262892255-cnmp61htnsg5lfenuurj2a8g3ha0jafg.apps.googleusercontent.com` |
-| Google Browser Key | `AIzaSyAe36e1KpVN8JjLVU30D1rBHYB-EXI9J7U` |
-
----
-
-## Database Tables (Confirmed)
-
-| Table Name   | Status    |
-|--------------|-----------|
+| Table Name   | Status      |
+|--------------|-------------|
 | users        | ✅ Confirmed |
 | suppliers    | ✅ Confirmed |
 | materials    | ✅ Confirmed |
@@ -52,26 +27,22 @@
 
 ---
 
-## Current Development Tasks
+## Development Progress
 
-| File          | Status  | Description |
-|----------------|---------|-------------|
-| signin.html    | 🔧 Pending | UI Fix, Enhance Social Buttons, Supabase Auth Integration |
-| signup.html    | 🔧 Pending | Same as above |
-| askkai.js      | 🔧 Pending | Integrate Calculations & Material Tables for Project Calculations |
-| quote.html     | 🔧 Pending | Supplier Fetching, Material Pricing Logic |
-| settings.html  | 🔧 Pending | Manage Contacts, Suppliers, Quotes, and Emails via Supabase |
-
----
-
-## Outstanding Items Before Auth Page Work
-
-1. ✅ Supabase Config Confirmed (Across Netlify & Render).  
-2. ✅ All Required Environment Keys Provided.  
-3. ❓ **Final Check: Is Payment Gateway Selected? (e.g., Stripe, PayPal?)**  
-4. ❓ **Do you have a preferred CSS framework (Tailwind, Bootstrap) or should I optimize based on existing styles?**  
-5. ❓ **Would you like a standardized `.env` example prepared for local testing?**
+| Component      | Status      | Notes |
+|----------------|-------------|-------|
+| signin.html    | ✅ Finalized | UI/UX polished, Supabase Auth integrated, Social Auth working. |
+| signup.html    | ✅ Finalized | UI/UX polished, Supabase Auth integrated, Social Auth working. |
+| askkai.js      | ⏳ Pending   | Next task: Integrate calculations & materials logic. |
+| quote.html     | ⏳ Pending   | Requires supplier and material integration. |
+| settings.html  | ⏳ Pending   | Manage saved contacts, quotes, suppliers, and emails. |
 
 ---
 
-## Command to Refresh My Context:
+## Stripe Webhook Integration
+- **Endpoint:** https://askkai-backend-clean.onrender.com/webhook  
+- **Event:** `checkout.session.completed` (Confirmed)  
+- **Secrets Management:**  
+```env
+STRIPE_SECRET_KEY=sk_live_***********  
+STRIPE_WEBHOOK_SECRET=whsec_***********
