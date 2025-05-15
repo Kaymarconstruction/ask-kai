@@ -8,17 +8,20 @@
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.7/dist/umd/supabase.min.js"></script>
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js"></script>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://accounts.google.com https://connect.facebook.net;">
   <style>
     body { background-image: url('https://i.imgur.com/jhqlVA5.png'); background-size: cover; background-position: center; }
     @media (max-width: 768px) { body { background-image: url('https://i.imgur.com/qzRmu0O.jpeg'); } }
     .overlay { background-color: rgba(255, 255, 255, 0.92); backdrop-filter: blur(5px); }
     .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: #323232; color: #fff; padding: 12px 24px; border-radius: 8px; opacity: 0; transition: opacity 0.3s ease; z-index: 1000; }
     .toast.show { opacity: 1; }
+    .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #000; border-radius: 50%; width: 18px; height: 18px; animation: spin 1s linear infinite; display: inline-block; vertical-align: middle; }
+    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
   </style>
 </head>
 
 <body class="text-gray-800">
-<div id="toast" class="toast"></div>
+<div id="toast" class="toast" aria-live="polite"></div>
 <main class="min-h-screen flex items-center justify-center p-4 sm:p-6 text-center">
   <div class="overlay w-full max-w-md rounded-xl shadow-lg p-6 sm:p-8 space-y-4">
     <img src="https://i.imgur.com/uYWtV9r.png" alt="Kai Marlow" class="w-32 sm:w-40 h-48 sm:h-60 object-cover rounded-2xl shadow mx-auto" />
@@ -26,33 +29,23 @@
     <p class="text-sm text-gray-700 leading-snug">Expert building help on-site or in the shed. First 10 prompts are free.</p>
 
     <div class="space-y-3 text-left">
-      <input id="email" type="email" placeholder="Email address" class="w-full border p-3 rounded-lg" />
-      <input id="password" type="password" placeholder="Password" class="w-full border p-3 rounded-lg" />
-      <button onclick="signUpWithEmail()" class="w-full bg-black text-white py-2 rounded hover:bg-gray-900">Sign Up</button>
+      <label for="email" class="sr-only">Email Address</label>
+      <input id="email" type="email" placeholder="Email address" class="w-full border p-3 rounded-lg" required aria-label="Email address" />
+      
+      <label for="password" class="sr-only">Password</label>
+      <input id="password" type="password" placeholder="Password" class="w-full border p-3 rounded-lg" required aria-label="Password" />
+
+      <label for="confirm-password" class="sr-only">Confirm Password</label>
+      <input id="confirm-password" type="password" placeholder="Confirm Password" class="w-full border p-3 rounded-lg" required aria-label="Confirm Password" />
+
+      <button onclick="signUpWithEmail()" class="w-full bg-black text-white py-2 rounded hover:bg-gray-900" id="signup-btn">Sign Up</button>
     </div>
 
     <div class="my-4 border-t pt-4 space-y-3">
-      <!-- Google Sign-Up -->
-      <div id="g_id_onload"
-           data-client_id="713262892255-cnmp61htnsg5lfenuurj2a8g3ha0jafg.apps.googleusercontent.com"
-           data-context="signup"
-           data-ux_mode="popup"
-           data-callback="handleGoogleLogin"
-           data-auto_prompt="false"></div>
-      <div class="g_id_signin"
-           data-type="standard"
-           data-shape="pill"
-           data-theme="outline"
-           data-text="continue_with"
-           data-size="large"
-           data-logo_alignment="left"></div>
-
-      <!-- Facebook Sign-Up -->
-      <div class="flex justify-center">
-        <button onclick="signUpWithFacebook()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 w-full">
-          Continue with Facebook
-        </button>
-      </div>
+      <!-- Google Sign-Up Button -->
+      <button onclick="signUpWithGoogle()" class="w-full bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">Continue with Google</button>
+      <!-- Facebook Sign-Up Button -->
+      <button onclick="signUpWithFacebook()" class="w-full bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Continue with Facebook</button>
     </div>
 
     <p class="text-sm text-gray-600">Already have an account? <a href="signin.html" class="text-blue-600 hover:underline">Sign in here</a></p>
@@ -60,33 +53,58 @@
 </main>
 
 <script>
-  const SUPABASE_URL = window.SUPABASE_URL || 'https://ndvmxpkoyoimibntetef.supabase.co';
-  const SUPABASE_KEY = window.SUPABASE_KEY || 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5kdm14cGtveW9pbWlibnRldGVmIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0NjUwODE4OSwiZXhwIjoyMDYyMDg0MTg5fQ.VV4x_0Z-MpRphBQlyAWrB1OgH7BJvaVI3KU7dWnTDog';
-  const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  const SUPABASE_URL = window.SUPABASE_URL;
+  const SUPABASE_KEY = window.SUPABASE_KEY;
 
+  if (!SUPABASE_URL || !SUPABASE_KEY) {
+    alert('Supabase environment variables are not properly configured.');
+    throw new Error('Missing Supabase configuration.');
+  }
+
+  const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
   const toast = document.getElementById('toast');
+  const signupBtn = document.getElementById('signup-btn');
+
   function showToast(message, duration = 3000) {
     toast.textContent = message;
     toast.classList.add('show');
     setTimeout(() => toast.classList.remove('show'), duration);
   }
 
-  supabase.auth.getSession().then(({ data: { session } }) => {
-    if (session) window.location.href = 'index.html';
-  });
-
   async function signUpWithEmail() {
     const email = document.getElementById('email').value.trim().toLowerCase();
     const password = document.getElementById('password').value.trim();
+    const confirmPassword = document.getElementById('confirm-password').value.trim();
 
-    if (!email || !password) return showToast("Please fill in both fields.");
+    if (!validateEmail(email)) return showToast("Invalid email format.");
+    if (!validatePassword(password)) return showToast("Password must be at least 8 characters, include a number and a symbol.");
+    if (password !== confirmPassword) return showToast("Passwords do not match.");
 
-    const { data, error } = await supabase.auth.signUp({ email, password });
+    disableButton(true);
 
-    if (error) return showToast(error.message);
+    try {
+      const { error } = await supabase.auth.signUp({ email, password });
+      if (error) return showToast(error.message);
+      showToast("Check your email to confirm your account.");
+      setTimeout(() => { window.location.href = 'index.html'; }, 2000);
+    } catch (err) {
+      showToast("Unexpected error during sign up.");
+    } finally {
+      disableButton(false);
+    }
+  }
 
-    showToast("Check your email to confirm your account.");
-    setTimeout(() => { window.location.href = 'index.html'; }, 2000);
+  function disableButton(state) {
+    signupBtn.disabled = state;
+    signupBtn.innerHTML = state ? '<span class="spinner"></span> Signing Up...' : 'Sign Up';
+  }
+
+  function validateEmail(email) {
+    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+  }
+
+  function validatePassword(password) {
+    return password.length >= 8 && /\d/.test(password) && /[!@#$%^&*]/.test(password);
   }
 
   function signUpWithGoogle() {
