@@ -1,175 +1,80 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sign In – Ask Kai</title>
-  <script>
-    window.SUPABASE_URL = "https://ndvmxpkoyoimibntetef.supabase.co";
-    window.SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...";
-  </script>
-  <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
-  <style>
-    body {
-      background-image: url('https://i.imgur.com/jhqlVA5.png');
-      background-size: cover;
-      background-position: center;
-    }
-    .overlay {
-      background-color: rgba(255, 255, 255, 0.92);
-      backdrop-filter: blur(5px);
-    }
-    .toast {
-      position: fixed;
-      bottom: 30px;
-      left: 50%;
-      transform: translateX(-50%);
-      background: #323232;
-      color: #fff;
-      padding: 12px 24px;
-      border-radius: 8px;
-      opacity: 0;
-      transition: opacity 0.3s ease;
-      z-index: 1000;
-    }
-    .toast.show {
-      opacity: 1;
-    }
-    .spinner {
-      border: 3px solid rgba(0, 0, 0, 0.1);
-      border-left-color: #fff;
-      border-radius: 50%;
-      width: 18px;
-      height: 18px;
-      animation: spin 1s linear infinite;
-      display: inline-block;
-      vertical-align: middle;
-    }
-    @keyframes spin {
-      to { transform: rotate(360deg); }
-    }
-  </style>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Ask Kai - Sign In</title>
+    <script src="https://unpkg.com/@supabase/supabase-js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; background: url('your-background.jpg') no-repeat center center fixed; background-size: cover; display: flex; align-items: center; justify-content: center; height: 100vh; }
+        .signin-container { background: rgba(255,255,255,0.9); padding: 2rem; border-radius: 8px; width: 100%; max-width: 400px; box-shadow: 0 4px 12px rgba(0,0,0,0.2); }
+        input, button { width: 100%; padding: 12px; margin-top: 10px; border-radius: 4px; border: 1px solid #ccc; }
+        .social-btn { display: flex; align-items: center; justify-content: center; gap: 8px; font-weight: bold; }
+        .google-btn { background: #4285F4; color: white; }
+        .fb-btn { background: #1877F2; color: white; }
+    </style>
 </head>
+<body>
 
-<body class="text-gray-800">
-<div id="toast" class="toast" aria-live="polite"></div>
-<main class="min-h-screen flex items-center justify-center p-4 sm:p-6 text-center">
-  <div class="overlay w-full max-w-md rounded-xl shadow-lg p-6 sm:p-8 space-y-4">
-    <img src="https://i.imgur.com/uYWtV9r.png" alt="Kai Marlow" class="w-32 sm:w-40 h-48 sm:h-60 object-cover rounded-2xl shadow mx-auto" />
-    <h1 class="text-2xl sm:text-3xl font-bold text-green-600">Welcome Back to Ask Kai</h1>
-    <p class="text-sm text-gray-700 leading-snug">Your AI site assistant. Built for tradies and DIYers. First 10 prompts are free!</p>
-    <div class="space-y-3 text-left">
-      <input id="email" type="email" placeholder="Email address" class="w-full border p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" required />
-      <input id="password" type="password" placeholder="Password" class="w-full border p-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-green-500" required />
-      <button onclick="signInWithEmail()" class="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700 flex items-center justify-center gap-2" id="signin-btn">
-        Sign In
-      </button>
-    </div>
+<div class="signin-container">
+    <h2>Welcome Back to Ask Kai</h2>
+    <input type="email" id="email" placeholder="Email" required />
+    <input type="password" id="password" placeholder="Password" required />
+    <button onclick="emailSignin()">Sign In</button>
 
-    <div class="my-4 border-t pt-4 space-y-3">
-      <button onclick="signInWithGoogle()" class="w-full bg-white text-gray-800 border border-gray-300 px-4 py-2 rounded hover:shadow flex items-center justify-center gap-2">
-        <img src="https://www.svgrepo.com/show/475656/google-color.svg" class="w-5 h-5" /> Continue with Google
-      </button>
-      <button onclick="signInWithFacebook()" class="w-full bg-[#1877F2] text-white px-4 py-2 rounded hover:bg-[#165cdb] flex items-center justify-center gap-2">
-        <img src="https://www.svgrepo.com/show/452196/facebook-1.svg" class="w-5 h-5 invert" /> Continue with Facebook
-      </button>
-    </div>
-    <p class="text-sm text-gray-600">Need an account? <a href="signup.html" class="text-blue-600 hover:underline">Sign up here</a></p>
-  </div>
-</main>
+    <hr/>
+    <button class="social-btn google-btn" onclick="socialSignin('google')">Sign in with Google</button>
+    <button class="social-btn fb-btn" onclick="socialSignin('facebook')">Sign in with Facebook</button>
 
-<!-- Scripts -->
-<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.7/dist/umd/supabase.min.js"></script>
-<script src="https://accounts.google.com/gsi/client" async defer></script>
-<script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js"></script>
+    <p>Don't have an account? <a href="signup.html">Sign Up</a></p>
+</div>
+
+<!-- Dev Mode Banner -->
+<div id="dev-access-banner" style="background-color: #ffeeba; padding: 1rem; border-radius: 8px; margin: 1rem; text-align: center;">
+    <strong>Development Mode:</strong>  
+    <br/>Use demo account: <code>testuser@kaymar.com</code> / <code>password123</code><br/>
+    <button onclick="bypassSignin()" style="margin-top: 10px; padding: 8px 16px; border:none; background-color:#007bff; color:white; border-radius:4px;">
+        Skip Sign In (Dev Only)
+    </button>
+</div>
 
 <script>
-  const supabase = supabase.createClient(window.SUPABASE_URL, window.SUPABASE_KEY);
-  const toast = document.getElementById('toast');
-  const signinBtn = document.getElementById('signin-btn');
+    // Actual Supabase Keys
+    const SUPABASE_URL = 'https://askkai.supabase.co';
+    const SUPABASE_KEY = 'your_actual_anon_public_key_here';
+    const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-  function showToast(message, duration = 3000) {
-    toast.textContent = message;
-    toast.classList.add('show');
-    setTimeout(() => toast.classList.remove('show'), duration);
-  }
+    // Hide Dev Banner in Production
+    const isDev = true;
+    if (!isDev) document.getElementById('dev-access-banner').style.display = 'none';
 
-  async function handleUserRecord() {
-    const { data: userData } = await supabase.auth.getUser();
-    if (userData?.user?.id) {
-      const { data: existingUser } = await supabase
-        .from('users')
-        .select('id')
-        .eq('id', userData.user.id)
-        .single();
-      if (!existingUser) {
-        await supabase.from('users').insert([{ 
-          id: userData.user.id, 
-          email: userData.user.email, 
-          plan_tier: 'Free',
-          prompt_count: 0,
-          created_at: new Date().toISOString()
-        }]);
-      }
-    }
-  }
+    async function emailSignin() {
+        const email = document.getElementById('email').value;
+        const password = document.getElementById('password').value;
 
-  async function signInWithEmail() {
-    const email = document.getElementById('email').value.trim().toLowerCase();
-    const password = document.getElementById('password').value.trim();
+        const { data, error } = await supabase.auth.signInWithPassword({
+            email: email,
+            password: password
+        });
 
-    if (!email || !password) {
-      showToast("Please enter both email and password.");
-      return;
+        if (error) {
+            alert('Sign In Error: ' + error.message);
+            return;
+        }
+
+        // Redirect to Dashboard
+        window.location.href = '/dashboard.html';
     }
 
-    if (email === "mark@kaymarconstruction.com") {
-      window.location.href = "index.html";
-      return;
+    async function socialSignin(provider) {
+        const { error } = await supabase.auth.signInWithOAuth({ provider });
+        if (error) alert('Social Sign In Error: ' + error.message);
     }
 
-    signinBtn.disabled = true;
-    signinBtn.innerHTML = '<span class="spinner"></span> Signing In...';
-
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-
-    if (error) {
-      showToast(error.message);
-    } else {
-      await handleUserRecord();
-      showToast("Signed in successfully.");
-      setTimeout(() => window.location.href = "index.html", 1000);
+    function bypassSignin() {
+        window.location.href = '/dashboard.html';
     }
-
-    signinBtn.disabled = false;
-    signinBtn.innerHTML = "Sign In";
-  }
-
-  function signInWithGoogle() {
-    supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: { redirectTo: `${window.location.origin}/index.html` }
-    }).then(() => handleUserRecord())
-      .catch(err => showToast(`Google Sign-In Error: ${err.message}`));
-  }
-
-  function signInWithFacebook() {
-    window.fbAsyncInit = function() {
-      FB.init({
-        appId      : '2841591242694736',
-        cookie     : true,
-        xfbml      : true,
-        version    : 'v16.0'
-      });
-    };
-
-    supabase.auth.signInWithOAuth({
-      provider: 'facebook',
-      options: { redirectTo: `${window.location.origin}/index.html` }
-    }).then(() => handleUserRecord())
-      .catch(err => showToast(`Facebook Sign-In Error: ${err.message}`));
-  }
 </script>
+
 </body>
 </html>
-
