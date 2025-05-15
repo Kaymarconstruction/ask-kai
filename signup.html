@@ -3,156 +3,105 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sign Up – Ask Kai</title>
+  <title>Sign In – Ask Kai</title>
   <script>
     window.SUPABASE_URL = "https://ndvmxpkoyoimibntetef.supabase.co";
     window.SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5kdm14cGtveW9pbWlibnRldGVmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY1MDgxODksImV4cCI6MjA2MjA4NDE4OX0.-U4Jfb33aFfoAec-fhhFqjHExezWcKoEYwkSVgibjE4";
+    const supabase = supabase.createClient(window.SUPABASE_URL, window.SUPABASE_KEY);
   </script>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.7/dist/umd/supabase.min.js"></script>
   <script src="https://accounts.google.com/gsi/client" async defer></script>
   <script async defer crossorigin="anonymous" src="https://connect.facebook.net/en_US/sdk.js"></script>
-  <style>
-    body { background-image: url('https://i.imgur.com/jhqlVA5.png'); background-size: cover; background-position: center; }
-    .overlay { background-color: rgba(255, 255, 255, 0.92); backdrop-filter: blur(5px); }
-    .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: #323232; color: #fff; padding: 12px 24px; border-radius: 8px; opacity: 0; transition: opacity 0.3s ease; z-index: 1000; }
-    .toast.show { opacity: 1; }
-    .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #000; border-radius: 50%; width: 18px; height: 18px; animation: spin 1s linear infinite; display: inline-block; vertical-align: middle; }
-    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
-  </style>
 </head>
-<body class="text-gray-800">
-<div id="toast" class="toast" aria-live="polite"></div>
-<main class="min-h-screen flex items-center justify-center p-4 sm:p-6 text-center">
-  <div class="overlay w-full max-w-md rounded-xl shadow-lg p-6 sm:p-8 space-y-4">
-    <img src="https://i.imgur.com/uYWtV9r.png" alt="Kai Marlow" class="w-32 sm:w-40 h-48 sm:h-60 object-cover rounded-2xl shadow mx-auto" />
-    <h1 class="text-2xl sm:text-3xl font-bold text-green-600">Join Ask Kai</h1>
-    <p class="text-sm text-gray-700 leading-snug">Expert building help on-site or in the shed. First 10 prompts are free.</p>
-    <div class="space-y-3 text-left">
-      <input id="email" type="email" placeholder="Email address" class="w-full border p-3 rounded-lg" required />
-      <input id="password" type="password" placeholder="Password" class="w-full border p-3 rounded-lg" required />
-      <input id="confirm-password" type="password" placeholder="Confirm Password" class="w-full border p-3 rounded-lg" required />
-      <button onclick="signUpWithEmail()" class="w-full bg-black text-white py-2 rounded hover:bg-gray-900" id="signup-btn">Sign Up</button>
-    </div>
-    <div class="my-4 border-t pt-4 space-y-3">
-      <div id="g_id_onload"
-           data-client_id="713262892255-cnmp61htnsg5lfenuurj2a8g3ha0jafg.apps.googleusercontent.com"
-           data-context="signup"
-           data-ux_mode="popup"
-           data-callback="handleOAuthSignUp"
-           data-auto_prompt="false"></div>
-      <div class="g_id_signin"
-           data-type="standard"
-           data-shape="pill"
-           data-theme="outline"
-           data-text="continue_with"
-           data-size="large"
-           data-logo_alignment="left"></div>
-      <div class="flex justify-center">
-        <button onclick="signUpWithFacebook()" class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 w-full">Continue with Facebook</button>
-      </div>
-    </div>
-    <p class="text-sm text-gray-600">Already have an account? <a href="signin.html" class="text-blue-600 hover:underline">Sign in here</a></p>
-  </div>
-</main>
-
+<body>
+<!-- Your HTML Content Remains the Same -->
 <script>
-document.addEventListener('DOMContentLoaded', function () {
-  const supabase = supabase.createClient(window.SUPABASE_URL, window.SUPABASE_KEY);
-  const toast = document.getElementById('toast');
-  const signupBtn = document.getElementById('signup-btn');
+const toast = document.getElementById('toast');
+const signinBtn = document.getElementById('signin-btn');
 
-  function showToast(message, duration = 3000) {
-    toast.textContent = message;
-    toast.classList.add('show');
-    setTimeout(() => toast.classList.remove('show'), duration);
-  }
+function showToast(message, duration = 3000) {
+  toast.textContent = message;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), duration);
+}
 
-  function disableButton(state) {
-    signupBtn.disabled = state;
-    signupBtn.innerHTML = state ? '<span class="spinner"></span> Signing Up...' : 'Sign Up';
-  }
+function disableButton(state) {
+  signinBtn.disabled = state;
+  signinBtn.innerHTML = state ? '<span class="spinner"></span> Signing In...' : 'Sign In';
+}
 
-  function validateEmail(email) {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  }
+function validateEmail(email) {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
+}
 
-  function validatePassword(password) {
-    return password.length >= 8 && /\d/.test(password) && /[!@#$%^&*]/.test(password);
-  }
-
-  async function handleUserRecord() {
-    const { data: userData } = await supabase.auth.getUser();
-    if (userData?.user?.id) {
-      const { data: existingUser } = await supabase.from('users').select('id').eq('id', userData.user.id).single();
-      if (!existingUser) {
-        await supabase.from('users').insert([{ 
-          id: userData.user.id, 
-          email: userData.user.email, 
-          plan_tier: 'Free',
-          prompt_count: 0,
-          created_at: new Date().toISOString()
-        }]);
-      }
+async function handleUserRecord() {
+  const { data: userData } = await supabase.auth.getUser();
+  if (userData?.user?.id) {
+    const { data: existingUser } = await supabase.from('users').select('id').eq('id', userData.user.id).single();
+    if (!existingUser) {
+      await supabase.from('users').insert([{ 
+        id: userData.user.id, 
+        email: userData.user.email, 
+        plan_tier: 'Free',
+        prompt_count: 0,
+        created_at: new Date().toISOString()
+      }]);
     }
   }
+}
 
-  async function signUpWithEmail() {
-    const email = document.getElementById('email').value.trim().toLowerCase();
-    const password = document.getElementById('password').value.trim();
-    const confirmPassword = document.getElementById('confirm-password').value.trim();
+async function signInWithEmail() {
+  const email = document.getElementById('email').value.trim().toLowerCase();
+  const password = document.getElementById('password').value.trim();
 
-    if (!validateEmail(email)) return showToast("Invalid email format.");
-    if (!validatePassword(password)) return showToast("Password must be at least 8 characters, include a number and a symbol.");
-    if (password !== confirmPassword) return showToast("Passwords do not match.");
+  if (!validateEmail(email)) return showToast("Invalid email format.");
+  if (!password) return showToast("Password cannot be empty.");
 
-    disableButton(true);
+  disableButton(true);
 
-    try {
-      const { error } = await supabase.auth.signUp({ email, password });
-      if (error) return showToast(error.message);
-      await handleUserRecord();
-      showToast("Check your email to confirm your account.");
-      setTimeout(() => window.location.href = 'index.html', 2000);
-    } catch (err) {
-      showToast("Unexpected error during sign up.");
-    } finally {
-      disableButton(false);
-    }
+  try {
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    if (error) return showToast(error.message);
+    await handleUserRecord();
+    showToast("Sign in successful.");
+    setTimeout(() => window.location.href = 'index.html', 1000);
+  } catch (err) {
+    showToast("Unexpected error during sign in.");
+  } finally {
+    disableButton(false);
   }
+}
 
-  function signUpWithFacebook() {
-    supabase.auth.signInWithOAuth({
-      provider: 'facebook',
-      options: { redirectTo: `${window.location.origin}/index.html` }
-    })
-    .then(() => handleUserRecord())
-    .catch(err => showToast(`Facebook Sign-Up Error: ${err.message}`));
-  }
+function signInWithFacebook() {
+  supabase.auth.signInWithOAuth({
+    provider: 'facebook',
+    options: { redirectTo: `${window.location.origin}/index.html` }
+  })
+  .then(() => handleUserRecord())
+  .catch(err => showToast(`Facebook Sign-In Error: ${err.message}`));
+}
 
-  function handleOAuthSignUp() {
-    handleUserRecord();
-  }
+function handleOAuthLogin(response) {
+  handleUserRecord();
+}
 
-  // Facebook SDK Init
-  window.fbAsyncInit = function() {
-    FB.init({
-      appId: '2841591242694736',
-      cookie: true,
-      xfbml: true,
-      version: 'v15.0'
-    });
-  };
+window.fbAsyncInit = function() {
+  FB.init({
+    appId: '2841591242694736',
+    cookie: true,
+    xfbml: true,
+    version: 'v15.0'
+  });
+};
 
-  (function(d, s, id) {
-    var js, fjs = d.getElementsByTagName(s)[0];
-    if (d.getElementById(id)) return;
-    js = d.createElement(s); js.id = id;
-    js.src = "https://connect.facebook.net/en_US/sdk.js";
-    fjs.parentNode.insertBefore(js, fjs);
-  }(document, 'script', 'facebook-jssdk'));
-});
+(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "https://connect.facebook.net/en_US/sdk.js";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));
 </script>
 </body>
 </html>
-
