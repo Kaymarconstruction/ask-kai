@@ -55,7 +55,9 @@
     <p class="text-sm text-gray-600">Already have an account? <a href="signin.html" class="text-blue-600 hover:underline">Sign in here</a></p>
   </div>
 </main>
+
 <script>
+document.addEventListener('DOMContentLoaded', function () {
   const supabase = supabase.createClient(window.SUPABASE_URL, window.SUPABASE_KEY);
   const toast = document.getElementById('toast');
   const signupBtn = document.getElementById('signup-btn');
@@ -149,6 +151,8 @@
     js.src = "https://connect.facebook.net/en_US/sdk.js";
     fjs.parentNode.insertBefore(js, fjs);
   }(document, 'script', 'facebook-jssdk'));
+});
 </script>
 </body>
 </html>
+
