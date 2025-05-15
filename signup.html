@@ -14,8 +14,6 @@
     .overlay { background-color: rgba(255, 255, 255, 0.92); backdrop-filter: blur(5px); }
     .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: #323232; color: #fff; padding: 12px 24px; border-radius: 8px; opacity: 0; transition: opacity 0.3s ease; z-index: 1000; }
     .toast.show { opacity: 1; }
-    .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #000; border-radius: 50%; width: 18px; height: 18px; animation: spin 1s linear infinite; display: inline-block; vertical-align: middle; }
-    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
   </style>
 </head>
 
@@ -69,89 +67,53 @@
     setTimeout(() => toast.classList.remove('show'), duration);
   }
 
-  function disableButton(state) {
-    signupBtn.disabled = state;
-    signupBtn.innerHTML = state ? '<span class="spinner"></span> Signing Up...' : 'Sign Up';
-  }
-
-  function validateEmail(email) {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  }
-
-  function validatePassword(password) {
-    return password.length >= 8 && /\d/.test(password) && /[!@#$%^&*]/.test(password);
-  }
-
-  async function handleUserRecord() {
-    const { data: userData } = await supabase.auth.getUser();
-    if (userData?.user?.id) {
-      const { data: existingUser } = await supabase.from('users').select('id').eq('id', userData.user.id).single();
-      if (!existingUser) {
-        await supabase.from('users').insert([{ 
-          id: userData.user.id, 
-          email: userData.user.email, 
-          plan_tier: 'Free',
-          prompt_count: 0,
-          created_at: new Date().toISOString()
-        }]);
-      }
-    }
-  }
-
-  async function signUpWithEmail() {
-    const email = document.getElementById('email').value.trim().toLowerCase();
+  function signUpWithEmail() {
+    const email = document.getElementById('email').value.trim();
     const password = document.getElementById('password').value.trim();
     const confirmPassword = document.getElementById('confirm-password').value.trim();
 
-    if (!validateEmail(email)) return showToast("Invalid email format.");
-    if (!validatePassword(password)) return showToast("Password must be at least 8 characters, include a number and a symbol.");
-    if (password !== confirmPassword) return showToast("Passwords do not match.");
-
-    disableButton(true);
-
-    try {
-      const { error } = await supabase.auth.signUp({ email, password });
-      if (error) return showToast(error.message);
-      await handleUserRecord();
-      showToast("Check your email to confirm your account.");
-      setTimeout(() => window.location.href = 'index.html', 2000);
-    } catch (err) {
-      showToast("Unexpected error during sign up.");
-    } finally {
-      disableButton(false);
+    if (!email || !password || !confirmPassword) {
+      showToast("All fields are required.");
+      return;
     }
-  }
+    if (password !== confirmPassword) {
+      showToast("Passwords do not match.");
+      return;
+    }
 
-  function handleOAuthSignUp() {
-    handleUserRecord();
+    signupBtn.disabled = true;
+    signupBtn.innerHTML = "Signing Up...";
+
+    supabase.auth.signUp({ email, password })
+      .then(({ error }) => {
+        if (error) {
+          showToast(error.message);
+          signupBtn.disabled = false;
+          signupBtn.innerHTML = "Sign Up";
+        } else {
+          showToast("Check your email to confirm your account.");
+          setTimeout(() => window.location.href = "index.html", 2000);
+        }
+      })
+      .catch(() => {
+        showToast("An unexpected error occurred.");
+        signupBtn.disabled = false;
+        signupBtn.innerHTML = "Sign Up";
+      });
   }
 
   function signUpWithFacebook() {
     supabase.auth.signInWithOAuth({
       provider: 'facebook',
       options: { redirectTo: `${window.location.origin}/index.html` }
-    })
-    .then(() => handleUserRecord())
-    .catch(err => showToast(`Facebook Sign-Up Error: ${err.message}`));
+    }).catch(err => showToast(`Facebook Sign-Up Error: ${err.message}`));
   }
 
-  // Facebook SDK Initialization
-  window.fbAsyncInit = function() {
-    FB.init({
-      appId: '2841591242694736',
-      cookie: true,
-      xfbml: true,
-      version: 'v15.0'
-    });
-  };
-
-  (function(d, s, id) {
-    var js, fjs = d.getElementsByTagName(s)[0];
-    if (d.getElementById(id)) return;
-    js = d.createElement(s); js.id = id;
-    js.src = "https://connect.facebook.net/en_US/sdk.js";
-    fjs.parentNode.insertBefore(js, fjs);
-  }(document, 'script', 'facebook-jssdk'));
+  function handleOAuthSignUp(response) {
+    console.log("Google OAuth Response", response);
+    showToast("Signed up via Google.");
+    setTimeout(() => window.location.href = "index.html", 1000);
+  }
 </script>
 </body>
 </html>
