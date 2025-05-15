@@ -35,7 +35,7 @@
     </div>
     <div class="my-4 border-t pt-4 space-y-3">
       <div id="g_id_onload"
-           data-client_id="YOUR_GOOGLE_CLIENT_ID"
+           data-client_id="713262892255-cnmp61htnsg5lfenuurj2a8g3ha0jafg.apps.googleusercontent.com"
            data-context="signin"
            data-ux_mode="popup"
            data-callback="handleOAuthLogin"
@@ -124,6 +124,24 @@ function signInWithFacebook() {
 function handleOAuthLogin() {
   handleUserRecord();
 }
+
+// Facebook SDK Init
+window.fbAsyncInit = function() {
+  FB.init({
+    appId: '2841591242694736',
+    cookie: true,
+    xfbml: true,
+    version: 'v15.0'
+  });
+};
+
+(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "https://connect.facebook.net/en_US/sdk.js";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));
 </script>
 </body>
 </html>
