@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Sign Up – Ask Kai</title>
+  <title>Sign In – Ask Kai</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.7/dist/umd/supabase.min.js"></script>
   <script src="https://accounts.google.com/gsi/client" async defer></script>
@@ -11,7 +11,6 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://accounts.google.com https://connect.facebook.net;">
   <style>
     body { background-image: url('https://i.imgur.com/jhqlVA5.png'); background-size: cover; background-position: center; }
-    @media (max-width: 768px) { body { background-image: url('https://i.imgur.com/qzRmu0O.jpeg'); } }
     .overlay { background-color: rgba(255, 255, 255, 0.92); backdrop-filter: blur(5px); }
     .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: #323232; color: #fff; padding: 12px 24px; border-radius: 8px; opacity: 0; transition: opacity 0.3s ease; z-index: 1000; }
     .toast.show { opacity: 1; }
@@ -24,22 +23,20 @@
 <main class="min-h-screen flex items-center justify-center p-4 sm:p-6 text-center">
   <div class="overlay w-full max-w-md rounded-xl shadow-lg p-6 sm:p-8 space-y-4">
     <img src="https://i.imgur.com/uYWtV9r.png" alt="Kai Marlow" class="w-32 sm:w-40 h-48 sm:h-60 object-cover rounded-2xl shadow mx-auto" />
-    <h1 class="text-2xl sm:text-3xl font-bold text-green-600">Join Ask Kai</h1>
-    <p class="text-sm text-gray-700 leading-snug">Expert building help on-site or in the shed. First 10 prompts are free.</p>
+    <h1 class="text-2xl sm:text-3xl font-bold text-green-600">Sign In to Ask Kai</h1>
+    <p class="text-sm text-gray-700 leading-snug">Your AI site assistant. Built for tradies and DIYers. First 10 prompts are free.</p>
     <div class="space-y-3 text-left">
       <label for="email" class="sr-only">Email Address</label>
       <input id="email" type="email" placeholder="Email address" class="w-full border p-3 rounded-lg" required aria-label="Email address" />
       <label for="password" class="sr-only">Password</label>
       <input id="password" type="password" placeholder="Password" class="w-full border p-3 rounded-lg" required aria-label="Password" />
-      <label for="confirm-password" class="sr-only">Confirm Password</label>
-      <input id="confirm-password" type="password" placeholder="Confirm Password" class="w-full border p-3 rounded-lg" required aria-label="Confirm Password" />
-      <button onclick="signUpWithEmail()" class="w-full bg-black text-white py-2 rounded hover:bg-gray-900" id="signup-btn">Sign Up</button>
+      <button onclick="signInWithEmail()" class="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700" id="signin-btn">Sign In</button>
     </div>
     <div class="my-4 border-t pt-4 space-y-3">
-      <button onclick="signUpWithGoogle()" class="w-full bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">Continue with Google</button>
-      <button onclick="signUpWithFacebook()" class="w-full bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Continue with Facebook</button>
+      <button onclick="signInWithGoogle()" class="w-full bg-red-600 text-white px-4 py-2 rounded hover:bg-red-700">Continue with Google</button>
+      <button onclick="signInWithFacebook()" class="w-full bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Continue with Facebook</button>
     </div>
-    <p class="text-sm text-gray-600">Already have an account? <a href="signin.html" class="text-blue-600 hover:underline">Sign in here</a></p>
+    <p class="text-sm text-gray-600">Need an account? <a href="signup.html" class="text-blue-600 hover:underline">Sign up here</a></p>
   </div>
 </main>
 <script>
@@ -51,13 +48,13 @@ if (!SUPABASE_URL || !SUPABASE_KEY) {
 }
 const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 const toast = document.getElementById('toast');
-const signupBtn = document.getElementById('signup-btn');
+const signinBtn = document.getElementById('signin-btn');
 function showToast(message, duration = 3000) {
   toast.textContent = message;
   toast.classList.add('show');
   setTimeout(() => toast.classList.remove('show'), duration);
 }
-async function handleOAuthUser() {
+async function handleUserRecord() {
   const { data: userData } = await supabase.auth.getUser();
   if (userData?.user?.id) {
     const { data: existingUser } = await supabase
@@ -76,60 +73,46 @@ async function handleOAuthUser() {
     }
   }
 }
-async function signUpWithEmail() {
+async function signInWithEmail() {
   const email = document.getElementById('email').value.trim().toLowerCase();
   const password = document.getElementById('password').value.trim();
-  const confirmPassword = document.getElementById('confirm-password').value.trim();
   if (!validateEmail(email)) return showToast("Invalid email format.");
-  if (!validatePassword(password)) return showToast("Password must be at least 8 characters, include a number and a symbol.");
-  if (password !== confirmPassword) return showToast("Passwords do not match.");
+  if (!password) return showToast("Password cannot be empty.");
   disableButton(true);
   try {
-    const { data, error } = await supabase.auth.signUp({ email, password });
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
     if (error) return showToast(error.message);
-    const { data: userData } = await supabase.auth.getUser();
-    if (userData?.user?.id) {
-      await supabase.from('users').insert([{ 
-        id: userData.user.id, 
-        email: userData.user.email, 
-        plan_tier: 'Free',
-        prompt_count: 0,
-        created_at: new Date().toISOString()
-      }]);
-    }
-    showToast("Check your email to confirm your account.");
-    setTimeout(() => { window.location.href = 'index.html'; }, 2000);
+    await handleUserRecord();
+    showToast("Sign in successful.");
+    setTimeout(() => { window.location.href = 'index.html'; }, 1000);
   } catch (err) {
-    showToast("Unexpected error during sign up.");
+    showToast("Unexpected error during sign in.");
   } finally {
     disableButton(false);
   }
 }
 function disableButton(state) {
-  signupBtn.disabled = state;
-  signupBtn.innerHTML = state ? '<span class="spinner"></span> Signing Up...' : 'Sign Up';
+  signinBtn.disabled = state;
+  signinBtn.innerHTML = state ? '<span class="spinner"></span> Signing In...' : 'Sign In';
 }
 function validateEmail(email) {
   return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
 }
-function validatePassword(password) {
-  return password.length >= 8 && /\d/.test(password) && /[!@#$%^&*]/.test(password);
-}
-function signUpWithGoogle() {
+function signInWithGoogle() {
   supabase.auth.signInWithOAuth({
     provider: 'google',
     options: { redirectTo: `${window.location.origin}/index.html` }
   })
-  .then(() => handleOAuthUser())
-  .catch(err => showToast(`Google Sign-Up Error: ${err.message}`));
+  .then(() => handleUserRecord())
+  .catch(err => showToast(`Google Sign-In Error: ${err.message}`));
 }
-function signUpWithFacebook() {
+function signInWithFacebook() {
   supabase.auth.signInWithOAuth({
     provider: 'facebook',
     options: { redirectTo: `${window.location.origin}/index.html` }
   })
-  .then(() => handleOAuthUser())
-  .catch(err => showToast(`Facebook Sign-Up Error: ${err.message}`));
+  .then(() => handleUserRecord())
+  .catch(err => showToast(`Facebook Sign-In Error: ${err.message}`));
 }
 </script>
 </body>
