@@ -1,99 +1,71 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Ask Kai – Sign In</title>
-  <script src="https://unpkg.com/@supabase/supabase-js"></script>
-  <style>
-    body {
-      background-image: url('https://i.imgur.com/jhqlVA5.png');
-      background-size: cover;
-      background-position: center;
-    }
-    .overlay {
-      background-color: rgba(255, 255, 255, 0.92);
-      backdrop-filter: blur(5px);
-    }
-  </style>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Sign In to Ask Kai</title>
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-image: url('https://i.imgur.com/jhqlVA5.png');
+            background-size: cover;
+            background-position: center;
+        }
+        .overlay {
+            background-color: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(5px);
+        }
+    </style>
 </head>
-<body>
+<body class="flex items-center justify-center min-h-screen">
+    <div class="overlay p-8 rounded-lg shadow-lg max-w-md w-full">
+        <h1 class="text-2xl font-bold mb-4">Sign In to Ask Kai</h1>
+        <p class="mb-6 text-gray-600">Your AI site assistant. Built for tradies and DIYers. First 10 prompts are free.</p>
+        <div class="space-y-3 text-left">
+            <input id="email" type="email" placeholder="Email address" class="w-full border p-3 rounded-lg" />
+            <input id="password" type="password" placeholder="Password" class="w-full border p-3 rounded-lg" />
+            <button onclick="signInWithEmail()" class="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700">Sign In</button>
+        </div>
+        <div class="my-4 border-t pt-4 space-y-3">
+            <button onclick="signInWithGoogle()" class="w-full bg-red-600 text-white py-2 rounded hover:bg-red-700">Continue with Google</button>
+            <button onclick="signInWithFacebook()" class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">Continue with Facebook</button>
+        </div>
+        <p class="text-sm text-gray-600">Need an account? 
+            <a href="signup.html" class="text-blue-600 hover:underline">Sign up here</a>
+        </p>
+    </div>
 
-<div class="overlay p-6 rounded-xl shadow max-w-md mx-auto mt-20 text-center">
-  <h1 class="text-3xl font-bold mb-4">Sign In to Ask Kai</h1>
-  <p class="mb-6">Your AI site assistant. Built for tradies and DIYers. First 10 prompts are free.</p>
+    <script src="https://unpkg.com/@supabase/supabase-js"></script>
+    <script>
+        const SUPABASE_URL = 'https://ndvmxpkoyoimibntetef.supabase.co';
+        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5kdm14cGtveW9pbWlibnRldGVmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY1MDgxODksImV4cCI6MjA2MjA4NDE4OX0.-U4Jfb33aFfoAec-fhhFqjHExezWcKoEYwkSVgibjE4';
+        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-  <div class="space-y-3 text-left">
-    <input id="email" type="email" placeholder="Email address" class="w-full border p-3 rounded-lg" />
-    <input id="password" type="password" placeholder="Password" class="w-full border p-3 rounded-lg" />
-    <button onclick="signInWithEmail()" id="emailSignInBtn" class="w-full bg-green-600 text-white py-2 rounded hover:bg-green-700">Sign In</button>
-  </div>
+        async function signInWithEmail() {
+            const email = document.getElementById('email').value.trim().toLowerCase();
+            const password = document.getElementById('password').value.trim();
 
-  <div class="my-4 border-t pt-4 space-y-3">
-    <button onclick="signInWithGoogle()" class="w-full bg-red-600 text-white py-2 rounded hover:bg-red-700">Continue with Google</button>
-    <button onclick="signInWithFacebook()" class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">Continue with Facebook</button>
-  </div>
+            if (!email || !password) return alert("Please enter both email and password.");
 
-  <p class="text-sm text-gray-600">Need an account? 
-    <a href="signup.html" class="text-blue-600 hover:underline">Sign up here</a>
-  </p>
-</div>
+            const { data, error } = await supabase.auth.signInWithPassword({ email, password });
+            if (error) return alert(error.message);
 
-<script>
-  const SUPABASE_URL = 'https://ndvmxpkoyoimibntetef.supabase.co';
-  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5kdm14cGtveW9pbWlibnRldGVmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY1MDgxODksImV4cCI6MjA2MjA4NDE4OX0.-U4Jfb33aFfoAec-fhhFqjHExezWcKoEYwkSVgibjE4';
-  const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+            window.location.href = 'index.html';
+        }
 
-  async function signInWithEmail() {
-    const emailInput = document.getElementById('email');
-    const passwordInput = document.getElementById('password');
-    const signInButton = document.getElementById('emailSignInBtn');
+        function signInWithGoogle() {
+            supabase.auth.signInWithOAuth({
+                provider: 'google',
+                options: { redirectTo: `${window.location.origin}/index.html` }
+            });
+        }
 
-    const email = emailInput.value.trim().toLowerCase();
-    const password = passwordInput.value.trim();
-
-    if (!validateEmail(email) || password.length < 6) {
-      alert("Please enter a valid email and a password with at least 6 characters.");
-      return;
-    }
-
-    signInButton.disabled = true;
-    signInButton.textContent = "Signing In...";
-
-    try {
-      const { data, error } = await supabase.auth.signInWithPassword({ email, password });
-
-      if (error) throw error;
-
-      sessionStorage.setItem('askkaiUser', email);
-      window.location.href = 'index.html';
-    } catch (err) {
-      console.error('Sign-in error:', err);
-      alert(err.message || 'An error occurred during sign-in.');
-    } finally {
-      signInButton.disabled = false;
-      signInButton.textContent = "Sign In";
-    }
-  }
-
-  function validateEmail(email) {
-    return /\S+@\S+\.\S+/.test(email);
-  }
-
-  function signInWithGoogle() {
-    supabase.auth.signInWithOAuth({
-      provider: 'google',
-      options: { redirectTo: `${window.location.origin}/index.html` }
-    });
-  }
-
-  function signInWithFacebook() {
-    supabase.auth.signInWithOAuth({
-      provider: 'facebook',
-      options: { redirectTo: `${window.location.origin}/index.html` }
-    });
-  }
-</script>
-
+        function signInWithFacebook() {
+            supabase.auth.signInWithOAuth({
+                provider: 'facebook',
+                options: { redirectTo: `${window.location.origin}/index.html` }
+            });
+        }
+    </script>
 </body>
 </html>
