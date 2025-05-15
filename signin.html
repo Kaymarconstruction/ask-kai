@@ -21,6 +21,7 @@
     @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
   </style>
 </head>
+
 <body class="text-gray-800">
 <div id="toast" class="toast" aria-live="polite"></div>
 <main class="min-h-screen flex items-center justify-center p-4 sm:p-6 text-center">
@@ -54,94 +55,98 @@
     <p class="text-sm text-gray-600">Need an account? <a href="signup.html" class="text-blue-600 hover:underline">Sign up here</a></p>
   </div>
 </main>
+
 <script>
-const supabase = supabase.createClient(window.SUPABASE_URL, window.SUPABASE_KEY);
-const toast = document.getElementById('toast');
-const signinBtn = document.getElementById('signin-btn');
+document.addEventListener('DOMContentLoaded', function () {
+  const supabase = supabase.createClient(window.SUPABASE_URL, window.SUPABASE_KEY);
+  const toast = document.getElementById('toast');
+  const signinBtn = document.getElementById('signin-btn');
 
-function showToast(message, duration = 3000) {
-  toast.textContent = message;
-  toast.classList.add('show');
-  setTimeout(() => toast.classList.remove('show'), duration);
-}
+  function showToast(message, duration = 3000) {
+    toast.textContent = message;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), duration);
+  }
 
-function disableButton(state) {
-  signinBtn.disabled = state;
-  signinBtn.innerHTML = state ? '<span class="spinner"></span> Signing In...' : 'Sign In';
-}
+  function disableButton(state) {
+    signinBtn.disabled = state;
+    signinBtn.innerHTML = state ? '<span class=\"spinner\"></span> Signing In...' : 'Sign In';
+  }
 
-function validateEmail(email) {
-  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-}
+  function validateEmail(email) {
+    return /^[^\\s@]+@[^\\s@]+\\.[^\\s@]+$/.test(email);
+  }
 
-async function handleUserRecord() {
-  const { data: userData } = await supabase.auth.getUser();
-  if (userData?.user?.id) {
-    const { data: existingUser } = await supabase.from('users').select('id').eq('id', userData.user.id).single();
-    if (!existingUser) {
-      await supabase.from('users').insert([{ 
-        id: userData.user.id, 
-        email: userData.user.email, 
-        plan_tier: 'Free',
-        prompt_count: 0,
-        created_at: new Date().toISOString()
-      }]);
+  async function handleUserRecord() {
+    const { data: userData } = await supabase.auth.getUser();
+    if (userData?.user?.id) {
+      const { data: existingUser } = await supabase.from('users').select('id').eq('id', userData.user.id).single();
+      if (!existingUser) {
+        await supabase.from('users').insert([{ 
+          id: userData.user.id, 
+          email: userData.user.email, 
+          plan_tier: 'Free',
+          prompt_count: 0,
+          created_at: new Date().toISOString()
+        }]);
+      }
     }
   }
-}
 
-async function signInWithEmail() {
-  const email = document.getElementById('email').value.trim().toLowerCase();
-  const password = document.getElementById('password').value.trim();
+  async function signInWithEmail() {
+    const email = document.getElementById('email').value.trim().toLowerCase();
+    const password = document.getElementById('password').value.trim();
 
-  if (!validateEmail(email)) return showToast("Invalid email format.");
-  if (!password) return showToast("Password cannot be empty.");
+    if (!validateEmail(email)) return showToast(\"Invalid email format.\");
+    if (!password) return showToast(\"Password cannot be empty.\");
 
-  disableButton(true);
+    disableButton(true);
 
-  try {
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    if (error) return showToast(error.message);
-    await handleUserRecord();
-    showToast("Sign in successful.");
-    setTimeout(() => window.location.href = 'index.html', 1000);
-  } catch (err) {
-    showToast("Unexpected error during sign in.");
-  } finally {
-    disableButton(false);
+    try {
+      const { error } = await supabase.auth.signInWithPassword({ email, password });
+      if (error) return showToast(error.message);
+      await handleUserRecord();
+      showToast(\"Sign in successful.\");
+      setTimeout(() => window.location.href = 'index.html', 1000);
+    } catch (err) {
+      showToast(\"Unexpected error during sign in.\");
+    } finally {
+      disableButton(false);
+    }
   }
-}
 
-function signInWithFacebook() {
-  supabase.auth.signInWithOAuth({
-    provider: 'facebook',
-    options: { redirectTo: `${window.location.origin}/index.html` }
-  })
-  .then(() => handleUserRecord())
-  .catch(err => showToast(`Facebook Sign-In Error: ${err.message}`));
-}
+  function signInWithFacebook() {
+    supabase.auth.signInWithOAuth({
+      provider: 'facebook',
+      options: { redirectTo: `${window.location.origin}/index.html` }
+    })
+    .then(() => handleUserRecord())
+    .catch(err => showToast(`Facebook Sign-In Error: ${err.message}`));
+  }
 
-function handleOAuthLogin() {
-  handleUserRecord();
-}
+  function handleOAuthLogin() {
+    handleUserRecord();
+  }
 
-// Facebook SDK Init
-window.fbAsyncInit = function() {
-  FB.init({
-    appId: '2841591242694736',
-    cookie: true,
-    xfbml: true,
-    version: 'v15.0'
-  });
-};
+  // Facebook SDK Init
+  window.fbAsyncInit = function() {
+    FB.init({
+      appId: '2841591242694736',
+      cookie: true,
+      xfbml: true,
+      version: 'v15.0'
+    });
+  };
 
-(function(d, s, id) {
-  var js, fjs = d.getElementsByTagName(s)[0];
-  if (d.getElementById(id)) return;
-  js = d.createElement(s); js.id = id;
-  js.src = "https://connect.facebook.net/en_US/sdk.js";
-  fjs.parentNode.insertBefore(js, fjs);
-}(document, 'script', 'facebook-jssdk'));
+  (function(d, s, id) {
+    var js, fjs = d.getElementsByTagName(s)[0];
+    if (d.getElementById(id)) return;
+    js = d.createElement(s); js.id = id;
+    js.src = \"https://connect.facebook.net/en_US/sdk.js\";
+    fjs.parentNode.insertBefore(js, fjs);
+  }(document, 'script', 'facebook-jssdk'));
+});
 </script>
 </body>
 </html>
+
