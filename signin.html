@@ -15,16 +15,35 @@
       background-color: rgba(255, 255, 255, 0.92);
       backdrop-filter: blur(5px);
     }
+    .button {
+      width: 100%;
+      padding: 12px;
+      margin-bottom: 10px;
+      border: none;
+      border-radius: 5px;
+      color: white;
+      cursor: pointer;
+    }
+    .google-btn { background-color: #DB4437; }
+    .facebook-btn { background-color: #4267B2; }
+    img.kai-avatar {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      object-fit: cover;
+      margin-bottom: 20px;
+    }
   </style>
 </head>
 <body>
 
 <div class="overlay p-6 rounded-xl shadow max-w-md mx-auto mt-20 text-center">
+  <img src="https://i.imgur.com/uYWtV9r.png" alt="Kai's Picture" class="kai-avatar" />
   <h1 class="text-3xl font-bold mb-4">Sign In to Ask Kai</h1>
   <p class="mb-6">Your AI site assistant. Built for tradies and DIYers. First 10 prompts are free.</p>
 
-  <button onclick="signInWithGoogle()" class="p-3 bg-green-600 text-white rounded w-full mb-3">Sign In with Google</button>
-  <button onclick="signInWithFacebook()" class="p-3 bg-blue-600 text-white rounded w-full">Sign In with Facebook</button>
+  <button onclick="signInWithGoogle()" class="button google-btn">Sign In with Google</button>
+  <button onclick="signInWithFacebook()" class="button facebook-btn">Sign In with Facebook</button>
 
   <p class="mt-4 text-sm">Don't have an account? <a href="signup.html" class="text-green-600 font-bold">Sign Up</a></p>
 </div>
@@ -32,27 +51,24 @@
 <script>
   const supabase = supabase.createClient(
     'https://ndvmxpkoyoimibntetef.supabase.co',
-    'YOUR_PUBLIC_SUPABASE_KEY' // Replace with your actual public Supabase key or use .env if connected through backend
+    'YOUR_PUBLIC_SUPABASE_KEY'
   );
 
   function signInWithGoogle() {
     supabase.auth.signInWithOAuth({
       provider: 'google',
-      options: {
-        redirectTo: 'https://ask.kaymarconstruction.com/index.html' // Or simply 'index.html' if hosted at root
-      }
+      options: { redirectTo: 'https://ask.kaymarconstruction.com/index.html' }
     });
   }
 
   function signInWithFacebook() {
     supabase.auth.signInWithOAuth({
       provider: 'facebook',
-      options: {
-        redirectTo: 'https://ask.kaymarconstruction.com/index.html'
-      }
+      options: { redirectTo: 'https://ask.kaymarconstruction.com/index.html' }
     });
   }
 </script>
 
 </body>
 </html>
+
