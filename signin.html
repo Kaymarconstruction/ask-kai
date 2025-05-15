@@ -14,8 +14,6 @@
     .overlay { background-color: rgba(255, 255, 255, 0.92); backdrop-filter: blur(5px); }
     .toast { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); background: #323232; color: #fff; padding: 12px 24px; border-radius: 8px; opacity: 0; transition: opacity 0.3s ease; z-index: 1000; }
     .toast.show { opacity: 1; }
-    .spinner { border: 4px solid #f3f3f3; border-top: 4px solid #000; border-radius: 50%; width: 18px; height: 18px; animation: spin 1s linear infinite; display: inline-block; vertical-align: middle; }
-    @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
   </style>
 </head>
 
@@ -68,83 +66,48 @@
     setTimeout(() => toast.classList.remove('show'), duration);
   }
 
-  function disableButton(state) {
-    signinBtn.disabled = state;
-    signinBtn.innerHTML = state ? '<span class="spinner"></span> Signing In...' : 'Sign In';
-  }
-
-  function validateEmail(email) {
-    return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email);
-  }
-
-  async function handleUserRecord() {
-    const { data: userData } = await supabase.auth.getUser();
-    if (userData?.user?.id) {
-      const { data: existingUser } = await supabase.from('users').select('id').eq('id', userData.user.id).single();
-      if (!existingUser) {
-        await supabase.from('users').insert([{ 
-          id: userData.user.id, 
-          email: userData.user.email, 
-          plan_tier: 'Free',
-          prompt_count: 0,
-          created_at: new Date().toISOString()
-        }]);
-      }
-    }
-  }
-
-  async function signInWithEmail() {
-    const email = document.getElementById('email').value.trim().toLowerCase();
+  function signInWithEmail() {
+    const email = document.getElementById('email').value.trim();
     const password = document.getElementById('password').value.trim();
 
-    if (!validateEmail(email)) return showToast("Invalid email format.");
-    if (!password) return showToast("Password cannot be empty.");
-
-    disableButton(true);
-
-    try {
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) return showToast(error.message);
-      await handleUserRecord();
-      showToast("Sign in successful.");
-      setTimeout(() => window.location.href = 'index.html', 1000);
-    } catch (err) {
-      showToast("Unexpected error during sign in.");
-    } finally {
-      disableButton(false);
+    if (!email || !password) {
+      showToast("Please enter both email and password.");
+      return;
     }
-  }
 
-  function handleOAuthLogin() {
-    handleUserRecord();
+    signinBtn.disabled = true;
+    signinBtn.innerHTML = "Signing In...";
+
+    supabase.auth.signInWithPassword({ email, password })
+      .then(({ error }) => {
+        if (error) {
+          showToast(error.message);
+          signinBtn.disabled = false;
+          signinBtn.innerHTML = "Sign In";
+        } else {
+          showToast("Signed in successfully.");
+          setTimeout(() => window.location.href = "index.html", 1000);
+        }
+      })
+      .catch(() => {
+        showToast("An unexpected error occurred.");
+        signinBtn.disabled = false;
+        signinBtn.innerHTML = "Sign In";
+      });
   }
 
   function signInWithFacebook() {
     supabase.auth.signInWithOAuth({
       provider: 'facebook',
       options: { redirectTo: `${window.location.origin}/index.html` }
-    })
-    .then(() => handleUserRecord())
-    .catch(err => showToast(`Facebook Sign-In Error: ${err.message}`));
+    }).catch(err => showToast(`Facebook Sign-In Error: ${err.message}`));
   }
 
-  // Facebook SDK Initialization
-  window.fbAsyncInit = function() {
-    FB.init({
-      appId: '2841591242694736',
-      cookie: true,
-      xfbml: true,
-      version: 'v15.0'
-    });
-  };
-
-  (function(d, s, id) {
-    var js, fjs = d.getElementsByTagName(s)[0];
-    if (d.getElementById(id)) return;
-    js = d.createElement(s); js.id = id;
-    js.src = "https://connect.facebook.net/en_US/sdk.js";
-    fjs.parentNode.insertBefore(js, fjs);
-  }(document, 'script', 'facebook-jssdk'));
+  function handleOAuthLogin(response) {
+    console.log("Google OAuth Response", response);
+    showToast("Signed in via Google.");
+    setTimeout(() => window.location.href = "index.html", 1000);
+  }
 </script>
 </body>
 </html>
