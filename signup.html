@@ -5,6 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Join Ask Kai</title>
     <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <link rel="icon" type="image/x-icon" href="favicon.ico" />
     <style>
         body {
             background-image: url('https://i.imgur.com/jhqlVA5.png');
@@ -26,7 +27,8 @@
 </head>
 <body class="flex items-center justify-center min-h-screen">
     <div class="overlay p-8 rounded-lg shadow-lg max-w-md w-full text-center">
-        <img src="https://i.imgur.com/WzVY7pX.png" alt="Kai Avatar" class="mx-auto mb-4 rounded-full w-24 h-24 shadow-lg">
+        <!-- Rectangle Vertical Portrait for Kai -->
+        <img src="https://i.imgur.com/WzVY7pX.png" alt="Kai Avatar" class="mx-auto mb-4 rounded-lg w-40 h-64 object-cover shadow-lg">
         <h1 class="text-2xl font-bold mb-2">Join Ask Kai</h1>
         <p class="mb-6 text-gray-600">Expert building help on-site or in the shed. First 10 prompts are free!</p>
 
@@ -54,38 +56,39 @@
 
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js"></script>
     <script>
-        const SUPABASE_URL = 'https://ndvmxpkoyoimibntetef.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5kdm14cGtveW9pbWlibnRldGVmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY1MDgxODksImV4cCI6MjA2MjA4NDE4OX0.-U4Jfb33aFfoAec-fhhFqjHExezWcKoEYwkSVgibjE4';
-        const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+        document.addEventListener('DOMContentLoaded', () => {
+            const SUPABASE_URL = 'https://ndvmxpkoyoimibntetef.supabase.co';
+            const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5kdm14cGtveW9pbWlibnRldGVmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY1MDgxODksImV4cCI6MjA2MjA4NDE4OX0.-U4Jfb33aFfoAec-fhhFqjHExezWcKoEYwkSVgibjE4';
+            const supabase = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        async function signUpWithEmail() {
-            const email = document.getElementById('email').value.trim().toLowerCase();
-            const password = document.getElementById('password').value.trim();
+            window.signUpWithEmail = async function() {
+                const email = document.getElementById('email').value.trim().toLowerCase();
+                const password = document.getElementById('password').value.trim();
 
-            if (!email || !password) return alert("Please fill in both fields.");
+                if (!email || !password) return alert("Please fill in both fields.");
 
-            const { data, error } = await supabase.auth.signUp({ email, password });
+                const { data, error } = await supabase.auth.signUp({ email, password });
 
-            if (error) return alert(error.message);
+                if (error) return alert(error.message);
 
-            // Optional: Add custom onboarding logic here
-            window.location.href = 'index.html';
-        }
+                // Optional: Add onboarding logic or token allocation here
+                window.location.href = 'index.html';
+            };
 
-        function signUpWithGoogle() {
-            supabase.auth.signInWithOAuth({
-                provider: 'google',
-                options: { redirectTo: `${window.location.origin}/index.html` }
-            });
-        }
+            window.signUpWithGoogle = function() {
+                supabase.auth.signInWithOAuth({
+                    provider: 'google',
+                    options: { redirectTo: `${window.location.origin}/index.html` }
+                });
+            };
 
-        function signUpWithFacebook() {
-            supabase.auth.signInWithOAuth({
-                provider: 'facebook',
-                options: { redirectTo: `${window.location.origin}/index.html` }
-            });
-        }
+            window.signUpWithFacebook = function() {
+                supabase.auth.signInWithOAuth({
+                    provider: 'facebook',
+                    options: { redirectTo: `${window.location.origin}/index.html` }
+                });
+            };
+        });
     </script>
 </body>
 </html>
-
