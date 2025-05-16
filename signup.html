@@ -17,14 +17,18 @@
             body { background-image: url('https://i.imgur.com/qzRmu0O.jpeg'); }
         }
         .overlay { background-color: rgba(255, 255, 255, 0.95); backdrop-filter: blur(5px); }
+        .oauth-btn img {
+            margin-right: 8px;
+            width: 20px;
+            height: 20px;
+        }
     </style>
 </head>
 <body class="flex items-center justify-center min-h-screen">
 
 <div class="overlay p-8 rounded-lg shadow-lg max-w-md w-full text-center">
-    <img src="https://i.imgur.com/WzVY7pX.png" alt="Kai Avatar" 
-         class="mx-auto mb-4 rounded-lg w-40 h-64 object-cover shadow-lg" 
-         onerror="this.src='https://i.imgur.com/WzVY7pX.png';" />
+    <img src="https://i.imgur.com/uYWtV9r.png" alt="Kai Avatar"
+         class="mx-auto mb-4 rounded-lg w-40 h-64 object-cover shadow-lg" />
     <h1 class="text-2xl font-bold text-green-600 mb-2">Join Ask Kai</h1>
     <p class="mb-6 text-gray-600">Expert building help on-site or in the shed. First 10 prompts are free!</p>
 
@@ -37,9 +41,15 @@
 
     <div class="my-4 border-t pt-4 space-y-3">
         <button onclick="signUpWithGoogle()" 
-                class="w-full bg-red-600 text-white py-2 rounded hover:bg-red-700">Continue with Google</button>
+                class="oauth-btn w-full bg-red-600 text-white py-2 rounded hover:bg-red-700 flex items-center justify-center">
+            <img src="https://img.icons8.com/color/48/000000/google-logo.png" alt="Google Icon">
+            Continue with Google
+        </button>
         <button onclick="signUpWithFacebook()" 
-                class="w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700">Continue with Facebook</button>
+                class="oauth-btn w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 flex items-center justify-center">
+            <img src="https://img.icons8.com/fluency/48/000000/facebook-new.png" alt="Facebook Icon">
+            Continue with Facebook
+        </button>
     </div>
 
     <p class="text-sm text-gray-600">Already have an account? 
@@ -64,20 +74,28 @@
 
             if (error) return alert(error.message);
 
+            // Insert user into Users table with defaults
+            await client.from('Users').insert({
+                email: email,
+                plan_tier: 'Free',
+                prompt_count: 0,
+                created_at: new Date().toISOString()
+            });
+
             window.location.href = 'index.html';
         };
 
         window.signUpWithGoogle = function() {
             client.auth.signInWithOAuth({
                 provider: 'google',
-                options: { redirectTo: `${window.location.origin}/index.html` }
+                options: { redirectTo: 'https://ask.kaymarconstruction.com/index.html' }
             });
         };
 
         window.signUpWithFacebook = function() {
             client.auth.signInWithOAuth({
                 provider: 'facebook',
-                options: { redirectTo: `${window.location.origin}/index.html` }
+                options: { redirectTo: 'https://ask.kaymarconstruction.com/index.html' }
             });
         };
     });
