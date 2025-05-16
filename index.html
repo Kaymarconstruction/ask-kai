@@ -13,6 +13,7 @@
     .blinking-cursor { display: inline-block; width: 10px; height: 1em; background-color: #7AC142; margin-left: 4px; animation: blink 1s steps(2, start) infinite; }
     @keyframes blink { 0%, 100% { opacity: 0; } 50% { opacity: 1; } }
     .overlay { background-color: rgba(255, 255, 255, 0.95); backdrop-filter: blur(4px); }
+    .menu-button { background-color: #7AC142; }
   </style>
 </head>
 
@@ -21,7 +22,7 @@
 <!-- Enforce Auth Immediately -->
 <script>
   const SUPABASE_URL = 'https://ndvmxpkoyoimibntetef.supabase.co';
-  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5kdm14cGtveW9pbWlibnRldGVmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY1MDgxODksImV4cCI6MjA2MjA4NDE4OX0.-U4Jfb33aFfoAec-fhhFqjHExezWcKoEYwkSVgibjE4';
+  const SUPABASE_KEY = 'YOUR_SUPABASE_PUBLIC_ANON_KEY'; // Replace with the actual key if needed.
   const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
   let userEmail = '';
 
@@ -37,11 +38,26 @@
   enforceAuth();
 </script>
 
-<div class="w-full bg-black relative">
-  <!-- Navigation and Menu -->
+<!-- Lime Green Menu Button -->
+<div class="absolute top-4 left-4 z-50">
+  <button onclick="toggleMenu()" class="menu-button text-white p-2 rounded-full shadow">
+    ☰
+  </button>
+  <div id="menuDropdown" class="hidden absolute left-0 mt-2 w-64 bg-white border border-gray-300 shadow-lg rounded-md z-50 p-4 space-y-2 text-gray-800 text-base font-medium">
+    <a href="index.html" class="block text-[#7AC142] hover:underline">Home</a>
+    <a href="settings.html" class="block text-gray-700 hover:underline">Profile</a>
+    <a href="apprentice-hub.html" class="block text-gray-700 hover:underline">Apprentice Hub</a>
+    <a href="plus-hub.html" class="block text-gray-700 hover:underline">Plus Hub</a>
+    <a href="pro-hub.html" class="block text-gray-700 hover:underline">Pro Hub</a>
+    <a href="upgrade.html" class="block text-gray-700 hover:underline">Upgrade</a>
+    <a href="team.html" class="block text-gray-700 hover:underline">Meet the Team</a>
+    <a href="#" class="block text-gray-400 cursor-not-allowed hover:underline">Download App (Coming Soon)</a>
+    <hr class="my-2">
+    <p onclick="logoutUser()" class="block text-red-600 hover:underline cursor-pointer">Log Out</p>
+  </div>
 </div>
 
-<main class="max-w-3xl mx-auto p-4 w-full flex-grow">
+<main class="max-w-3xl mx-auto p-4 w-full flex-grow mt-16">
   <div class="overlay p-6 rounded-xl shadow space-y-6">
     <div id="kaiReply" class="bg-white p-4 rounded-xl shadow space-y-4 text-sm text-gray-800 mb-6"></div>
     <div class="flex flex-col space-y-2">
@@ -63,7 +79,30 @@
   </div>
 </main>
 
+<!-- Footer with Banner and Social Links -->
+<footer class="bg-white shadow-lg p-6 mt-8 text-center">
+  <img src="https://i.imgur.com/nDIhtRr.png" alt="Kaymar Banner" class="mx-auto mb-4 max-h-24 object-contain" />
+  <p class="text-gray-500 text-sm mb-4">&copy; 2025 Kaymar Construction | Powered by Ask Kai</p>
+  <div class="flex justify-center space-x-4">
+    <a href="https://www.instagram.com/askkai_official" class="text-blue-600 hover:underline">Instagram</a>
+    <a href="https://www.tiktok.com/@askkai_official" class="text-blue-600 hover:underline">TikTok</a>
+    <a href="https://www.facebook.com/askkai_official" class="text-blue-600 hover:underline">Facebook</a>
+    <a href="https://www.youtube.com/@askkai_official" class="text-blue-600 hover:underline">YouTube</a>
+    <a href="https://www.threads.net/@askkai_official" class="text-blue-600 hover:underline">Threads</a>
+  </div>
+</footer>
+
 <script>
+  function toggleMenu() {
+    document.getElementById('menuDropdown').classList.toggle('hidden');
+  }
+
+  function logoutUser() {
+    client.auth.signOut().then(() => {
+      window.location.href = 'signin.html';
+    });
+  }
+
   const askInput = document.getElementById('askInput');
   const kaiReply = document.getElementById('kaiReply');
   const submitBtn = document.getElementById('submitBtn');
