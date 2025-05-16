@@ -17,11 +17,6 @@
             body { background-image: url('https://i.imgur.com/qzRmu0O.jpeg'); }
         }
         .overlay { background-color: rgba(255, 255, 255, 0.95); backdrop-filter: blur(5px); }
-        .oauth-btn img {
-            margin-right: 8px;
-            width: 20px;
-            height: 20px;
-        }
     </style>
 </head>
 <body class="flex items-center justify-center min-h-screen">
@@ -40,14 +35,14 @@
     </div>
 
     <div class="my-4 border-t pt-4 space-y-3">
+        <!-- Google Button Plain Style -->
         <button onclick="signInWithGoogle()" 
-                class="oauth-btn w-full bg-red-600 text-white py-2 rounded hover:bg-red-700 flex items-center justify-center">
-            <img src="https://img.icons8.com/color/48/000000/google-logo.png" alt="Google Icon">
+                class="w-full bg-white text-black border py-2 rounded hover:bg-gray-100">
             Continue with Google
         </button>
+        <!-- Facebook Button Plain Style -->
         <button onclick="signInWithFacebook()" 
-                class="oauth-btn w-full bg-blue-600 text-white py-2 rounded hover:bg-blue-700 flex items-center justify-center">
-            <img src="https://img.icons8.com/fluency/48/000000/facebook-new.png" alt="Facebook Icon">
+                class="w-full bg-white text-black border py-2 rounded hover:bg-gray-100">
             Continue with Facebook
         </button>
     </div>
@@ -74,20 +69,20 @@
 
             if (error) return alert(error.message);
 
-            window.location.href = 'index.html';
+            window.location.href = 'https://ask.kaymarconstruction.com/';
         };
 
         window.signInWithGoogle = function() {
             client.auth.signInWithOAuth({
                 provider: 'google',
-                options: { redirectTo: 'https://ask.kaymarconstruction.com/index.html' }
+                options: { redirectTo: 'https://ask.kaymarconstruction.com/' }
             });
         };
 
         window.signInWithFacebook = function() {
             client.auth.signInWithOAuth({
                 provider: 'facebook',
-                options: { redirectTo: 'https://ask.kaymarconstruction.com/index.html' }
+                options: { redirectTo: 'https://ask.kaymarconstruction.com/' }
             });
         };
     });
