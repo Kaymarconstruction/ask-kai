@@ -7,21 +7,22 @@
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.7/dist/umd/supabase.min.js"></script>
   <style>
-    body { 
-      background-image: url('https://i.imgur.com/jhqlVA5.png'); 
-      background-size: cover; 
-      background-position: center; 
-      font-family: sans-serif; 
+    body {
+      background-image: url('https://i.imgur.com/jhqlVA5.png');
+      background-size: cover;
+      background-position: center;
+      font-family: sans-serif;
     }
-    @media (max-width: 768px) { 
-      body { background-image: url('https://i.imgur.com/qzRmu0O.jpeg'); } 
+    @media (max-width: 768px) {
+      body { background-image: url('https://i.imgur.com/qzRmu0O.jpeg'); }
     }
-    .overlay { background-color: rgba(255, 255, 255, 0.9); backdrop-filter: blur(5px); }
+    .overlay { background-color: rgba(255, 255, 255, 0.95); backdrop-filter: blur(5px); }
+    .menu-button { background-color: #7AC142; }
     .profile-border { border: 4px solid #7AC142; cursor: pointer; }
-    .toast { 
-      position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); 
-      background: #323232; color: #fff; padding: 12px 24px; border-radius: 8px; 
-      opacity: 0; transition: opacity 0.3s ease; z-index: 1000; 
+    .toast {
+      position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+      background: #323232; color: #fff; padding: 12px 24px; border-radius: 8px;
+      opacity: 0; transition: opacity 0.3s ease; z-index: 1000;
     }
     .toast.show { opacity: 1; }
   </style>
@@ -32,58 +33,57 @@
 <!-- Toast Notification -->
 <div id="toast" class="toast"></div>
 
-<!-- Header -->
-<header class="bg-white shadow p-4 flex justify-between items-center">
-  <img src="https://i.imgur.com/nDIhtRr.png" alt="Business Logo" class="h-12">
-  <button onclick="logout()" class="bg-red-600 hover:bg-red-700 text-white px-4 py-2 rounded-lg">Log Out</button>
-</header>
-
-<!-- Settings Content -->
-<div class="max-w-xl mx-auto p-6 space-y-6 overlay mt-8 rounded-lg">
-  <div class="text-center">
-    <label for="profilePic">
-      <img id="profilePreview" src="https://i.imgur.com/WzVY7pX.png" alt="Profile" 
-           class="mx-auto w-40 h-64 rounded-lg object-cover shadow-lg profile-border" 
-           onerror="this.src='https://i.imgur.com/WzVY7pX.png';" />
-    </label>
-    <input id="profilePic" type="file" accept="image/*" class="hidden" />
-    <h1 id="userName" class="text-3xl font-bold text-green-600 mt-4">Welcome Back!</h1>
-    <button onclick="location.href='upgrade.html'" 
-            class="mt-4 bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg shadow">
-      Manage Subscription
-    </button>
+<!-- Lime Green Floating Menu -->
+<div class="absolute top-4 left-4 z-50">
+  <button onclick="toggleMenu()" class="menu-button text-white p-2 rounded-full shadow">☰</button>
+  <div id="menuDropdown" class="hidden absolute left-0 mt-2 w-64 bg-white border border-gray-300 shadow-lg rounded-md z-50 p-4 space-y-2 text-gray-800 text-base font-medium">
+    <a href="index.html" class="block text-[#7AC142] hover:underline">Home</a>
+    <a href="settings.html" class="block text-gray-700 hover:underline">Profile</a>
+    <a href="apprentice-hub.html" class="block text-gray-700 hover:underline">Apprentice Hub</a>
+    <a href="plus-hub.html" class="block text-gray-700 hover:underline">Plus Hub</a>
+    <a href="pro-hub.html" class="block text-gray-700 hover:underline">Pro Hub</a>
+    <a href="upgrade.html" class="block text-gray-700 hover:underline">Upgrade</a>
+    <a href="team.html" class="block text-gray-700 hover:underline">Meet the Team</a>
+    <a href="#" class="block text-gray-400 cursor-not-allowed hover:underline">Download App (Coming Soon)</a>
+    <hr class="my-2">
+    <p onclick="logout()" class="block text-red-600 hover:underline cursor-pointer">Log Out</p>
   </div>
+</div>
 
-  <div class="bg-white p-4 shadow rounded space-y-4">
-    <div>
-      <label class="block text-sm font-medium">Email</label>
-      <p id="userEmail" class="text-gray-700">Loading...</p>
-    </div>
-    <div>
-      <label class="block text-sm font-medium">Subscription Tier</label>
-      <p id="planTier" class="text-green-700 font-semibold">Loading...</p>
-    </div>
-    <div>
-      <label class="block text-sm font-medium">Token Usage</label>
-      <p id="promptUsage" class="text-gray-700">Loading...</p>
-    </div>
+<!-- Profile Content -->
+<div class="max-w-xl mx-auto p-6 space-y-6 overlay mt-16 rounded-lg text-center">
+  <label for="profilePic">
+    <img id="profilePreview" src="https://i.imgur.com/uYWtV9r.png" alt="Profile"
+         class="mx-auto w-40 h-64 rounded-lg object-cover shadow-lg profile-border"
+         onerror="this.src='https://i.imgur.com/uYWtV9r.png';" />
+  </label>
+  <input id="profilePic" type="file" accept="image/*" class="hidden" />
+  <h1 id="userName" class="text-3xl font-bold text-green-600 mt-4">Welcome Back!</h1>
+  <button onclick="location.href='upgrade.html'" 
+          class="mt-4 bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg shadow">
+    Manage Subscription
+  </button>
+
+  <div class="bg-white p-4 shadow rounded space-y-4 mt-8 text-left">
+    <div><label class="block text-sm font-medium">Email</label><p id="userEmail" class="text-gray-700">Loading...</p></div>
+    <div><label class="block text-sm font-medium">Subscription Tier</label><p id="planTier" class="text-green-700 font-semibold">Loading...</p></div>
+    <div><label class="block text-sm font-medium">Token Usage</label><p id="promptUsage" class="text-gray-700">Loading...</p></div>
     <div class="flex space-x-4 mt-4">
       <a href="addcontacts.html" class="bg-black text-white px-4 py-2 rounded hover:bg-gray-800">Add Contacts</a>
       <a href="contacts.html" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">View Contacts</a>
+      <a href="suppliers.html" class="bg-green-600 text-white px-4 py-2 rounded hover:bg-green-700">Saved Suppliers</a>
     </div>
   </div>
 
   <a href="index.html" class="text-blue-600 underline text-sm block text-center mt-6">Back to Chat</a>
 </div>
-
 <script>
   const SUPABASE_URL = 'https://ndvmxpkoyoimibntetef.supabase.co';
   const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5kdm14cGtveW9pbWlibnRldGVmIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0NjUwODE4OSwiZXhwIjoyMDYyMDg0MTg5fQ.VV4x_0Z-MpRphBQlyAWrB1OgH7BJvaVI3KU7dWnTDog';
   const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
   const BUCKET = 'profile-pictures';
-
   const toast = document.getElementById('toast');
-  
+
   function showToast(message, duration = 3000) {
     toast.textContent = message;
     toast.classList.add('show');
@@ -91,9 +91,8 @@
   }
 
   async function checkSession() {
-    const { data, error } = await client.auth.getSession();
-    const session = data.session;
-    if (!session) {
+    const { data: { session } } = await client.auth.getSession();
+    if (!session || !session.user) {
       window.location.href = 'signin.html';
     } else {
       loadProfile(session.user.email);
@@ -103,18 +102,18 @@
   async function loadProfile(userEmail) {
     const { data, error } = await client
       .from('users')
-      .select('name, profile_pic_url, plan_tier, prompt_count')
+      .select('name, profile_pic_url, plan_tier, prompt_count, saved_contacts, saved_suppliers')
       .eq('email', userEmail)
       .single();
 
-    if (error) return showToast('Failed to load profile.');
+    if (error || !data) return showToast('Failed to load profile.');
 
     document.getElementById('userName').textContent = `Welcome Back, ${data.name || 'Apprentice'}!`;
     document.getElementById('userEmail').textContent = userEmail;
     document.getElementById('planTier').textContent = data.plan_tier || 'Free Plan';
     document.getElementById('promptUsage').textContent = `${data.prompt_count || 0} / ${data.plan_tier === 'Free Plan' ? '10' : '∞'}`;
-    
-    const profilePic = data.profile_pic_url || 'https://i.imgur.com/WzVY7pX.png';
+
+    const profilePic = data.profile_pic_url || 'https://i.imgur.com/uYWtV9r.png';
     document.getElementById('profilePreview').src = `${profilePic}?t=${Date.now()}`;
   }
 
@@ -122,17 +121,12 @@
     if (!file.type.startsWith('image/')) return showToast('Only image files allowed.');
     if (file.size > 2 * 1024 * 1024) return showToast('Max file size is 2MB.');
 
-    const { data } = await client.auth.getSession();
-    const session = data.session;
+    const { data: { session } } = await client.auth.getSession();
     const user = session.user;
-
     const fileExt = file.name.split('.').pop();
     const filePath = `${user.email}.${fileExt}`;
 
-    const { error: uploadError } = await client.storage
-      .from(BUCKET)
-      .upload(filePath, file, { upsert: true });
-
+    const { error: uploadError } = await client.storage.from(BUCKET).upload(filePath, file, { upsert: true });
     if (uploadError) return showToast('Failed to upload image.');
 
     const { data: publicURL } = client.storage.from(BUCKET).getPublicUrl(filePath);
@@ -148,6 +142,10 @@
     if (file) uploadProfilePic(file);
   });
 
+  function toggleMenu() {
+    document.getElementById('menuDropdown').classList.toggle('hidden');
+  }
+
   function logout() {
     client.auth.signOut().then(() => {
       sessionStorage.clear();
@@ -155,9 +153,7 @@
     });
   }
 
-  // Initial session check
   checkSession();
 </script>
-
 </body>
 </html>
