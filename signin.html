@@ -17,6 +17,11 @@
             body { background-image: url('https://i.imgur.com/qzRmu0O.jpeg'); }
         }
         .overlay { background-color: rgba(255, 255, 255, 0.95); backdrop-filter: blur(5px); }
+        .oauth-btn img {
+            margin-right: 8px;
+            width: 20px;
+            height: 20px;
+        }
     </style>
 </head>
 <body class="flex items-center justify-center min-h-screen">
@@ -35,14 +40,14 @@
     </div>
 
     <div class="my-4 border-t pt-4 space-y-3">
-        <!-- Google Button Plain Style -->
         <button onclick="signInWithGoogle()" 
-                class="w-full bg-white text-black border py-2 rounded hover:bg-gray-100">
+                class="oauth-btn w-full bg-white text-black border py-2 rounded hover:bg-gray-100 flex items-center justify-center">
+            <img src="https://img.icons8.com/color/48/000000/google-logo.png" alt="Google Icon">
             Continue with Google
         </button>
-        <!-- Facebook Button Plain Style -->
         <button onclick="signInWithFacebook()" 
-                class="w-full bg-white text-black border py-2 rounded hover:bg-gray-100">
+                class="oauth-btn w-full bg-white text-black border py-2 rounded hover:bg-gray-100 flex items-center justify-center">
+            <img src="https://img.icons8.com/fluency/48/000000/facebook-new.png" alt="Facebook Icon">
             Continue with Facebook
         </button>
     </div>
@@ -68,6 +73,13 @@
             const { data, error } = await client.auth.signInWithPassword({ email, password });
 
             if (error) return alert(error.message);
+
+            // Auto-upgrade Mark to Pro with unlimited tokens
+            if (email === 'mark@kaymarconstruction.com') {
+                await client.from('Users')
+                    .update({ plan_tier: 'Pro', prompt_count: Infinity })
+                    .eq('email', email);
+            }
 
             window.location.href = 'https://ask.kaymarconstruction.com/';
         };
