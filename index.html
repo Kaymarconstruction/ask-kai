@@ -17,6 +17,23 @@
 </head>
 
 <body class="text-gray-800 flex flex-col">
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.7/dist/umd/supabase.min.js"></script>
+<script>
+    const SUPABASE_URL = 'https://ndvmxpkoyoimibntetef.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5kdm14cGtveW9pbWlibnRldGVmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY1MDgxODksImV4cCI6MjA2MjA4NDE4OX0.-U4Jfb33aFfoAec-fhhFqjHExezWcKoEYwkSVgibjE4';
+    const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+
+    async function enforceAuth() {
+        const { data: { session } } = await client.auth.getSession();
+
+        if (!session) {
+            // No active session, redirect to sign-in
+            window.location.href = 'signin.html';
+        }
+    }
+
+    enforceAuth();
+</script>
 <div class="w-full bg-black relative">
   <div class="absolute left-2 top-1/2 transform -translate-y-1/2 z-50">
     <button onclick="toggleMenu()" class="bg-black text-white p-2 rounded shadow">
