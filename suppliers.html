@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Contacts – Ask Kai</title>
+  <title>Suppliers – Ask Kai</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.7/dist/umd/supabase.min.js"></script>
   <style>
@@ -35,11 +35,11 @@
 </div>
 
 <div class="max-w-2xl mx-auto p-6 overlay mt-16 rounded-lg text-center">
-  <h1 class="text-2xl font-bold text-green-600 mb-4">Your Contacts</h1>
+  <h1 class="text-2xl font-bold text-green-600 mb-4">Saved Suppliers</h1>
   
-  <div id="contactsList" class="space-y-4 text-left"></div>
+  <div id="suppliersList" class="space-y-4 text-left"></div>
 
-  <a href="addcontacts.html" class="text-blue-600 underline text-sm block text-center mt-6">Add New Contact</a>
+  <a href="addcontacts.html" class="text-blue-600 underline text-sm block text-center mt-6">Add New Supplier</a>
 </div>
 
 <script>
@@ -47,7 +47,7 @@
   const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5kdm14cGtveW9pbWlibnRldGVmIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0NjUwODE4OSwiZXhwIjoyMDYyMDg0MTg5fQ.VV4x_0Z-MpRphBQlyAWrB1OgH7BJvaVI3KU7dWnTDog';
   const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-  async function loadContacts() {
+  async function loadSuppliers() {
     const { data: { session } } = await client.auth.getSession();
     if (!session) return window.location.href = 'signin.html';
 
@@ -56,28 +56,28 @@
     const { data, error } = await client
       .from('suppliers')
       .select('*')
-      .eq('user_id', user.id);
+      .or(`user_id.eq.${user.id},user_id.is.null`); // User-specific and global suppliers
 
-    const contactsList = document.getElementById('contactsList');
-    contactsList.innerHTML = '';
+    const suppliersList = document.getElementById('suppliersList');
+    suppliersList.innerHTML = '';
 
     if (error || !data.length) {
-      contactsList.innerHTML = '<p class="text-gray-600 text-center">No contacts found. Add some!</p>';
+      suppliersList.innerHTML = '<p class="text-gray-600 text-center">No suppliers found. Add some!</p>';
       return;
     }
 
-    data.forEach(contact => {
-      const contactCard = document.createElement('div');
-      contactCard.className = 'bg-white p-4 rounded-lg shadow space-y-2';
+    data.forEach(supplier => {
+      const supplierCard = document.createElement('div');
+      supplierCard.className = 'bg-white p-4 rounded-lg shadow space-y-2';
 
-      contactCard.innerHTML = `
-        <h2 class="text-lg font-bold text-green-600">${contact.supplier_name}</h2>
-        ${contact.email ? `<p><strong>Email:</strong> ${contact.email}</p>` : ''}
-        ${contact.phone ? `<p><strong>Phone:</strong> ${contact.phone}</p>` : ''}
-        ${contact.notes ? `<p><strong>Notes:</strong> ${contact.notes}</p>` : ''}
+      supplierCard.innerHTML = `
+        <h2 class="text-lg font-bold text-green-600">${supplier.supplier_name}</h2>
+        ${supplier.email ? `<p><strong>Email:</strong> ${supplier.email}</p>` : ''}
+        ${supplier.phone ? `<p><strong>Phone:</strong> ${supplier.phone}</p>` : ''}
+        ${supplier.notes ? `<p><strong>Notes:</strong> ${supplier.notes}</p>` : ''}
       `;
 
-      contactsList.appendChild(contactCard);
+      suppliersList.appendChild(supplierCard);
     });
   }
 
@@ -92,7 +92,7 @@
     });
   }
 
-  loadContacts();
+  loadSuppliers();
 </script>
 
 </body>
