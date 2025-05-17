@@ -24,6 +24,7 @@
         }
     </style>
 </head>
+
 <body class="flex items-center justify-center min-h-screen">
 
 <div class="overlay p-8 rounded-lg shadow-lg max-w-md w-full text-center">
@@ -59,45 +60,42 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.7/dist/umd/supabase.min.js"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const SUPABASE_URL = 'https://ndvmxpkoyoimibntetef.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5kdm14cGtveW9pbWlibnRldGVmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY1MDgxODksImV4cCI6MjA2MjA4NDE4OX0.-U4Jfb33aFfoAec-fhhFqjHExezWcKoEYwkSVgibjE4';
-        const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    const SUPABASE_URL = 'https://ndvmxpkoyoimibntetef.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5kdm14cGtveW9pbWlibnRldGVmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY1MDgxODksImV4cCI6MjA2MjA4NDE4OX0.-U4Jfb33aFfoAec-fhhFqjHExezWcKoEYwkSVgibjE4';
+    const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        window.signInWithEmail = async function() {
-            const email = document.getElementById('email').value.trim().toLowerCase();
-            const password = document.getElementById('password').value.trim();
+    async function signInWithEmail() {
+        const email = document.getElementById('email').value.trim().toLowerCase();
+        const password = document.getElementById('password').value.trim();
 
-            if (!email || !password) return alert("Please enter both email and password.");
+        if (!email || !password) return alert("Please enter both email and password.");
 
-            const { data, error } = await client.auth.signInWithPassword({ email, password });
+        const { data, error } = await client.auth.signInWithPassword({ email, password });
 
-            if (error) return alert(error.message);
+        if (error) return alert(error.message);
 
-            // Auto-upgrade Mark to Pro with unlimited tokens
-            if (email === 'mark@kaymarconstruction.com') {
-                await client.from('Users')
-                    .update({ plan_tier: 'Pro', prompt_count: Infinity })
-                    .eq('email', email);
-            }
+        if (email === 'mark@kaymarconstruction.com') {
+            await client.from('users')
+                .update({ plan_tier: 'Pro', prompt_count: 999999 })
+                .eq('email', email);
+        }
 
-            window.location.href = 'https://ask.kaymarconstruction.com/';
-        };
+        window.location.href = 'https://ask.kaymarconstruction.com/';
+    }
 
-        window.signInWithGoogle = function() {
-            client.auth.signInWithOAuth({
-                provider: 'google',
-                options: { redirectTo: 'https://ask.kaymarconstruction.com/' }
-            });
-        };
+    function signInWithGoogle() {
+        client.auth.signInWithOAuth({
+            provider: 'google',
+            options: { redirectTo: 'https://ask.kaymarconstruction.com/' }
+        });
+    }
 
-        window.signInWithFacebook = function() {
-            client.auth.signInWithOAuth({
-                provider: 'facebook',
-                options: { redirectTo: 'https://ask.kaymarconstruction.com/' }
-            });
-        };
-    });
+    function signInWithFacebook() {
+        client.auth.signInWithOAuth({
+            provider: 'facebook',
+            options: { redirectTo: 'https://ask.kaymarconstruction.com/' }
+        });
+    }
 </script>
 
 </body>
