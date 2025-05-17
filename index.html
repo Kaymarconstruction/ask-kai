@@ -38,7 +38,7 @@
 </script>
 
 <div class="absolute top-4 left-4 z-50">
-  <button onclick="toggleMenu()" class="menu-button text-white p-2 rounded-full shadow">☰</button>
+  <button onclick="toggleMenu()" class="menu-button text-white p-2 rounded-full shadow" aria-expanded="false" aria-controls="menuDropdown">☰</button>
   <div id="menuDropdown" class="hidden absolute left-0 mt-2 w-64 bg-white border border-gray-300 shadow-lg rounded-md z-50 p-4 space-y-2 text-gray-800 text-base font-medium">
     <a href="index.html" class="block text-[#7AC142] hover:underline">Home</a>
     <a href="settings.html" class="block text-gray-700 hover:underline">Profile</a>
@@ -47,6 +47,9 @@
     <a href="pro-hub.html" class="block text-gray-700 hover:underline">Pro Hub</a>
     <a href="upgrade.html" class="block text-gray-700 hover:underline">Upgrade</a>
     <a href="team.html" class="block text-gray-700 hover:underline">Meet the Team</a>
+    <a href="suppliers.html" class="block text-gray-700 hover:underline">Suppliers</a>
+    <a href="contacts.html" class="block text-gray-700 hover:underline">Contacts</a>
+    <a href="addcontacts.html" class="block text-gray-700 hover:underline">Add Contacts</a>
     <a href="#" class="block text-gray-400 cursor-not-allowed hover:underline">Download App (Coming Soon)</a>
     <hr class="my-2">
     <p onclick="logoutUser()" class="block text-red-600 hover:underline cursor-pointer">Log Out</p>
@@ -56,7 +59,7 @@
 <main class="max-w-3xl mx-auto p-4 w-full flex-grow mt-16">
   <div class="overlay p-6 rounded-xl shadow space-y-6">
     <p class="text-center text-lg font-semibold text-lime-500 mb-4">
-      Ask Kai-Real advice,No fluff.
+      Ask Kai – Real Advice, No Fluff.
     </p>
 
     <div id="kaiReply" class="bg-white p-4 rounded-xl shadow space-y-4 text-sm text-gray-800 mb-6"></div>
@@ -91,9 +94,12 @@
     </div>
   </div>
 </main>
+
 <script>
   function toggleMenu() {
-    document.getElementById('menuDropdown').classList.toggle('hidden');
+    const menu = document.getElementById('menuDropdown');
+    const expanded = menu.classList.toggle('hidden');
+    document.querySelector('.menu-button').setAttribute('aria-expanded', !expanded);
   }
 
   function logoutUser() {
@@ -109,6 +115,19 @@
   async function submitQuestion() {
     const userQuestion = askInput.value.trim();
     if (!userQuestion || !userEmail) return alert("Please log in and enter a question.");
+
+    // Check user's plan and prompt usage
+    const { data: userData, error } = await client
+      .from('users')
+      .select('plan_tier, prompt_count')
+      .eq('email', userEmail)
+      .single();
+
+    if (error) return alert("Unable to retrieve user information.");
+
+    if (userData.plan_tier === 'Free' && userData.prompt_count >= 10) {
+      return alert("You’ve reached your free prompt limit. Please upgrade your plan.");
+    }
 
     const qaContainer = document.createElement('div');
     qaContainer.className = 'mb-6';
@@ -145,6 +164,12 @@
       const data = await response.json();
       const finalText = data.reply || "Kai’s stumped. Try again shortly.";
       kaiText.textContent = finalText;
+
+      // Increment prompt count after successful response
+      await client.from('users')
+        .update({ prompt_count: userData.prompt_count + 1 })
+        .eq('email', userEmail);
+
     } catch (error) {
       console.error('Chat Error:', error);
       kaiText.textContent = "Kai hit a snag. Try again later.";
