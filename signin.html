@@ -17,14 +17,9 @@
             body { background-image: url('https://i.imgur.com/qzRmu0O.jpeg'); }
         }
         .overlay { background-color: rgba(255, 255, 255, 0.95); backdrop-filter: blur(5px); }
-        .oauth-btn img {
-            margin-right: 8px;
-            width: 20px;
-            height: 20px;
-        }
+        .oauth-btn img { margin-right: 8px; width: 20px; height: 20px; }
     </style>
 </head>
-
 <body class="flex items-center justify-center min-h-screen">
 
 <div class="overlay p-8 rounded-lg shadow-lg max-w-md w-full text-center">
@@ -61,7 +56,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.7/dist/umd/supabase.min.js"></script>
 <script>
     const SUPABASE_URL = 'https://ndvmxpkoyoimibntetef.supabase.co';
-    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5kdm14cGtveW9pbWlibnRldGVmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY1MDgxODksImV4cCI6MjA2MjA4NDE4OX0.-U4Jfb33aFfoAec-fhhFqjHExezWcKoEYwkSVgibjE4';
+    const SUPABASE_KEY = 'YOUR_PUBLIC_ANON_KEY_HERE'; // Replace with actual public anon key
     const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
     async function signInWithEmail() {
@@ -70,30 +65,30 @@
 
         if (!email || !password) return alert("Please enter both email and password.");
 
-        const { data, error } = await client.auth.signInWithPassword({ email, password });
-
+        const { error } = await client.auth.signInWithPassword({ email, password });
         if (error) return alert(error.message);
 
+        // Auto-upgrade admin user
         if (email === 'mark@kaymarconstruction.com') {
             await client.from('users')
-                .update({ plan_tier: 'Pro', prompt_count: 999999 })
+                .update({ plan_tier: 'Pro', prompt_count: 99999 })
                 .eq('email', email);
         }
 
-        window.location.href = 'https://ask.kaymarconstruction.com/';
+        window.location.href = 'index.html';
     }
 
     function signInWithGoogle() {
         client.auth.signInWithOAuth({
             provider: 'google',
-            options: { redirectTo: 'https://ask.kaymarconstruction.com/' }
+            options: { redirectTo: 'index.html' }
         });
     }
 
     function signInWithFacebook() {
         client.auth.signInWithOAuth({
             provider: 'facebook',
-            options: { redirectTo: 'https://ask.kaymarconstruction.com/' }
+            options: { redirectTo: 'index.html' }
         });
     }
 </script>
