@@ -24,6 +24,7 @@
         }
     </style>
 </head>
+
 <body class="flex items-center justify-center min-h-screen">
 
 <div class="overlay p-8 rounded-lg shadow-lg max-w-md w-full text-center">
@@ -59,49 +60,46 @@
 
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.7/dist/umd/supabase.min.js"></script>
 <script>
-    document.addEventListener('DOMContentLoaded', () => {
-        const SUPABASE_URL = 'https://ndvmxpkoyoimibntetef.supabase.co';
-        const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5kdm14cGtveW9pbWlibnRldGVmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY1MDgxODksImV4cCI6MjA2MjA4NDE4OX0.-U4Jfb33aFfoAec-fhhFqjHExezWcKoEYwkSVgibjE4';
-        const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+    const SUPABASE_URL = 'https://ndvmxpkoyoimibntetef.supabase.co';
+    const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5kdm14cGtveW9pbWlibnRldGVmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY1MDgxODksImV4cCI6MjA2MjA4NDE4OX0.-U4Jfb33aFfoAec-fhhFqjHExezWcKoEYwkSVgibjE4';
+    const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
-        window.signUpWithEmail = async function() {
-            const email = document.getElementById('email').value.trim().toLowerCase();
-            const password = document.getElementById('password').value.trim();
+    async function signUpWithEmail() {
+        const email = document.getElementById('email').value.trim().toLowerCase();
+        const password = document.getElementById('password').value.trim();
 
-            if (!email || !password) return alert("Please fill in both fields.");
+        if (!email || !password) return alert("Please fill in both fields.");
 
-            const { data, error } = await client.auth.signUp({ email, password });
+        const { data, error } = await client.auth.signUp({ email, password });
 
-            if (error) return alert(error.message);
+        if (error) return alert(error.message);
 
-            // Determine user plan
-            const planTier = (email === 'mark@kaymarconstruction.com') ? 'Pro' : 'Free';
-            const promptCount = (planTier === 'Pro') ? Infinity : 0;
+        const planTier = (email === 'mark@kaymarconstruction.com') ? 'Pro' : 'Free';
+        const promptCount = (planTier === 'Pro') ? 999999 : 0;
 
-            await client.from('Users').insert({
-                email: email,
-                plan_tier: planTier,
-                prompt_count: promptCount,
-                created_at: new Date().toISOString()
-            });
+        await client.from('users').insert({
+            email: email,
+            plan_tier: planTier,
+            prompt_count: promptCount,
+            created_at: new Date().toISOString()
+        });
 
-            window.location.href = 'https://ask.kaymarconstruction.com/';
-        };
+        window.location.href = 'https://ask.kaymarconstruction.com/';
+    }
 
-        window.signUpWithGoogle = function() {
-            client.auth.signInWithOAuth({
-                provider: 'google',
-                options: { redirectTo: 'https://ask.kaymarconstruction.com/' }
-            });
-        };
+    function signUpWithGoogle() {
+        client.auth.signInWithOAuth({
+            provider: 'google',
+            options: { redirectTo: 'https://ask.kaymarconstruction.com/' }
+        });
+    }
 
-        window.signUpWithFacebook = function() {
-            client.auth.signInWithOAuth({
-                provider: 'facebook',
-                options: { redirectTo: 'https://ask.kaymarconstruction.com/' }
-            });
-        };
-    });
+    function signUpWithFacebook() {
+        client.auth.signInWithOAuth({
+            provider: 'facebook',
+            options: { redirectTo: 'https://ask.kaymarconstruction.com/' }
+        });
+    }
 </script>
 
 </body>
