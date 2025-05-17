@@ -18,67 +18,50 @@
     }
     .overlay { background-color: rgba(255, 255, 255, 0.95); backdrop-filter: blur(5px); }
     .menu-button { background-color: #7AC142; }
+    .toast {
+      position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+      background: #323232; color: #fff; padding: 12px 24px; border-radius: 8px;
+      opacity: 0; transition: opacity 0.3s ease; z-index: 1000;
+    }
+    .toast.show { opacity: 1; }
   </style>
 </head>
 
 <body class="text-gray-800">
 
+<div id="toast" class="toast"></div>
+
+<!-- Navigation Menu -->
 <div class="absolute top-4 left-4 z-50">
   <button onclick="toggleMenu()" class="menu-button text-white p-2 rounded-full shadow">☰</button>
   <div id="menuDropdown" class="hidden absolute left-0 mt-2 w-64 bg-white border border-gray-300 shadow-lg rounded-md z-50 p-4 space-y-2 text-gray-800 text-base font-medium">
     <a href="index.html" class="block text-[#7AC142] hover:underline">Home</a>
-    <a href="addcontacts.html" class="block text-gray-700 hover:underline">Add Contact</a>
     <a href="settings.html" class="block text-gray-700 hover:underline">Profile</a>
+    <a href="addsuppliers.html" class="block text-gray-700 hover:underline">Add Supplier</a>
+    <a href="contacts.html" class="block text-gray-700 hover:underline">Contacts</a>
     <hr class="my-2">
     <p onclick="logout()" class="block text-red-600 hover:underline cursor-pointer">Log Out</p>
   </div>
 </div>
 
-<div class="max-w-2xl mx-auto p-6 overlay mt-16 rounded-lg text-center">
-  <h1 class="text-2xl font-bold text-green-600 mb-4">Saved Suppliers</h1>
-  
-  <div id="suppliersList" class="space-y-4 text-left"></div>
-
-  <a href="addcontacts.html" class="text-blue-600 underline text-sm block text-center mt-6">Add New Supplier</a>
-</div>
+<main class="max-w-xl mx-auto p-6 space-y-6 overlay mt-16 rounded-lg text-center">
+  <h1 class="text-3xl font-bold text-green-600 mb-6">Your Suppliers</h1>
+  <div id="suppliersList" class="space-y-4"></div>
+  <a href="addsuppliers.html" class="block bg-green-600 hover:bg-green-700 text-white py-2 px-6 rounded shadow mt-6">Add New Supplier</a>
+  <a href="index.html" class="block text-blue-600 underline text-sm mt-4">Back to Chat</a>
+</main>
 
 <script>
   const SUPABASE_URL = 'https://ndvmxpkoyoimibntetef.supabase.co';
-  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5kdm14cGtveW9pbWlibnRldGVmIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0NjUwODE4OSwiZXhwIjoyMDYyMDg0MTg5fQ.VV4x_0Z-MpRphBQlyAWrB1OgH7BJvaVI3KU7dWnTDog';
+  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5kdm14cGtveW9pbWlibnRldGVmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY1MDgxODksImV4cCI6MjA2MjA4NDE4OX0.-U4Jfb33aFfoAec-fhhFqjHExezWcKoEYwkSVgibjE4';
   const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+  const suppliersList = document.getElementById('suppliersList');
+  const toast = document.getElementById('toast');
 
-  async function loadSuppliers() {
-    const { data: { session } } = await client.auth.getSession();
-    if (!session) return window.location.href = 'signin.html';
-
-    const user = session.user;
-
-    const { data, error } = await client
-      .from('suppliers')
-      .select('*')
-      .or(`user_id.eq.${user.id},user_id.is.null`); // User-specific and global suppliers
-
-    const suppliersList = document.getElementById('suppliersList');
-    suppliersList.innerHTML = '';
-
-    if (error || !data.length) {
-      suppliersList.innerHTML = '<p class="text-gray-600 text-center">No suppliers found. Add some!</p>';
-      return;
-    }
-
-    data.forEach(supplier => {
-      const supplierCard = document.createElement('div');
-      supplierCard.className = 'bg-white p-4 rounded-lg shadow space-y-2';
-
-      supplierCard.innerHTML = `
-        <h2 class="text-lg font-bold text-green-600">${supplier.supplier_name}</h2>
-        ${supplier.email ? `<p><strong>Email:</strong> ${supplier.email}</p>` : ''}
-        ${supplier.phone ? `<p><strong>Phone:</strong> ${supplier.phone}</p>` : ''}
-        ${supplier.notes ? `<p><strong>Notes:</strong> ${supplier.notes}</p>` : ''}
-      `;
-
-      suppliersList.appendChild(supplierCard);
-    });
+  function showToast(message, duration = 3000) {
+    toast.textContent = message;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), duration);
   }
 
   function toggleMenu() {
@@ -87,9 +70,71 @@
 
   function logout() {
     client.auth.signOut().then(() => {
-      sessionStorage.clear();
       window.location.href = 'signin.html';
     });
+  }
+
+  async function loadSuppliers() {
+    const { data: { session }, error: sessionError } = await client.auth.getSession();
+    if (sessionError || !session) {
+      window.location.href = 'signin.html';
+      return;
+    }
+
+    const userId = session.user.id;
+    const { data, error } = await client
+      .from('suppliers')
+      .select('*')
+      .eq('user_id', userId)
+      .order('name', { ascending: true });
+
+    if (error) {
+      console.error('Fetch Error:', error);
+      showToast('Failed to load suppliers.');
+      return;
+    }
+
+    if (!data.length) {
+      suppliersList.innerHTML = '<p class="text-gray-600">No suppliers saved yet.</p>';
+      return;
+    }
+
+    suppliersList.innerHTML = '';
+    data.forEach(supplier => {
+      const card = document.createElement('div');
+      card.className = 'bg-white p-4 rounded-lg shadow text-left space-y-2';
+
+      card.innerHTML = `
+        <p><strong>Name:</strong> ${supplier.name}</p>
+        <p><strong>Email:</strong> ${supplier.email || 'N/A'}</p>
+        <p><strong>Phone:</strong> ${supplier.phone || 'N/A'}</p>
+        <p><strong>Notes:</strong> ${supplier.notes || 'None'}</p>
+        <button onclick="deleteSupplier(${supplier.id})" 
+          class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded mt-2 shadow">
+          Delete
+        </button>
+      `;
+
+      suppliersList.appendChild(card);
+    });
+  }
+
+  async function deleteSupplier(supplierId) {
+    const confirmDelete = confirm('Are you sure you want to delete this supplier?');
+    if (!confirmDelete) return;
+
+    const { error } = await client
+      .from('suppliers')
+      .delete()
+      .eq('id', supplierId);
+
+    if (error) {
+      console.error('Delete Error:', error);
+      showToast('Failed to delete supplier.');
+    } else {
+      showToast('Supplier deleted successfully!');
+      loadSuppliers();
+    }
   }
 
   loadSuppliers();
