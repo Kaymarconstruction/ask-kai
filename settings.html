@@ -29,12 +29,12 @@
 </head>
 
 <body class="text-gray-800">
-
 <div id="toast" class="toast"></div>
 
+<!-- Menu Button -->
 <div class="absolute top-4 left-4 z-50">
   <button onclick="toggleMenu()" class="menu-button text-white p-2 rounded-full shadow">☰</button>
-  <div id="menuDropdown" class="hidden absolute left-0 mt-2 w-64 bg-white border border-gray-300 shadow-lg rounded-md z-50 p-4 space-y-2 text-gray-800 text-base font-medium">
+  <div id="menuDropdown" class="hidden absolute left-0 mt-2 w-64 bg-white border shadow-lg rounded-md z-50 p-4 space-y-2 text-gray-800 text-base font-medium">
     <a href="index.html" class="block text-[#7AC142] hover:underline">Home</a>
     <a href="settings.html" class="block text-gray-700 hover:underline">Profile</a>
     <a href="apprentice-hub.html" class="block text-gray-700 hover:underline">Apprentice Hub</a>
@@ -47,11 +47,11 @@
   </div>
 </div>
 
+<!-- Profile Section -->
 <div class="max-w-xl mx-auto p-6 space-y-6 overlay mt-16 rounded-lg text-center">
   <label for="profilePic">
     <img id="profilePreview" src="https://i.imgur.com/uYWtV9r.png" alt="Profile"
-         class="mx-auto w-40 h-40 rounded-full object-cover shadow-lg profile-border"
-         onerror="this.src='https://i.imgur.com/uYWtV9r.png';" />
+         class="mx-auto w-40 h-40 rounded-full object-cover shadow-lg profile-border" />
   </label>
   <input id="profilePic" type="file" accept="image/*" class="hidden" />
   <h1 id="userName" class="text-3xl font-bold text-green-600 mt-4">Welcome Back!</h1>
@@ -63,7 +63,8 @@
   <div class="bg-white p-4 shadow rounded space-y-4 mt-8 text-left">
     <div><label class="block text-sm font-medium">Email</label><p id="userEmail" class="text-gray-700">Loading...</p></div>
     <div><label class="block text-sm font-medium">Subscription Tier</label><p id="planTier" class="text-green-700 font-semibold">Loading...</p></div>
-    <div><label class="block text-sm font-medium">Token Usage</label>
+    <div>
+      <label class="block text-sm font-medium">Token Usage</label>
       <div class="w-full bg-gray-200 rounded-full h-2.5 mt-1">
         <div id="usageBar" class="bg-green-600 h-2.5 rounded-full" style="width:0%"></div>
       </div>
@@ -80,89 +81,88 @@
 </div>
 
 <script>
-  const SUPABASE_URL = 'https://ndvmxpkoyoimibntetef.supabase.co';
-  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5kdm14cGtveW9pbWlibnRldGVmIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc0NjUwODE4OSwiZXhwIjoyMDYyMDg0MTg5fQ.VV4x_0Z-MpRphBQlyAWrB1OgH7BJvaVI3KU7dWnTDog';
-  const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-  const BUCKET = 'profile-pictures';
-  const toast = document.getElementById('toast');
+const SUPABASE_URL = 'https://ndvmxpkoyoimibntetef.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9...'; // Replace with full anon key if needed
+const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
+const BUCKET = 'profile-pictures';
+const toast = document.getElementById('toast');
 
-  function showToast(message, duration = 3000) {
-    toast.textContent = message;
-    toast.classList.add('show');
-    setTimeout(() => toast.classList.remove('show'), duration);
+function showToast(message, duration = 3000) {
+  toast.textContent = message;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), duration);
+}
+
+async function checkSession() {
+  const { data: { session } } = await client.auth.getSession();
+  if (!session || !session.user) {
+    window.location.href = 'signin.html';
+  } else {
+    loadProfile(session.user);
   }
+}
 
-  async function checkSession() {
-    const { data: { session } } = await client.auth.getSession();
-    if (!session || !session.user) {
-      window.location.href = 'signin.html';
-    } else {
-      loadProfile(session.user);
-    }
-  }
+async function loadProfile(user) {
+  const { data, error } = await client
+    .from('users')
+    .select('name, profile_pic_url, plan_tier, prompt_count')
+    .eq('id', user.id)
+    .single();
 
-  async function loadProfile(user) {
-    const { data, error } = await client
-      .from('users')
-      .select('name, profile_pic_url, plan_tier, prompt_count')
-      .eq('id', user.id)
-      .single();
+  if (error || !data) return showToast(`Error loading profile: ${error?.message || 'Unknown error'}`);
 
-    if (error || !data) return showToast(`Error loading profile: ${error?.message || 'Unknown error'}`);
+  document.getElementById('userName').textContent = `Welcome Back, ${data.name || 'Apprentice'}!`;
+  document.getElementById('userEmail').textContent = user.email;
+  document.getElementById('planTier').textContent = data.plan_tier || 'Free Plan';
 
-    document.getElementById('userName').textContent = `Welcome Back, ${data.name || 'Apprentice'}!`;
-    document.getElementById('userEmail').textContent = user.email;
-    document.getElementById('planTier').textContent = data.plan_tier || 'Free Plan';
+  const usagePercent = Math.min((data.prompt_count || 0) / 10 * 100, 100);
+  document.getElementById('promptUsage').textContent = `${data.prompt_count || 0} / ${data.plan_tier === 'Free Plan' ? '10' : '∞'}`;
+  document.getElementById('usageBar').style.width = `${usagePercent}%`;
 
-    const usagePercent = Math.min((data.prompt_count || 0) / 10 * 100, 100);
-    document.getElementById('promptUsage').textContent = `${data.prompt_count || 0} / ${data.plan_tier === 'Free Plan' ? '10' : '∞'}`;
-    document.getElementById('usageBar').style.width = `${usagePercent}%`;
+  const profilePic = data.profile_pic_url || 'https://i.imgur.com/uYWtV9r.png';
+  document.getElementById('profilePreview').src = `${profilePic}?t=${Date.now()}`;
+}
 
-    const profilePic = data.profile_pic_url || 'https://i.imgur.com/uYWtV9r.png';
-    document.getElementById('profilePreview').src = `${profilePic}?t=${Date.now()}`;
-  }
+async function uploadProfilePic(file) {
+  if (!file.type.startsWith('image/')) return showToast('Only image files allowed.');
+  if (file.size > 2 * 1024 * 1024) return showToast('Max file size is 2MB.');
 
-  async function uploadProfilePic(file) {
-    if (!file.type.startsWith('image/')) return showToast('Only image files allowed.');
-    if (file.size > 2 * 1024 * 1024) return showToast('Max file size is 2MB.');
+  const { data: { session } } = await client.auth.getSession();
+  const user = session.user;
+  const fileExt = file.name.split('.').pop();
+  const filePath = `${user.id}.${fileExt}`;
 
-    const { data: { session } } = await client.auth.getSession();
-    const user = session.user;
-    const fileExt = file.name.split('.').pop();
-    const filePath = `${user.id}.${fileExt}`;
-
-    const { error: uploadError } = await client.storage.from(BUCKET).upload(filePath, file, {
-      upsert: true,
-      cacheControl: '3600',
-      metadata: { user_id: user.id }
-    });
-
-    if (uploadError) return showToast(`Upload failed: ${uploadError.message}`);
-
-    const { data: publicURL } = client.storage.from(BUCKET).getPublicUrl(filePath);
-    await client.from('users').update({ profile_pic_url: publicURL.publicUrl }).eq('id', user.id);
-
-    document.getElementById('profilePreview').src = `${publicURL.publicUrl}?t=${Date.now()}`;
-    showToast('Profile picture updated!');
-  }
-
-  document.getElementById('profilePic').addEventListener('change', (e) => {
-    const file = e.target.files[0];
-    if (file) uploadProfilePic(file);
+  const { error: uploadError } = await client.storage.from(BUCKET).upload(filePath, file, {
+    upsert: true,
+    cacheControl: '3600'
   });
 
-  function toggleMenu() {
-    document.getElementById('menuDropdown').classList.toggle('hidden');
-  }
+  if (uploadError) return showToast(`Upload failed: ${uploadError.message}`);
 
-  function logout() {
-    client.auth.signOut().then(() => {
-      sessionStorage.clear();
-      window.location.href = 'signin.html';
-    });
-  }
+  const { data: publicURL } = client.storage.from(BUCKET).getPublicUrl(filePath);
+  await client.from('users').update({ profile_pic_url: publicURL.publicUrl }).eq('id', user.id);
 
-  checkSession();
+  document.getElementById('profilePreview').src = `${publicURL.publicUrl}?t=${Date.now()}`;
+  showToast('Profile picture updated!');
+}
+
+document.getElementById('profilePic').addEventListener('change', (e) => {
+  const file = e.target.files[0];
+  if (file) uploadProfilePic(file);
+});
+
+function toggleMenu() {
+  document.getElementById('menuDropdown').classList.toggle('hidden');
+}
+
+function logout() {
+  client.auth.signOut().then(() => {
+    sessionStorage.clear();
+    window.location.href = 'signin.html';
+  });
+}
+
+checkSession();
 </script>
 
 </body>
