@@ -3,30 +3,81 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>My Contacts – Ask Kai</title>
+  <title>Contacts – Ask Kai</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.7/dist/umd/supabase.min.js"></script>
+  <style>
+    body {
+      background-image: url('https://i.imgur.com/jhqlVA5.png');
+      background-size: cover;
+      background-position: center;
+      font-family: sans-serif;
+    }
+    @media (max-width: 768px) {
+      body { background-image: url('https://i.imgur.com/qzRmu0O.jpeg'); }
+    }
+    .overlay { background-color: rgba(255, 255, 255, 0.95); backdrop-filter: blur(5px); }
+    .menu-button { background-color: #7AC142; }
+    .toast {
+      position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%);
+      background: #323232; color: #fff; padding: 12px 24px; border-radius: 8px;
+      opacity: 0; transition: opacity 0.3s ease; z-index: 1000;
+    }
+    .toast.show { opacity: 1; }
+  </style>
 </head>
 
-<body class="text-gray-800 flex flex-col items-center justify-center min-h-screen bg-gray-100">
-  <h1 class="text-3xl font-bold text-green-600 mb-6">My Contacts</h1>
-  <div id="contactsList" class="w-full max-w-md space-y-4"></div>
+<body class="text-gray-800">
 
-  <a href="addcontacts.html" class="mt-6 bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded shadow">
-    Add New Contact
-  </a>
-  <a href="settings.html" class="block text-center text-blue-600 underline mt-4">Back to Settings</a>
+<div id="toast" class="toast"></div>
+
+<!-- Navigation Menu -->
+<div class="absolute top-4 left-4 z-50">
+  <button onclick="toggleMenu()" class="menu-button text-white p-2 rounded-full shadow">☰</button>
+  <div id="menuDropdown" class="hidden absolute left-0 mt-2 w-64 bg-white border border-gray-300 shadow-lg rounded-md z-50 p-4 space-y-2 text-gray-800 text-base font-medium">
+    <a href="index.html" class="block text-[#7AC142] hover:underline">Home</a>
+    <a href="settings.html" class="block text-gray-700 hover:underline">Profile</a>
+    <a href="addcontacts.html" class="block text-gray-700 hover:underline">Add Contact</a>
+    <a href="suppliers.html" class="block text-gray-700 hover:underline">Suppliers</a>
+    <hr class="my-2">
+    <p onclick="logout()" class="block text-red-600 hover:underline cursor-pointer">Log Out</p>
+  </div>
+</div>
+
+<main class="max-w-xl mx-auto p-6 space-y-6 overlay mt-16 rounded-lg text-center">
+  <h1 class="text-3xl font-bold text-green-600 mb-6">Your Contacts</h1>
+  <div id="contactsList" class="space-y-4"></div>
+  <a href="addcontacts.html" class="block bg-green-600 hover:bg-green-700 text-white py-2 px-6 rounded shadow mt-6">Add New Contact</a>
+  <a href="index.html" class="block text-blue-600 underline text-sm mt-4">Back to Chat</a>
+</main>
 
 <script>
   const SUPABASE_URL = 'https://ndvmxpkoyoimibntetef.supabase.co';
   const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5kdm14cGtveW9pbWlibnRldGVmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY1MDgxODksImV4cCI6MjA2MjA4NDE4OX0.-U4Jfb33aFfoAec-fhhFqjHExezWcKoEYwkSVgibjE4';
   const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
   const contactsList = document.getElementById('contactsList');
+  const toast = document.getElementById('toast');
+
+  function showToast(message, duration = 3000) {
+    toast.textContent = message;
+    toast.classList.add('show');
+    setTimeout(() => toast.classList.remove('show'), duration);
+  }
+
+  function toggleMenu() {
+    document.getElementById('menuDropdown').classList.toggle('hidden');
+  }
+
+  function logout() {
+    client.auth.signOut().then(() => {
+      window.location.href = 'signin.html';
+    });
+  }
 
   async function loadContacts() {
     const { data: { session }, error: sessionError } = await client.auth.getSession();
     if (sessionError || !session) {
-      alert('You must be logged in.');
+      window.location.href = 'signin.html';
       return;
     }
 
@@ -34,35 +85,60 @@
     const { data, error } = await client
       .from('contacts')
       .select('*')
-      .eq('user_id', userId);
+      .eq('user_id', userId)
+      .order('name', { ascending: true });
 
     if (error) {
-      console.error('Load Error:', error);
-      contactsList.innerHTML = '<p class="text-center text-gray-500">Failed to load contacts.</p>';
+      console.error('Fetch Error:', error);
+      showToast('Failed to load contacts.');
       return;
     }
 
     if (!data.length) {
-      contactsList.innerHTML = '<p class="text-center text-gray-500">No contacts saved yet.</p>';
+      contactsList.innerHTML = '<p class="text-gray-600">No contacts saved yet.</p>';
       return;
     }
 
     contactsList.innerHTML = '';
     data.forEach(contact => {
-      const contactCard = document.createElement('div');
-      contactCard.className = 'bg-white p-4 rounded shadow space-y-2 text-left';
+      const card = document.createElement('div');
+      card.className = 'bg-white p-4 rounded-lg shadow text-left space-y-2';
 
-      contactCard.innerHTML = `
-        <h2 class="text-xl font-bold text-green-600">${contact.name}</h2>
-        <p class="text-gray-700"><strong>Email:</strong> ${contact.email}</p>
-        <p class="text-gray-700"><strong>Phone:</strong> ${contact.phone || 'N/A'}</p>
-        <p class="text-gray-700"><strong>Notes:</strong> ${contact.notes || 'N/A'}</p>
+      card.innerHTML = `
+        <p><strong>Name:</strong> ${contact.name}</p>
+        <p><strong>Email:</strong> ${contact.email}</p>
+        <p><strong>Phone:</strong> ${contact.phone || 'N/A'}</p>
+        <p><strong>Notes:</strong> ${contact.notes || 'None'}</p>
+        <button onclick="deleteContact(${contact.id})" 
+          class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded mt-2 shadow">
+          Delete
+        </button>
       `;
-      contactsList.appendChild(contactCard);
+
+      contactsList.appendChild(card);
     });
+  }
+
+  async function deleteContact(contactId) {
+    const confirmDelete = confirm('Are you sure you want to delete this contact?');
+    if (!confirmDelete) return;
+
+    const { error } = await client
+      .from('contacts')
+      .delete()
+      .eq('id', contactId);
+
+    if (error) {
+      console.error('Delete Error:', error);
+      showToast('Failed to delete contact.');
+    } else {
+      showToast('Contact deleted successfully!');
+      loadContacts();
+    }
   }
 
   loadContacts();
 </script>
+
 </body>
 </html>
