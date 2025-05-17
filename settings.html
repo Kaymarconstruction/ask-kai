@@ -72,7 +72,6 @@
       <p id="promptUsage" class="text-gray-700 mt-1">Loading...</p>
     </div>
 
-    <!-- Action Buttons -->
     <div class="flex flex-wrap gap-4 mt-4 justify-center">
       <a href="addcontacts.html" class="bg-black text-white px-4 py-2 rounded hover:bg-gray-800">Add Contact</a>
       <a href="addsuppliers.html" class="bg-black text-white px-4 py-2 rounded hover:bg-gray-800">Add Supplier</a>
@@ -87,7 +86,7 @@
 
 <script>
   const SUPABASE_URL = 'https://ndvmxpkoyoimibntetef.supabase.co';
-  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5kdm14cGtveW9pbWlibnRldGVmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY1MDgxODksImV4cCI6MjA2MjA4NDE4OX0.-U4Jfb33aFfoAec-fhhFqjHExezWcKoEYwkSVgibjE4';
+  const SUPABASE_KEY = 'your-supabase-public-api-key';
   const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
   const BUCKET = 'profile-pictures';
   const toast = document.getElementById('toast');
@@ -111,7 +110,7 @@
     const { data, error } = await client
       .from('users')
       .select('name, profile_pic_url, plan_tier, prompt_count')
-      .eq('id', user.id)
+      .eq('email', user.email) // Using email for reliable lookup
       .single();
 
     if (error || !data) return showToast(`Error loading profile: ${error?.message || 'Unknown error'}`);
@@ -137,18 +136,18 @@
     const { data: { session } } = await client.auth.getSession();
     const user = session.user;
     const fileExt = file.name.split('.').pop();
-    const filePath = `${user.id}.${fileExt}`;
+    const filePath = `${user.email.replace(/[@.]/g, '_')}.${fileExt}`; // Sanitize email for filename
 
     const { error: uploadError } = await client.storage.from(BUCKET).upload(filePath, file, {
       upsert: true,
       cacheControl: '3600',
-      metadata: { user_id: user.id }
+      metadata: { user_email: user.email }
     });
 
     if (uploadError) return showToast(`Upload failed: ${uploadError.message}`);
 
     const { data: publicURL } = client.storage.from(BUCKET).getPublicUrl(filePath);
-    await client.from('users').update({ profile_pic_url: publicURL.publicUrl }).eq('id', user.id);
+    await client.from('users').update({ profile_pic_url: publicURL.publicUrl }).eq('email', user.email);
 
     document.getElementById('profilePreview').src = `${publicURL.publicUrl}?t=${Date.now()}`;
     showToast('Profile picture updated!');
