@@ -6,57 +6,77 @@
   <title>Settings – Ask Kai</title>
   <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet" />
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.7/dist/umd/supabase.min.js"></script>
+  <style>
+    body {
+      background-image: url('https://i.imgur.com/jhqlVA5.png');
+      background-size: cover;
+      background-position: center;
+      font-family: sans-serif;
+    }
+    @media (max-width: 768px) {
+      body { background-image: url('https://i.imgur.com/qzRmu0O.jpeg'); }
+    }
+    .overlay { background-color: rgba(255, 255, 255, 0.95); backdrop-filter: blur(5px); }
+    .menu-button { background-color: #7AC142; }
+    .profile-border { border: 4px solid #7AC142; cursor: pointer; }
+  </style>
 </head>
-<body class="bg-gray-100 text-gray-800 flex flex-col min-h-screen">
 
-<!-- Menu -->
-<div class="bg-white shadow p-4 flex justify-between items-center">
-  <h1 class="text-2xl font-bold text-green-600">Settings</h1>
-  <button onclick="logout()" class="text-red-600 hover:underline">Log Out</button>
+<body class="text-gray-800 flex flex-col min-h-screen">
+
+<!-- Menu Button -->
+<div class="absolute top-4 left-4 z-50">
+  <button onclick="toggleMenu()" class="menu-button text-white p-2 rounded-full shadow">☰</button>
+  <div id="menuDropdown" class="hidden absolute left-0 mt-2 w-64 bg-white border border-gray-300 shadow-lg rounded-md z-50 p-4 space-y-2">
+    <a href="index.html" class="block text-[#7AC142] hover:underline">Home</a>
+    <a href="settings.html" class="block text-gray-700 hover:underline">Profile</a>
+    <a href="apprentice-hub.html" class="block text-gray-700 hover:underline">Apprentice Hub</a>
+    <a href="plus-hub.html" class="block text-gray-700 hover:underline">Plus Hub</a>
+    <a href="pro-hub.html" class="block text-gray-700 hover:underline">Pro Hub</a>
+    <a href="upgrade.html" class="block text-gray-700 hover:underline">Upgrade</a>
+    <a href="team.html" class="block text-gray-700 hover:underline">Meet the Team</a>
+    <a href="suppliers.html" class="block text-gray-700 hover:underline">Suppliers</a>
+    <a href="contacts.html" class="block text-gray-700 hover:underline">Contacts</a>
+    <a href="addcontacts.html" class="block text-gray-700 hover:underline">Add Contacts</a>
+    <p onclick="logout()" class="block text-red-600 hover:underline cursor-pointer">Log Out</p>
+  </div>
 </div>
 
-<!-- Navigation Links -->
-<nav class="bg-white shadow p-4 space-y-2">
-  <a href="index.html" class="block text-blue-600 hover:underline">Home</a>
-  <a href="addcontacts.html" class="block text-gray-700 hover:underline">Add Contact</a>
-  <a href="contacts.html" class="block text-gray-700 hover:underline">Saved Contacts</a>
-  <a href="suppliers.html" class="block text-gray-700 hover:underline">Suppliers</a>
-  <a href="apprentice-hub.html" class="block text-gray-700 hover:underline">Apprentice Hub</a>
-  <a href="plus-hub.html" class="block text-gray-700 hover:underline">Plus Hub</a>
-  <a href="pro-hub.html" class="block text-gray-700 hover:underline">Pro Hub</a>
-  <a href="team.html" class="block text-gray-700 hover:underline">Meet the Team</a>
-  <a href="upgrade.html" class="block text-gray-700 hover:underline">Upgrade</a>
-</nav>
-
 <!-- Profile Section -->
-<main class="flex-grow p-6">
-  <div class="max-w-md mx-auto bg-white p-6 rounded-lg shadow space-y-4 text-center">
-    <label for="profilePic">
-      <img id="profilePreview" src="https://i.imgur.com/uYWtV9r.png" alt="Profile"
-           class="mx-auto w-32 h-32 rounded-full object-cover border-4 border-green-600 cursor-pointer" />
-    </label>
-    <input id="profilePic" type="file" accept="image/*" class="hidden" />
-    <h2 id="userName" class="text-2xl font-bold text-green-600 mt-4">Welcome Back!</h2>
-    <button onclick="location.href='upgrade.html'" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded shadow">
-      Manage Subscription
-    </button>
+<main class="max-w-xl mx-auto p-6 overlay mt-16 rounded-lg text-center flex-grow">
+  <label for="profilePic">
+    <img id="profilePreview" src="https://i.imgur.com/uYWtV9r.png" alt="Profile"
+         class="mx-auto w-40 h-40 rounded-full object-cover shadow-lg profile-border" />
+  </label>
+  <input id="profilePic" type="file" accept="image/*" class="hidden" />
+  <h1 id="userName" class="text-3xl font-bold text-green-600 mt-4">Welcome Back!</h1>
+  <button onclick="location.href='upgrade.html'" 
+          class="mt-4 bg-green-600 hover:bg-green-700 text-white px-6 py-2 rounded-lg shadow">
+    Manage Subscription
+  </button>
 
-    <div class="bg-gray-100 p-4 rounded text-left space-y-2 mt-4">
-      <p><strong>Email:</strong> <span id="userEmail">Loading...</span></p>
-      <p><strong>Subscription Tier:</strong> <span id="planTier">Loading...</span></p>
-      <p><strong>Token Usage:</strong> <span id="promptUsage">Loading...</span></p>
-      <div class="w-full bg-gray-300 rounded h-2.5">
-        <div id="usageBar" class="bg-green-600 h-2.5 rounded" style="width: 0%;"></div>
+  <div class="bg-white p-4 shadow rounded space-y-4 mt-8 text-left">
+    <div><label class="block text-sm font-medium">Email</label><p id="userEmail" class="text-gray-700">Loading...</p></div>
+    <div><label class="block text-sm font-medium">Subscription Tier</label><p id="planTier" class="text-green-700 font-semibold">Loading...</p></div>
+    <div><label class="block text-sm font-medium">Token Usage</label>
+      <div class="w-full bg-gray-200 rounded-full h-2.5 mt-1">
+        <div id="usageBar" class="bg-green-600 h-2.5 rounded-full" style="width:0%"></div>
       </div>
+      <p id="promptUsage" class="text-gray-700 mt-1">Loading...</p>
     </div>
   </div>
+
+  <a href="index.html" class="text-blue-600 underline text-sm block text-center mt-6">Back to Chat</a>
 </main>
 
 <script>
   const SUPABASE_URL = 'https://ndvmxpkoyoimibntetef.supabase.co';
-  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5kdm14cGtveW9pbWlibnRldGVmIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NDY1MDgxODksImV4cCI6MjA2MjA4NDE4OX0.-U4Jfb33aFfoAec-fhhFqjHExezWcKoEYwkSVgibjE4'; // Ensure this is set via Render Environment
+  const SUPABASE_KEY = 'YOUR_PUBLIC_SUPABASE_KEY_HERE';
   const client = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
-  const BUCKET = 'profile-pictures';
+
+  function toggleMenu() {
+    document.getElementById('menuDropdown').classList.toggle('hidden');
+  }
 
   async function checkSession() {
     const { data: { session } } = await client.auth.getSession();
@@ -65,44 +85,48 @@
   }
 
   async function loadProfile(user) {
-    const { data, error } = await client.from('users')
+    const { data, error } = await client
+      .from('users')
       .select('name, profile_pic_url, plan_tier, prompt_count')
-      .eq('email', user.email)
+      .eq('id', user.id)
       .single();
 
-    if (error || !data) {
-      document.getElementById('userEmail').textContent = 'Error loading';
-      return;
-    }
+    if (error) return alert('Error loading profile.');
 
     document.getElementById('userName').textContent = `Welcome Back, ${data.name || 'Mate'}!`;
     document.getElementById('userEmail').textContent = user.email;
     document.getElementById('planTier').textContent = data.plan_tier || 'Free';
-    document.getElementById('promptUsage').textContent = `${data.prompt_count || 0} / ${data.plan_tier === 'Free' ? 10 : '∞'}`;
-
-    const percent = Math.min((data.prompt_count || 0) / 10 * 100, 100);
+    
+    const usage = data.prompt_count || 0;
+    const limit = data.plan_tier === 'Free' ? 10 : '∞';
+    const percent = data.plan_tier === 'Free' ? Math.min((usage / 10) * 100, 100) : 100;
     document.getElementById('usageBar').style.width = `${percent}%`;
+    document.getElementById('promptUsage').textContent = `${usage} / ${limit}`;
 
-    const profilePic = data.profile_pic_url || 'https://i.imgur.com/uYWtV9r.png';
-    document.getElementById('profilePreview').src = `${profilePic}?t=${Date.now()}`;
+    const picUrl = data.profile_pic_url || 'https://i.imgur.com/uYWtV9r.png';
+    document.getElementById('profilePreview').src = `${picUrl}?t=${Date.now()}`;
   }
 
   async function uploadProfilePic(file) {
-    if (!file.type.startsWith('image/')) return alert('Only image files allowed.');
-    if (file.size > 2 * 1024 * 1024) return alert('Max file size is 2MB.');
+    if (!file.type.startsWith('image/')) return alert('Only images allowed.');
+    if (file.size > 2 * 1024 * 1024) return alert('Max size is 2MB.');
 
     const { data: { session } } = await client.auth.getSession();
     const user = session.user;
     const fileExt = file.name.split('.').pop();
     const filePath = `${user.id}.${fileExt}`;
 
-    const { error } = await client.storage.from(BUCKET).upload(filePath, file, { upsert: true });
-    if (error) return alert(`Upload failed: ${error.message}`);
+    const { error } = await client.storage.from('profile-pictures').upload(filePath, file, {
+      upsert: true
+    });
 
-    const { data: publicURL } = client.storage.from(BUCKET).getPublicUrl(filePath);
-    await client.from('users').update({ profile_pic_url: publicURL.publicUrl }).eq('email', user.email);
+    if (error) return alert('Upload failed.');
 
-    document.getElementById('profilePreview').src = `${publicURL.publicUrl}?t=${Date.now()}`;
+    const { data } = client.storage.from('profile-pictures').getPublicUrl(filePath);
+    await client.from('users').update({ profile_pic_url: data.publicUrl }).eq('id', user.id);
+
+    document.getElementById('profilePreview').src = `${data.publicUrl}?t=${Date.now()}`;
+    alert('Profile picture updated!');
   }
 
   document.getElementById('profilePic').addEventListener('change', (e) => {
